@@ -2,6 +2,7 @@
 
 static Window *s_main_window;
 static TextLayer *s_time_layer;
+static Layer *s_layer;
 
 static void update_time() {
   time_t temp = time(NULL);
@@ -17,6 +18,11 @@ static void update_time() {
   text_layer_set_text(s_time_layer, buffer);
 }
 
+static void update_layer(Layer *layer, GContext *ctx) {
+  graphics_context_set_stroke_color(ctx, GColorBlack);
+  graphics_draw_circle(ctx, GPoint(144 / 2, 168 / 2), 144 / 2);
+}
+
 static void main_window_load(Window *window) {
   s_time_layer = text_layer_create(GRect(0, 55, 144, 50));
   text_layer_set_background_color(s_time_layer, GColorClear);
@@ -29,9 +35,16 @@ static void main_window_load(Window *window) {
   layer_add_child(
     window_get_root_layer(window),
     text_layer_get_layer(s_time_layer));
+  
+  s_layer = layer_create(GRect(0, 0, 144, 168));
+  layer_set_update_proc(s_layer, update_layer);
+  layer_add_child(
+    window_get_root_layer(window),
+    s_layer);
 }
 
 static void main_window_unload(Window *window) {
+  layer_destroy(s_layer);
   text_layer_destroy(s_time_layer);
 }
 
