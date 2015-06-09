@@ -20,7 +20,11 @@ static void update_time() {
 
 static void update_layer(Layer *layer, GContext *ctx) {
   graphics_context_set_stroke_color(ctx, GColorBlack);
-  graphics_draw_circle(ctx, GPoint(144 / 2, 168 / 2), 144 / 2);
+  GRect r = layer_get_bounds(layer);
+  GPoint center = GPoint(
+    (r.size.w - r.origin.x) / 2,
+    (r.size.h - r.origin.y) / 2);
+  graphics_draw_circle(ctx, center, r.size.w / 2);
 }
 
 static void main_window_load(Window *window) {
@@ -36,7 +40,7 @@ static void main_window_load(Window *window) {
     window_get_root_layer(window),
     text_layer_get_layer(s_time_layer));
   
-  s_layer = layer_create(GRect(0, 0, 144, 168));
+  s_layer = layer_create(GRect(0, 14, 144, 144));
   layer_set_update_proc(s_layer, update_layer);
   layer_add_child(
     window_get_root_layer(window),
