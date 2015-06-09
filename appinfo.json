@@ -2,12 +2,12 @@
   "uuid": "7931554c-19ca-40b4-bd7d-c6fcb59c1545",
   "shortName": "Tutorial1",
   "longName": "Tutorial1",
-  "companyName": "MakeAwesomeHappen",
+  "companyName": "KENZ",
   "versionLabel": "1.0",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite", "basalt"],
   "watchapp": {
-    "watchface": false
+    "watchface": true
   },
   "appKeys": {
     "dummy": 0
