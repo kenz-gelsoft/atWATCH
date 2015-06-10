@@ -3,4 +3,4 @@
 set -e
 
 pebble build
-pebble install --phone 192.168.0.3
+pebble install --phone 192.168.0.2
