@@ -3,6 +3,7 @@
 static Window *s_main_window;
 static TextLayer *s_time_layer;
 static Layer *s_layer;
+static PropertyAnimation *s_animation;
 
 static void update_time() {
   time_t temp = time(NULL);
@@ -20,11 +21,15 @@ static void update_time() {
 
 static void update_layer(Layer *layer, GContext *ctx) {
   graphics_context_set_stroke_color(ctx, GColorBlack);
-  GRect r = layer_get_bounds(layer);
+  GRect r = layer_get_bounds(s_layer);
   GPoint center = GPoint(
-    (r.size.w - r.origin.x) / 2,
-    (r.size.h - r.origin.y) / 2);
+    r.origin.x + r.size.w / 2,
+    r.origin.y + r.size.h / 2);
   graphics_draw_circle(ctx, center, r.size.w / 2);
+}
+
+static void anim_stopped(Animation *animation, bool finished, void *context) {
+  property_animation_destroy(s_animation);
 }
 
 static void main_window_load(Window *window) {
@@ -45,9 +50,21 @@ static void main_window_load(Window *window) {
   layer_add_child(
     window_get_root_layer(window),
     s_layer);
+  
+  GRect start  = GRect(0, (168 - 144) / 2, 144, 144);
+  GRect finish = GRect((144 - 32) / 2, (168 - 32) / 2, 32, 32);
+  s_animation = property_animation_create_layer_frame(s_layer, &start, &finish);
+  animation_set_duration((Animation *)s_animation, 500);
+  animation_set_delay((Animation *)s_animation, 300);
+  animation_set_curve((Animation *)s_animation, AnimationCurveEaseInOut);
+  animation_set_handlers((Animation *)s_animation, (AnimationHandlers) {
+    .stopped = anim_stopped
+  }, NULL);
+  animation_schedule((Animation *)s_animation);
 }
 
 static void main_window_unload(Window *window) {
+  animation_unschedule_all();
   layer_destroy(s_layer);
   text_layer_destroy(s_time_layer);
 }
