@@ -1,7 +1,26 @@
 #include <pebble.h>
 
+static const int LAYER_COUNT = 17;
+
 static Window *s_main_window;
-static Layer  *s_layer[7];
+static Layer  *s_layer[17];
+
+/*
+      (19, 3) (58, 1) (98, 3)
+  ( 1,38) (34,32) (76,32) (116,38)
+      (12,68) (52,66) (98,68)
+( 1,106) (34,106) (76,106) (116,106)
+     (19,141) (58,144) (98,141)
+*/
+
+#define RECT(x,y,w,h) (x),(y),(w),(h)
+static int16_t sIconAreas[] = {
+            RECT(19,3,27,27), RECT(58,1,27,27), RECT(98,3,27,27),
+  RECT(1,38,27,27), RECT(34,32,35,35), RECT(76,32,35,35), RECT(116,38,27,27),
+            RECT(12,68,35,35), RECT(52,66,40,40), RECT(98,68,35,35),
+  RECT(1,106,27,27), RECT(34,106,35,35), RECT(76,106,35,35), RECT(116,106,27,27),
+            RECT(19,141,27,27), RECT(58,144,27,27), RECT(98,141,27,27),
+};
 
 static void update_layer(Layer *layer, GContext *ctx) {
   GRect r = layer_get_frame(layer);
@@ -34,73 +53,25 @@ static void make_circle_layer(Layer **p_layer, GRect *from, GRect *to) {
 }
 
 static void main_window_load(Window *window) {
-  // 144 / 3 = 48
-  static const uint16_t to_size = 41;
-  static const uint16_t smaller = 36;
-  static const uint16_t radius = 144/2;
-  static const int16_t to_distance = 42;
-  static const int16_t from_distance = 144 + (to_distance-to_size)*3; // gap = 48 - 40 = 8
-  
-  // sqrt(3)/2 * edge = height
-  // 1.732*edge/2
-  GPoint center = GPoint(144/2, 168/2);  
-  GRect from_rect = GRect(0, 0, 144, 168);
-  GRect to_rect = GRect((144 - to_size) / 2,
-                        (168 - to_size) / 2,
-                        to_size, to_size);
-  make_circle_layer(&s_layer[0], &from_rect, &to_rect);
-
-  GRect from_rect2 = GRect(-from_distance,
-                           0, 144, 168);
-  GRect to_rect2 = GRect(center.x-to_distance-smaller/2,
-                        (168 - smaller) / 2,
-                        smaller, smaller);
-  make_circle_layer(&s_layer[1], &from_rect2, &to_rect2);
-
-  GRect from_rect3 = GRect(from_distance,
-                           0, 144, 168);
-  GRect to_rect3 = GRect(center.x+to_distance-smaller/2,
-                         (168 - smaller) / 2,
-                         smaller, smaller);
-  make_circle_layer(&s_layer[2], &from_rect3, &to_rect3);
-  
-  GRect from_rect4 = GRect(-center.x,
-                           -from_distance*1.732/2,
-                           144, 168);
-  GRect to_rect4 = GRect(center.x-to_distance/2-smaller/2,
-                         center.y-to_distance*1.732/2-smaller/2,
-                         smaller, smaller);
-  make_circle_layer(&s_layer[3], &from_rect4, &to_rect4);
-
-  GRect from_rect5 = GRect(from_distance/2,
-                           -from_distance*1.732/2,
-                           144, 168);
-  GRect to_rect5 = GRect(center.x+to_distance/2-smaller/2,
-                         center.y-to_distance*1.732/2-smaller/2,
-                         smaller, smaller);
-  make_circle_layer(&s_layer[4], &from_rect5, &to_rect5);
-
-  GRect from_rect6 = GRect(-center.x,
-                           from_distance*1.732/2,
-                           144, 168);
-  GRect to_rect6 = GRect(center.x-to_distance/2-smaller/2,
-                         center.y+to_distance*1.732/2-smaller/2,
-                         smaller, smaller);
-  make_circle_layer(&s_layer[5], &from_rect6, &to_rect6);
-
-  GRect from_rect7 = GRect(from_distance/2,
-                           from_distance*1.732/2,
-                           144, 168);
-  GRect to_rect7 = GRect(center.x+to_distance/2-smaller/2,
-                         center.y+to_distance*1.732/2-smaller/2,
-                         smaller, smaller);
-  make_circle_layer(&s_layer[6], &from_rect7, &to_rect7);
-}
+  float scale = 144.f / 40.f;
+  for (int i = 0; i < LAYER_COUNT; ++i) {
+    GRect to_rect = GRect(sIconAreas[i*4],sIconAreas[i*4+1],sIconAreas[i*4+2],sIconAreas[i*4+3]);
+    int16_t cx = 144 / 2;
+    int16_t cy = 168 / 2;
+    GRect r = to_rect;
+    r.origin.x += (r.origin.x - cx) * scale;
+    r.origin.y += (r.origin.y - cy) * scale;
+    r.size.w *= scale;
+    r.size.h *= scale;
+    make_circle_layer(&s_layer[i], &r, &to_rect);
+  }
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 static void main_window_unload(Window *window) {
   animation_unschedule_all();
-  layer_destroy(s_layer[0]);
-  layer_destroy(s_layer[1]);
+  for (int i = 0; i < LAYER_COUNT; ++i) {
+    layer_destroy(s_layer[i]);
+  }
 }
 
 static void init() {
