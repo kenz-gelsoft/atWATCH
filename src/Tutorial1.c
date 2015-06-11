@@ -3,6 +3,7 @@
 static const int LAYER_COUNT = 17;
 
 static Window *s_main_window;
+static Layer  *sBgLayer;
 static Layer  *s_layer[17];
 
 /*
@@ -24,13 +25,18 @@ static int16_t sIconAreas[] = {
 
 static void update_layer(Layer *layer, GContext *ctx) {
   GRect r = layer_get_frame(layer);
-  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_context_set_fill_color(ctx, GColorWhite);
   GPoint center = GPoint(r.size.w / 2,
                          r.size.h / 2);
   uint16_t radius = r.size.w / 2 - 1;
   APP_LOG(APP_LOG_LEVEL_DEBUG, "update_layer: (%d, %d), %d",
           center.x, center.y, radius);
   graphics_fill_circle(ctx, center, radius);
+}
+
+static void paint_bg(Layer *layer, GContext *ctx) {
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_fill_rect(ctx, layer_get_bounds(layer), 0, 0);
 }
 
 static void anim_stopped(Animation *animation, bool finished, void *context) {
@@ -53,14 +59,18 @@ static void make_circle_layer(Layer **p_layer, GRect *from, GRect *to) {
 }
 
 static void main_window_load(Window *window) {
+  sBgLayer = layer_create(GRect(0, 0, 144, 168));
+  layer_set_update_proc(sBgLayer, paint_bg);
+  layer_add_child(window_get_root_layer(window), sBgLayer);
+  
   float scale = 144.f / 40.f;
   for (int i = 0; i < LAYER_COUNT; ++i) {
     GRect to_rect = GRect(sIconAreas[i*4],sIconAreas[i*4+1],sIconAreas[i*4+2],sIconAreas[i*4+3]);
     int16_t cx = 144 / 2;
     int16_t cy = 168 / 2;
     GRect r = to_rect;
-    r.origin.x += (r.origin.x - cx) * scale;
-    r.origin.y += (r.origin.y - cy) * scale;
+    r.origin.x = cx + (r.origin.x - cx) * scale;
+    r.origin.y = cy + (r.origin.y - cy) * scale;
     r.size.w *= scale;
     r.size.h *= scale;
     make_circle_layer(&s_layer[i], &r, &to_rect);
@@ -72,6 +82,7 @@ static void main_window_unload(Window *window) {
   for (int i = 0; i < LAYER_COUNT; ++i) {
     layer_destroy(s_layer[i]);
   }
+  layer_destroy(sBgLayer);
 }
 
 static void init() {
