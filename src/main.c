@@ -7,7 +7,6 @@ static Window *s_main_window;
 static Layer  *s_layer[LAYER_COUNT];
 static DitherPercentage sColors[LAYER_COUNT]; // TODO 構造体
 static const DitherPercentage gLooksGood[] = {
-  DITHER_25_PERCENT,
   DITHER_50_PERCENT,
   DITHER_75_PERCENT,
   DITHER_80_PERCENT
@@ -50,10 +49,21 @@ PATH_DEFINITIONS(4)
 static int16_t sIconAreas[] = {
             RECT(19,3,28,28), RECT(58,0,28,28), RECT(98,3,28,28),
   RECT(1,37,28,28), RECT(34,31,35,35), RECT(76,31,35,35), RECT(116,37,28,28),
-            RECT(12,67,35,35), RECT(52,65,40,40), RECT(98,67,35,35),
+            RECT(12,67,35,35), RECT(51,64,42,42), RECT(98,67,35,35),
   RECT(1,105,28,28), RECT(34,105,35,35), RECT(76,105,35,35), RECT(116,105,28,28),
             RECT(19,138,28,28), RECT(58,141,28,28), RECT(98,138,28,28),
 };
+
+static void draw_bold_line(GContext *ctx, GPoint p1, GPoint p2) {
+  int32_t x1 = p1.x;
+  int32_t y1 = p1.y;
+  int32_t x2 = p2.x;
+  int32_t y2 = p2.y;
+  graphics_draw_line(ctx, p1, p2);
+  graphics_draw_line(ctx, GPoint(x1 + 1, y1),     GPoint(x2 + 1, y2));
+  graphics_draw_line(ctx, GPoint(x1,     y1 + 1), GPoint(x2    , y2 + 1));
+  graphics_draw_line(ctx, GPoint(x1 + 1, y1 + 1), GPoint(x2 + 1, y2 + 1));
+}
 
 static void update_layer(Layer *layer, GContext *ctx) {
   GRect r = layer_get_frame(layer);
@@ -95,33 +105,48 @@ static void update_layer(Layer *layer, GContext *ctx) {
       graphics_context_set_stroke_color(ctx, GColorBlack);
     }
 
-    GPath *hourHandPath = NULL;
-    GPath *minHandPath  = NULL;
-    if (radius > 80) {
-      hourHandPath = sHourHandPath4x;
-      minHandPath  = sMinHandPath4x;
-    } else if (radius > 60) {
-      hourHandPath = sHourHandPath3x;
-      minHandPath  = sMinHandPath3x;
-    } else if (radius > 40) {
-      hourHandPath = sHourHandPath2x;
-      minHandPath  = sMinHandPath2x;
-    } else {
-      hourHandPath = sHourHandPath1x;
-      minHandPath  = sMinHandPath1x;
-    }
+    // GPath *hourHandPath = NULL;
+    // GPath *minHandPath  = NULL;
+    // if (radius > 80) {
+    //   hourHandPath = sHourHandPath4x;
+    //   minHandPath  = sMinHandPath4x;
+    // } else if (radius > 60) {
+    //   hourHandPath = sHourHandPath3x;
+    //   minHandPath  = sMinHandPath3x;
+    // } else if (radius > 40) {
+    //   hourHandPath = sHourHandPath2x;
+    //   minHandPath  = sMinHandPath2x;
+    // } else {
+    //   hourHandPath = sHourHandPath1x;
+    //   minHandPath  = sMinHandPath1x;
+    // }
     
     // 時針
+    // int32_t hourAngle = TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f;
+    // gpath_move_to(hourHandPath, GPoint(radius, radius));
+    // gpath_rotate_to(hourHandPath, hourAngle);
+    // gpath_draw_filled(ctx, hourHandPath);
+    
+    int32_t hourLength = radius * 12 / 20;
     int32_t hourAngle = TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f;
-    gpath_move_to(hourHandPath, GPoint(radius, radius));
-    gpath_rotate_to(hourHandPath, hourAngle);
-    gpath_draw_filled(ctx, hourHandPath);
+    GPoint hourHand;
+    hourHand.y = (-cos_lookup(hourAngle) * hourLength / TRIG_MAX_RATIO) + center.y;
+    hourHand.x = ( sin_lookup(hourAngle) * hourLength / TRIG_MAX_RATIO) + center.x;
+    draw_bold_line(ctx, center, hourHand);
     
     // 分針
-    int32_t minAngle = TRIG_MAX_ANGLE * m / 60.f;
-    gpath_move_to(minHandPath, GPoint(radius, radius));
-    gpath_rotate_to(minHandPath, minAngle);
-    gpath_draw_filled(ctx, minHandPath);
+    // int32_t minAngle = TRIG_MAX_ANGLE * m / 60.f;
+    // gpath_move_to(minHandPath, GPoint(radius, radius));
+    // gpath_rotate_to(minHandPath, minAngle);
+    // gpath_draw_filled(ctx, minHandPath);
+    
+    int32_t minLength = radius * 18 / 20;
+    int32_t minAngle = TRIG_MAX_ANGLE * (m + s / 60.f) / 60.f;
+    GPoint minHand;
+    minHand.y = (-cos_lookup(minAngle) * minLength / TRIG_MAX_RATIO) + center.y;
+    minHand.x = ( sin_lookup(minAngle) * minLength / TRIG_MAX_RATIO) + center.x;
+    draw_bold_line(ctx, center, minHand);
+
     
     // 秒針
     int32_t secLength = radius * 18 / 20;
@@ -131,13 +156,14 @@ static void update_layer(Layer *layer, GContext *ctx) {
     secHand.x = ( sin_lookup(secAngle) * secLength / TRIG_MAX_RATIO) + center.x;
     graphics_draw_line(ctx, center, secHand);
   } else {
-    // アニメーション中は枠線だけ描画する
-    if (!animating) {
+    if (animating) {
+      // アニメーション中は枠線だけ描画する
+      graphics_context_set_stroke_color(ctx, GColorWhite);
+      graphics_draw_circle(ctx, center, radius);
+    } else {
       draw_dithered_circle(ctx, center.x, center.y, radius,
         GColorBlack, GColorWhite, sColors[layerNo]);
     }
-    graphics_context_set_stroke_color(ctx, GColorWhite);
-    graphics_draw_circle(ctx, center, radius);
   }
 }
 
