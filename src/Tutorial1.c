@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include "dithering/src/dithered_rects.h"
 
 #define LAYER_COUNT 17
 
@@ -25,11 +26,31 @@ static int16_t sIconAreas[] = {
 
 static void update_layer(Layer *layer, GContext *ctx) {
   GRect r = layer_get_frame(layer);
+  int layerNo = 0;
+  for (int i = 0; i < LAYER_COUNT; ++i) {
+    if (layer == s_layer[i]) {
+      layerNo = i;
+      break;
+    }
+  }
+  // APP_LOG(APP_LOG_LEVEL_DEBUG, "layer[%d] = (%d, %d, %d, %d)",
+  //   layerNo, r.origin.x, r.origin.y, r.size.w, r.size.h);
+  if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
+      r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
+    return;
+  }
   graphics_context_set_fill_color(ctx, GColorWhite);
   GPoint center = GPoint(r.size.w / 2,
                          r.size.h / 2-1);
   uint16_t radius = r.size.w / 2 - 1;
-  graphics_fill_circle(ctx, center, radius);
+  if (layerNo != 8) {
+    DitherPercentage p = layerNo % 2
+      ? DITHER_50_PERCENT
+      : DITHER_75_PERCENT;
+    draw_dithered_circle(ctx, center.x, center.y, radius, GColorBlack, GColorWhite, p);
+  } else {
+    graphics_fill_circle(ctx, center, radius);
+  }
 }
 
 static void paint_bg(Layer *layer, GContext *ctx) {
@@ -42,11 +63,12 @@ static void anim_stopped(Animation *animation, bool finished, void *context) {
 }
 
 static void make_circle_layer(Layer **p_layer, GRect *from, GRect *to) {
-  *p_layer = layer_create(GRect(-12, 0, 168, 168));
+  GRect initR = *from;
+  *p_layer = layer_create(initR);
   layer_set_update_proc(*p_layer, update_layer);
   layer_add_child(window_get_root_layer(s_main_window), *p_layer);
   
-  PropertyAnimation *animation = property_animation_create_layer_frame(*p_layer, from, to);
+  PropertyAnimation *animation = property_animation_create_layer_frame(*p_layer, NULL, to);
   animation_set_duration((Animation *)animation, 500);
   animation_set_delay((Animation *)animation, 300);
   animation_set_curve((Animation *)animation, AnimationCurveEaseInOut);
@@ -71,6 +93,8 @@ static void main_window_load(Window *window) {
     r.origin.y = cy + (r.origin.y - cy) * scale;
     r.size.w *= scale;
     r.size.h *= scale;
+    // APP_LOG(APP_LOG_LEVEL_DEBUG, "from_rect = (%d, %d, %d, %d)",
+    //   r.origin.x, r.origin.y, r.size.w, r.size.h);
     make_circle_layer(&s_layer[i], &r, &to_rect);
   }
 }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
