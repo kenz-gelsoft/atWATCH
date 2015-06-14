@@ -13,7 +13,7 @@ static GPath *sMinHandPath  = NULL;
 
 static const GPathInfo HOUR_HAND_PATH_INFO = {
   .num_points = 5,
-  .points = (GPoint []) {{0,0}, {-3, -4}, {-3, -12}, {2, -12}, {2, -4}}
+  .points = (GPoint []) {{0,0}, {-3, -4}, {-3, -13}, {2, -13}, {2, -4}}
 };
 static const GPathInfo MIN_HAND_PATH_INFO = {
   .num_points = 5,
