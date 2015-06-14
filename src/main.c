@@ -13,30 +13,6 @@ static const DitherPercentage gLooksGood[] = {
 };
 static int h=0, m=0, s=0;
 
-static GPath *sHourHandPath1x = NULL; // 20基準
-static GPath *sHourHandPath2x = NULL;
-static GPath *sHourHandPath3x = NULL;
-static GPath *sHourHandPath4x = NULL;
-static GPath *sMinHandPath1x  = NULL; // 20基準
-static GPath *sMinHandPath2x  = NULL;
-static GPath *sMinHandPath3x  = NULL;
-static GPath *sMinHandPath4x  = NULL;
-
-#define PATH_DEFINITIONS(scale) \
-  static const GPathInfo HOUR_HAND_PATH_INFO_##scale##X = { \
-    .num_points = 4, \
-    .points = (GPoint []) {{-2, 0}, {-2, -13*scale}, {3, -13*scale}, {3, 0}} \
-  }; \
-  static const GPathInfo MIN_HAND_PATH_INFO_##scale##X = { \
-    .num_points = 4, \
-    .points = (GPoint []) {{-2, 0}, {-2, -18*scale}, {3, -18*scale}, {3, 0}} \
-  };
-
-PATH_DEFINITIONS(1)
-PATH_DEFINITIONS(2)
-PATH_DEFINITIONS(3)
-PATH_DEFINITIONS(4)
-
 /*
       (19, 3) (58, 1) (98, 3)
   ( 1,38) (34,32) (76,32) (116,38)
@@ -105,28 +81,7 @@ static void update_layer(Layer *layer, GContext *ctx) {
       graphics_context_set_stroke_color(ctx, GColorBlack);
     }
 
-    // GPath *hourHandPath = NULL;
-    // GPath *minHandPath  = NULL;
-    // if (radius > 80) {
-    //   hourHandPath = sHourHandPath4x;
-    //   minHandPath  = sMinHandPath4x;
-    // } else if (radius > 60) {
-    //   hourHandPath = sHourHandPath3x;
-    //   minHandPath  = sMinHandPath3x;
-    // } else if (radius > 40) {
-    //   hourHandPath = sHourHandPath2x;
-    //   minHandPath  = sMinHandPath2x;
-    // } else {
-    //   hourHandPath = sHourHandPath1x;
-    //   minHandPath  = sMinHandPath1x;
-    // }
-    
     // 時針
-    // int32_t hourAngle = TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f;
-    // gpath_move_to(hourHandPath, GPoint(radius, radius));
-    // gpath_rotate_to(hourHandPath, hourAngle);
-    // gpath_draw_filled(ctx, hourHandPath);
-    
     int32_t hourLength = radius * 12 / 20;
     int32_t hourAngle = TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f;
     GPoint hourHand;
@@ -135,11 +90,6 @@ static void update_layer(Layer *layer, GContext *ctx) {
     draw_bold_line(ctx, center, hourHand);
     
     // 分針
-    // int32_t minAngle = TRIG_MAX_ANGLE * m / 60.f;
-    // gpath_move_to(minHandPath, GPoint(radius, radius));
-    // gpath_rotate_to(minHandPath, minAngle);
-    // gpath_draw_filled(ctx, minHandPath);
-    
     int32_t minLength = radius * 18 / 20;
     int32_t minAngle = TRIG_MAX_ANGLE * (m + s / 60.f) / 60.f;
     GPoint minHand;
@@ -228,15 +178,6 @@ static void main_window_unload(Window *window) {
 }
 
 static void init() {
-  sHourHandPath1x = gpath_create(&HOUR_HAND_PATH_INFO_1X);
-  sHourHandPath2x = gpath_create(&HOUR_HAND_PATH_INFO_2X);
-  sHourHandPath3x = gpath_create(&HOUR_HAND_PATH_INFO_3X);
-  sHourHandPath4x = gpath_create(&HOUR_HAND_PATH_INFO_4X);
-  sMinHandPath1x  = gpath_create(&MIN_HAND_PATH_INFO_1X);
-  sMinHandPath2x  = gpath_create(&MIN_HAND_PATH_INFO_2X);
-  sMinHandPath3x  = gpath_create(&MIN_HAND_PATH_INFO_3X);
-  sMinHandPath4x  = gpath_create(&MIN_HAND_PATH_INFO_4X);
-  
   srand(time(NULL));
   for (int i = 0; i < LAYER_COUNT; ++i) {
     const int colorCount = sizeof(gLooksGood)/sizeof(gLooksGood[0]);
@@ -256,14 +197,6 @@ static void init() {
 
 static void deinit() {
   window_destroy(s_main_window);
-  gpath_destroy(sMinHandPath4x);
-  gpath_destroy(sMinHandPath3x);
-  gpath_destroy(sMinHandPath2x);
-  gpath_destroy(sMinHandPath1x);
-  gpath_destroy(sHourHandPath4x);
-  gpath_destroy(sHourHandPath3x);
-  gpath_destroy(sHourHandPath2x);
-  gpath_destroy(sHourHandPath1x);
 }
   
 int main(void) {
