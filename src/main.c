@@ -8,17 +8,26 @@ static Layer  *sBgLayer;
 static Layer  *s_layer[LAYER_COUNT];
 static int h=0, m=0, s=0;
 
-static GPath *sHourHandPath = NULL;
-static GPath *sMinHandPath  = NULL;
+static GPath *sHourHandPath1x = NULL; // 20基準
+static GPath *sHourHandPath2x = NULL;
+static GPath *sHourHandPath4x = NULL;
+static GPath *sMinHandPath1x  = NULL; // 20基準
+static GPath *sMinHandPath2x  = NULL;
+static GPath *sMinHandPath4x  = NULL;
 
-static const GPathInfo HOUR_HAND_PATH_INFO = {
-  .num_points = 5,
-  .points = (GPoint []) {{0,0}, {-3, -4}, {-3, -13}, {2, -13}, {2, -4}}
-};
-static const GPathInfo MIN_HAND_PATH_INFO = {
-  .num_points = 5,
-  .points = (GPoint []) {{0,0}, {-3, -4}, {-3, -18}, {2, -18}, {2, -4}}
-};
+#define PATH_DEFINITIONS(scale) \
+  static const GPathInfo HOUR_HAND_PATH_INFO_##scale##X = { \
+    .num_points = 5, \
+    .points = (GPoint []) {{0,0}, {-3, -4}, {-3, -13*scale}, {2, -13*scale}, {2, -4}} \
+  }; \
+  static const GPathInfo MIN_HAND_PATH_INFO_##scale##X = { \
+    .num_points = 5, \
+    .points = (GPoint []) {{0,0}, {-3, -4}, {-3, -18*scale}, {2, -18*scale}, {2, -4}} \
+  };
+
+PATH_DEFINITIONS(1)
+PATH_DEFINITIONS(2)
+PATH_DEFINITIONS(4)
 
 /*
       (19, 3) (58, 1) (98, 3)
@@ -60,24 +69,35 @@ static void update_layer(Layer *layer, GContext *ctx) {
     graphics_context_set_fill_color(ctx, GColorWhite);
     graphics_fill_circle(ctx, center, radius);
     
-    // 時針
-    int32_t hourLength = radius * 3/5;
-    int32_t hourAngle = TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f;
+    GPath *hourHandPath = NULL;
+    GPath *minHandPath  = NULL;
+    if (radius > 80) {
+      hourHandPath = sHourHandPath4x;
+      minHandPath  = sMinHandPath4x;
+    } else if (radius > 40) {
+      hourHandPath = sHourHandPath2x;
+      minHandPath  = sMinHandPath2x;
+    } else {
+      hourHandPath = sHourHandPath1x;
+      minHandPath  = sMinHandPath1x;
+    }
+    
     graphics_context_set_fill_color(ctx, GColorBlack);
-    gpath_move_to(sHourHandPath, GPoint(radius, radius));
-    gpath_rotate_to(sHourHandPath, hourAngle);
-    gpath_draw_filled(ctx, sHourHandPath);
+
+    // 時針
+    int32_t hourAngle = TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f;
+    gpath_move_to(hourHandPath, GPoint(radius, radius));
+    gpath_rotate_to(hourHandPath, hourAngle);
+    gpath_draw_filled(ctx, hourHandPath);
     
     // 分針
-    int32_t minLength = radius * 5/6;
     int32_t minAngle = TRIG_MAX_ANGLE * m / 60.f;
-    graphics_context_set_fill_color(ctx, GColorBlack);
-    gpath_move_to(sMinHandPath, GPoint(radius, radius));
-    gpath_rotate_to(sMinHandPath, minAngle);
-    gpath_draw_filled(ctx, sMinHandPath);
+    gpath_move_to(minHandPath, GPoint(radius, radius));
+    gpath_rotate_to(minHandPath, minAngle);
+    gpath_draw_filled(ctx, minHandPath);
     
     // 秒針
-    int32_t secLength = 18;
+    int32_t secLength = radius * 18 / 20;
     int32_t secAngle = TRIG_MAX_ANGLE * s / 60.f;
     GPoint secHand;
     secHand.y = (-cos_lookup(secAngle) * secLength / TRIG_MAX_RATIO) + center.y;
@@ -163,8 +183,12 @@ static void main_window_unload(Window *window) {
 }
 
 static void init() {
-  sHourHandPath = gpath_create(&HOUR_HAND_PATH_INFO);
-  sMinHandPath  = gpath_create(&MIN_HAND_PATH_INFO);
+  sHourHandPath1x = gpath_create(&HOUR_HAND_PATH_INFO_1X);
+  sHourHandPath2x = gpath_create(&HOUR_HAND_PATH_INFO_2X);
+  sHourHandPath4x = gpath_create(&HOUR_HAND_PATH_INFO_4X);
+  sMinHandPath1x  = gpath_create(&MIN_HAND_PATH_INFO_1X);
+  sMinHandPath2x  = gpath_create(&MIN_HAND_PATH_INFO_2X);
+  sMinHandPath4x  = gpath_create(&MIN_HAND_PATH_INFO_4X);
   
   s_main_window = window_create();
   window_set_window_handlers(s_main_window, (WindowHandlers) {
@@ -178,8 +202,12 @@ static void init() {
 
 static void deinit() {
   window_destroy(s_main_window);
-  gpath_destroy(sMinHandPath);
-  gpath_destroy(sHourHandPath);
+  gpath_destroy(sMinHandPath4x);
+  gpath_destroy(sMinHandPath2x);
+  gpath_destroy(sMinHandPath1x);
+  gpath_destroy(sHourHandPath4x);
+  gpath_destroy(sHourHandPath2x);
+  gpath_destroy(sHourHandPath1x);
 }
   
 int main(void) {
