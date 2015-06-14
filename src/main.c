@@ -48,6 +48,11 @@ static int16_t sIconAreas[] = {
 
 static void update_layer(Layer *layer, GContext *ctx) {
   GRect r = layer_get_frame(layer);
+  if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
+      r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
+    // 不可視
+    return;
+  }
   int layerNo = 0;
   for (int i = 0; i < LAYER_COUNT; ++i) {
     if (layer == s_layer[i]) {
@@ -57,18 +62,30 @@ static void update_layer(Layer *layer, GContext *ctx) {
   }
   // APP_LOG(APP_LOG_LEVEL_DEBUG, "layer[%d] = (%d, %d, %d, %d)",
   //   layerNo, r.origin.x, r.origin.y, r.size.w, r.size.h);
-  if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
-      r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
-    return;
-  }
+  GRect finalRect = GRect(
+    sIconAreas[layerNo*4],
+    sIconAreas[layerNo*4+1],
+    sIconAreas[layerNo*4+2],
+    sIconAreas[layerNo*4+3]);
+  bool animating = !grect_equal(&r, &finalRect);
+
   GPoint center = GPoint(r.size.w / 2,
                          r.size.h / 2-1);
   uint16_t radius = r.size.w / 2 - 1;
   if (layerNo == 8) {
     // 背景
-    graphics_context_set_fill_color(ctx, GColorWhite);
-    graphics_fill_circle(ctx, center, radius);
-    
+    if (animating) {
+      graphics_context_set_stroke_color(ctx, GColorWhite);
+      graphics_draw_circle(ctx, center, radius);
+      graphics_context_set_fill_color(ctx, GColorWhite);
+      graphics_context_set_stroke_color(ctx, GColorWhite);
+    } else {
+      graphics_context_set_fill_color(ctx, GColorWhite);
+      graphics_fill_circle(ctx, center, radius);
+      graphics_context_set_fill_color(ctx, GColorBlack);
+      graphics_context_set_stroke_color(ctx, GColorBlack);
+    }
+
     GPath *hourHandPath = NULL;
     GPath *minHandPath  = NULL;
     if (radius > 80) {
@@ -82,8 +99,6 @@ static void update_layer(Layer *layer, GContext *ctx) {
       minHandPath  = sMinHandPath1x;
     }
     
-    graphics_context_set_fill_color(ctx, GColorBlack);
-
     // 時針
     int32_t hourAngle = TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f;
     gpath_move_to(hourHandPath, GPoint(radius, radius));
@@ -102,13 +117,18 @@ static void update_layer(Layer *layer, GContext *ctx) {
     GPoint secHand;
     secHand.y = (-cos_lookup(secAngle) * secLength / TRIG_MAX_RATIO) + center.y;
     secHand.x = ( sin_lookup(secAngle) * secLength / TRIG_MAX_RATIO) + center.x;
-    graphics_context_set_stroke_color(ctx, GColorBlack);
     graphics_draw_line(ctx, center, secHand);
   } else {
-    DitherPercentage p = layerNo % 2
-      ? DITHER_50_PERCENT
-      : DITHER_75_PERCENT;
-    draw_dithered_circle(ctx, center.x, center.y, radius, GColorBlack, GColorWhite, p);
+    if (animating) {
+      // アニメーション中は枠線だけ描画する
+      graphics_context_set_stroke_color(ctx, GColorWhite);
+      graphics_draw_circle(ctx, center, radius);
+    } else {
+      DitherPercentage p = layerNo % 2
+        ? DITHER_50_PERCENT
+        : DITHER_75_PERCENT;
+      draw_dithered_circle(ctx, center.x, center.y, radius, GColorBlack, GColorWhite, p);
+    }
   }
 }
 
