@@ -6,6 +6,7 @@
 static Window *s_main_window;
 static Layer  *sBgLayer;
 static Layer  *s_layer[LAYER_COUNT];
+static int h=0, m=0;
 
 /*
       (19, 3) (58, 1) (98, 3)
@@ -39,17 +40,33 @@ static void update_layer(Layer *layer, GContext *ctx) {
       r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
     return;
   }
-  graphics_context_set_fill_color(ctx, GColorWhite);
   GPoint center = GPoint(r.size.w / 2,
                          r.size.h / 2-1);
   uint16_t radius = r.size.w / 2 - 1;
-  if (layerNo != 8) {
+  if (layerNo == 8) {
+    graphics_context_set_fill_color(ctx, GColorWhite);
+    graphics_fill_circle(ctx, center, radius);
+    graphics_context_set_stroke_color(ctx, GColorBlack);
+    
+    int32_t hourLength = radius * 3/5;
+    int32_t hourAngle = TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f;
+    GPoint hourHand;
+    hourHand.y = (-cos_lookup(hourAngle) * hourLength / TRIG_MAX_RATIO) + center.y;
+    hourHand.x = ( sin_lookup(hourAngle) * hourLength / TRIG_MAX_RATIO) + center.x;
+    graphics_draw_line(ctx, center, hourHand);
+    
+    int32_t minsLength = radius * 5/6;
+    int32_t minsAngle = TRIG_MAX_ANGLE * m / 60.f;
+    GPoint minsHand;
+    minsHand.y = (-cos_lookup(minsAngle) * minsLength / TRIG_MAX_RATIO) + center.y;
+    minsHand.x = ( sin_lookup(minsAngle) * minsLength / TRIG_MAX_RATIO) + center.x;
+    graphics_draw_line(ctx, center, minsHand);
+    
+  } else {
     DitherPercentage p = layerNo % 2
       ? DITHER_50_PERCENT
       : DITHER_75_PERCENT;
     draw_dithered_circle(ctx, center.x, center.y, radius, GColorBlack, GColorWhite, p);
-  } else {
-    graphics_fill_circle(ctx, center, radius);
   }
 }
 
@@ -78,6 +95,19 @@ static void make_circle_layer(Layer **p_layer, GRect *from, GRect *to) {
   animation_schedule((Animation *)animation);
 }
 
+static void update_time() {
+  time_t temp = time(NULL);
+  struct tm *tick_time = localtime(&temp);
+  h = tick_time->tm_hour % 12;
+  m = tick_time->tm_min;
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d", h, m);
+  layer_mark_dirty(s_layer[8]);
+}
+
+static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
+  update_time();
+}
+
 static void main_window_load(Window *window) {
   sBgLayer = layer_create(GRect(0, 0, 144, 168));
   layer_set_update_proc(sBgLayer, paint_bg);
@@ -97,7 +127,9 @@ static void main_window_load(Window *window) {
     //   r.origin.x, r.origin.y, r.size.w, r.size.h);
     make_circle_layer(&s_layer[i], &r, &to_rect);
   }
-}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+  
+  update_time();
+}
 
 static void main_window_unload(Window *window) {
   animation_unschedule_all();
@@ -114,6 +146,8 @@ static void init() {
     .unload = main_window_unload
   });
   window_stack_push(s_main_window, true);
+  
+  tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 }
 
 static void deinit() {
