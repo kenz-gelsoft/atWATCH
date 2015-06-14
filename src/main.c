@@ -16,9 +16,11 @@ static int h=0, m=0, s=0;
 
 static GPath *sHourHandPath1x = NULL; // 20基準
 static GPath *sHourHandPath2x = NULL;
+static GPath *sHourHandPath3x = NULL;
 static GPath *sHourHandPath4x = NULL;
 static GPath *sMinHandPath1x  = NULL; // 20基準
 static GPath *sMinHandPath2x  = NULL;
+static GPath *sMinHandPath3x  = NULL;
 static GPath *sMinHandPath4x  = NULL;
 
 #define PATH_DEFINITIONS(scale) \
@@ -33,6 +35,7 @@ static GPath *sMinHandPath4x  = NULL;
 
 PATH_DEFINITIONS(1)
 PATH_DEFINITIONS(2)
+PATH_DEFINITIONS(3)
 PATH_DEFINITIONS(4)
 
 /*
@@ -97,6 +100,9 @@ static void update_layer(Layer *layer, GContext *ctx) {
     if (radius > 80) {
       hourHandPath = sHourHandPath4x;
       minHandPath  = sMinHandPath4x;
+    } else if (radius > 60) {
+      hourHandPath = sHourHandPath3x;
+      minHandPath  = sMinHandPath3x;
     } else if (radius > 40) {
       hourHandPath = sHourHandPath2x;
       minHandPath  = sMinHandPath2x;
@@ -125,14 +131,13 @@ static void update_layer(Layer *layer, GContext *ctx) {
     secHand.x = ( sin_lookup(secAngle) * secLength / TRIG_MAX_RATIO) + center.x;
     graphics_draw_line(ctx, center, secHand);
   } else {
-    if (animating) {
-      // アニメーション中は枠線だけ描画する
-      graphics_context_set_stroke_color(ctx, GColorWhite);
-      graphics_draw_circle(ctx, center, radius);
-    } else {
+    // アニメーション中は枠線だけ描画する
+    if (!animating) {
       draw_dithered_circle(ctx, center.x, center.y, radius,
         GColorBlack, GColorWhite, sColors[layerNo]);
     }
+    graphics_context_set_stroke_color(ctx, GColorWhite);
+    graphics_draw_circle(ctx, center, radius);
   }
 }
 
@@ -199,9 +204,11 @@ static void main_window_unload(Window *window) {
 static void init() {
   sHourHandPath1x = gpath_create(&HOUR_HAND_PATH_INFO_1X);
   sHourHandPath2x = gpath_create(&HOUR_HAND_PATH_INFO_2X);
+  sHourHandPath3x = gpath_create(&HOUR_HAND_PATH_INFO_3X);
   sHourHandPath4x = gpath_create(&HOUR_HAND_PATH_INFO_4X);
   sMinHandPath1x  = gpath_create(&MIN_HAND_PATH_INFO_1X);
   sMinHandPath2x  = gpath_create(&MIN_HAND_PATH_INFO_2X);
+  sMinHandPath3x  = gpath_create(&MIN_HAND_PATH_INFO_3X);
   sMinHandPath4x  = gpath_create(&MIN_HAND_PATH_INFO_4X);
   
   srand(time(NULL));
@@ -224,9 +231,11 @@ static void init() {
 static void deinit() {
   window_destroy(s_main_window);
   gpath_destroy(sMinHandPath4x);
+  gpath_destroy(sMinHandPath3x);
   gpath_destroy(sMinHandPath2x);
   gpath_destroy(sMinHandPath1x);
   gpath_destroy(sHourHandPath4x);
+  gpath_destroy(sHourHandPath3x);
   gpath_destroy(sHourHandPath2x);
   gpath_destroy(sHourHandPath1x);
 }
