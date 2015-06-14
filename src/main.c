@@ -4,7 +4,6 @@
 #define LAYER_COUNT 17
 
 static Window *s_main_window;
-static Layer  *sBgLayer;
 static Layer  *s_layer[LAYER_COUNT];
 static int h=0, m=0, s=0;
 
@@ -132,11 +131,6 @@ static void update_layer(Layer *layer, GContext *ctx) {
   }
 }
 
-static void paint_bg(Layer *layer, GContext *ctx) {
-  graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_fill_rect(ctx, layer_get_bounds(layer), 0, 0);
-}
-
 static void anim_stopped(Animation *animation, bool finished, void *context) {
   property_animation_destroy((PropertyAnimation *)animation);
 }
@@ -172,10 +166,6 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static void main_window_load(Window *window) {
-  sBgLayer = layer_create(GRect(0, 0, 144, 168));
-  layer_set_update_proc(sBgLayer, paint_bg);
-  layer_add_child(window_get_root_layer(window), sBgLayer);
-  
   float scale = 168.f / 40.f;
   for (int i = 0; i < LAYER_COUNT; ++i) {
     GRect to_rect = GRect(sIconAreas[i*4],sIconAreas[i*4+1],sIconAreas[i*4+2],sIconAreas[i*4+3]);
@@ -199,7 +189,6 @@ static void main_window_unload(Window *window) {
   for (int i = 0; i < LAYER_COUNT; ++i) {
     layer_destroy(s_layer[i]);
   }
-  layer_destroy(sBgLayer);
 }
 
 static void init() {
@@ -215,6 +204,7 @@ static void init() {
     .load   = main_window_load,
     .unload = main_window_unload
   });
+  window_set_background_color(s_main_window, GColorBlack);
   window_stack_push(s_main_window, true);
   
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
