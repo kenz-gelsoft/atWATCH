@@ -23,12 +23,12 @@ static GPath *sMinHandPath4x  = NULL;
 
 #define PATH_DEFINITIONS(scale) \
   static const GPathInfo HOUR_HAND_PATH_INFO_##scale##X = { \
-    .num_points = 5, \
-    .points = (GPoint []) {{0,0}, {-3, -4}, {-3, -13*scale}, {2, -13*scale}, {2, -4}} \
+    .num_points = 4, \
+    .points = (GPoint []) {{-2, 0}, {-2, -13*scale}, {3, -13*scale}, {3, 0}} \
   }; \
   static const GPathInfo MIN_HAND_PATH_INFO_##scale##X = { \
-    .num_points = 5, \
-    .points = (GPoint []) {{0,0}, {-3, -4}, {-3, -18*scale}, {2, -18*scale}, {2, -4}} \
+    .num_points = 4, \
+    .points = (GPoint []) {{-2, 0}, {-2, -18*scale}, {3, -18*scale}, {3, 0}} \
   };
 
 PATH_DEFINITIONS(1)
@@ -162,7 +162,7 @@ static void update_time() {
   h = tick_time->tm_hour % 12;
   m = tick_time->tm_min;
   s = tick_time->tm_sec;
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d", h, m);
+  //APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d", h, m);
   layer_mark_dirty(s_layer[8]);
 }
 
