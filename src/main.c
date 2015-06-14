@@ -5,6 +5,13 @@
 
 static Window *s_main_window;
 static Layer  *s_layer[LAYER_COUNT];
+static DitherPercentage sColors[LAYER_COUNT]; // TODO 構造体
+static const DitherPercentage gLooksGood[] = {
+  DITHER_25_PERCENT,
+  DITHER_50_PERCENT,
+  DITHER_75_PERCENT,
+  DITHER_80_PERCENT
+};
 static int h=0, m=0, s=0;
 
 static GPath *sHourHandPath1x = NULL; // 20基準
@@ -123,10 +130,8 @@ static void update_layer(Layer *layer, GContext *ctx) {
       graphics_context_set_stroke_color(ctx, GColorWhite);
       graphics_draw_circle(ctx, center, radius);
     } else {
-      DitherPercentage p = layerNo % 2
-        ? DITHER_50_PERCENT
-        : DITHER_75_PERCENT;
-      draw_dithered_circle(ctx, center.x, center.y, radius, GColorBlack, GColorWhite, p);
+      draw_dithered_circle(ctx, center.x, center.y, radius,
+        GColorBlack, GColorWhite, sColors[layerNo]);
     }
   }
 }
@@ -198,6 +203,12 @@ static void init() {
   sMinHandPath1x  = gpath_create(&MIN_HAND_PATH_INFO_1X);
   sMinHandPath2x  = gpath_create(&MIN_HAND_PATH_INFO_2X);
   sMinHandPath4x  = gpath_create(&MIN_HAND_PATH_INFO_4X);
+  
+  srand(time(NULL));
+  for (int i = 0; i < LAYER_COUNT; ++i) {
+    const int colorCount = sizeof(gLooksGood)/sizeof(gLooksGood[0]);
+    sColors[i] = gLooksGood[rand() % colorCount];
+  }
   
   s_main_window = window_create();
   window_set_window_handlers(s_main_window, (WindowHandlers) {
