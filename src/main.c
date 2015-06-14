@@ -56,10 +56,11 @@ static void update_layer(Layer *layer, GContext *ctx) {
                          r.size.h / 2-1);
   uint16_t radius = r.size.w / 2 - 1;
   if (layerNo == 8) {
+    // 背景
     graphics_context_set_fill_color(ctx, GColorWhite);
     graphics_fill_circle(ctx, center, radius);
-    graphics_context_set_stroke_color(ctx, GColorBlack);
     
+    // 時針
     int32_t hourLength = radius * 3/5;
     int32_t hourAngle = TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f;
     graphics_context_set_fill_color(ctx, GColorBlack);
@@ -67,18 +68,21 @@ static void update_layer(Layer *layer, GContext *ctx) {
     gpath_rotate_to(sHourHandPath, hourAngle);
     gpath_draw_filled(ctx, sHourHandPath);
     
-    int32_t minsLength = radius * 5/6;
-    int32_t minsAngle = TRIG_MAX_ANGLE * m / 60.f;
+    // 分針
+    int32_t minLength = radius * 5/6;
+    int32_t minAngle = TRIG_MAX_ANGLE * m / 60.f;
     graphics_context_set_fill_color(ctx, GColorBlack);
     gpath_move_to(sMinHandPath, GPoint(radius, radius));
-    gpath_rotate_to(sMinHandPath, minsAngle);
+    gpath_rotate_to(sMinHandPath, minAngle);
     gpath_draw_filled(ctx, sMinHandPath);
     
+    // 秒針
     int32_t secLength = 18;
     int32_t secAngle = TRIG_MAX_ANGLE * s / 60.f;
     GPoint secHand;
     secHand.y = (-cos_lookup(secAngle) * secLength / TRIG_MAX_RATIO) + center.y;
     secHand.x = ( sin_lookup(secAngle) * secLength / TRIG_MAX_RATIO) + center.x;
+    graphics_context_set_stroke_color(ctx, GColorBlack);
     graphics_draw_line(ctx, center, secHand);
   } else {
     DitherPercentage p = layerNo % 2
