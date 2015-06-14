@@ -1,10 +1,10 @@
 #include <pebble.h>
 
-static const int LAYER_COUNT = 17;
+#define LAYER_COUNT 17
 
 static Window *s_main_window;
 static Layer  *sBgLayer;
-static Layer  *s_layer[17];
+static Layer  *s_layer[LAYER_COUNT];
 
 /*
       (19, 3) (58, 1) (98, 3)
@@ -16,21 +16,19 @@ static Layer  *s_layer[17];
 
 #define RECT(x,y,w,h) (x),(y),(w),(h)
 static int16_t sIconAreas[] = {
-            RECT(19,3,27,27), RECT(58,1,27,27), RECT(98,3,27,27),
-  RECT(1,38,27,27), RECT(34,32,35,35), RECT(76,32,35,35), RECT(116,38,27,27),
-            RECT(12,68,35,35), RECT(52,66,40,40), RECT(98,68,35,35),
-  RECT(1,106,27,27), RECT(34,106,35,35), RECT(76,106,35,35), RECT(116,106,27,27),
-            RECT(19,141,27,27), RECT(58,144,27,27), RECT(98,141,27,27),
+            RECT(19,3,28,28), RECT(58,0,28,28), RECT(98,3,28,28),
+  RECT(1,37,28,28), RECT(34,31,35,35), RECT(76,31,35,35), RECT(116,37,28,28),
+            RECT(12,67,35,35), RECT(52,65,40,40), RECT(98,67,35,35),
+  RECT(1,105,28,28), RECT(34,105,35,35), RECT(76,105,35,35), RECT(116,105,28,28),
+            RECT(19,138,28,28), RECT(58,141,28,28), RECT(98,138,28,28),
 };
 
 static void update_layer(Layer *layer, GContext *ctx) {
   GRect r = layer_get_frame(layer);
   graphics_context_set_fill_color(ctx, GColorWhite);
   GPoint center = GPoint(r.size.w / 2,
-                         r.size.h / 2);
+                         r.size.h / 2-1);
   uint16_t radius = r.size.w / 2 - 1;
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "update_layer: (%d, %d), %d",
-          center.x, center.y, radius);
   graphics_fill_circle(ctx, center, radius);
 }
 
@@ -44,7 +42,7 @@ static void anim_stopped(Animation *animation, bool finished, void *context) {
 }
 
 static void make_circle_layer(Layer **p_layer, GRect *from, GRect *to) {
-  *p_layer = layer_create(GRect(0, 0, 144, 168));
+  *p_layer = layer_create(GRect(-12, 0, 168, 168));
   layer_set_update_proc(*p_layer, update_layer);
   layer_add_child(window_get_root_layer(s_main_window), *p_layer);
   
@@ -63,7 +61,7 @@ static void main_window_load(Window *window) {
   layer_set_update_proc(sBgLayer, paint_bg);
   layer_add_child(window_get_root_layer(window), sBgLayer);
   
-  float scale = 144.f / 40.f;
+  float scale = 168.f / 40.f;
   for (int i = 0; i < LAYER_COUNT; ++i) {
     GRect to_rect = GRect(sIconAreas[i*4],sIconAreas[i*4+1],sIconAreas[i*4+2],sIconAreas[i*4+3]);
     int16_t cx = 144 / 2;
