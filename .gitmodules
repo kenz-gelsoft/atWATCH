@@ -1,0 +1,3 @@
+[submodule "dithering"]
+	path = dithering
+	url = https://github.com/MathewReiss/dithering.git
