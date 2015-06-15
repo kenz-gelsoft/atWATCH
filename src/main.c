@@ -1,16 +1,12 @@
 #include <pebble.h>
 #include "dithering/src/dithered_rects.h"
+#include "dithering.h"
 
 #define LAYER_COUNT 17
 
 static Window *s_main_window;
 static Layer  *s_layer[LAYER_COUNT];
-static DitherPercentage sColors[LAYER_COUNT]; // TODO 構造体
-static const DitherPercentage gLooksGood[] = {
-  DITHER_50_PERCENT,
-  DITHER_75_PERCENT,
-  DITHER_80_PERCENT
-};
+static DitheringPattern sColors[LAYER_COUNT]; // TODO 構造体
 static int h=0, m=0, s=0;
 
 /*
@@ -111,8 +107,9 @@ static void update_layer(Layer *layer, GContext *ctx) {
       graphics_context_set_stroke_color(ctx, GColorWhite);
       graphics_draw_circle(ctx, center, radius);
     } else {
-      draw_dithered_circle(ctx, center.x, center.y, radius,
-        GColorBlack, GColorWhite, sColors[layerNo]);
+      // draw_dithered_circle(ctx, center.x, center.y, radius,
+      //   GColorBlack, GColorWhite, sColors[layerNo]);
+      fill_dithered_circle(ctx, center, radius, sColors[layerNo]);
     }
   }
 }
@@ -180,8 +177,7 @@ static void main_window_unload(Window *window) {
 static void init() {
   srand(time(NULL));
   for (int i = 0; i < LAYER_COUNT; ++i) {
-    const int colorCount = sizeof(gLooksGood)/sizeof(gLooksGood[0]);
-    sColors[i] = gLooksGood[rand() % colorCount];
+    sColors[i] = rand() % 3;
   }
   
   s_main_window = window_create();
