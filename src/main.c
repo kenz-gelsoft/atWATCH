@@ -1,5 +1,4 @@
 #include <pebble.h>
-#include "dithering/src/dithered_rects.h"
 #include "dithering.h"
 
 #define LAYER_COUNT 17
@@ -107,8 +106,6 @@ static void update_layer(Layer *layer, GContext *ctx) {
       graphics_context_set_stroke_color(ctx, GColorWhite);
       graphics_draw_circle(ctx, center, radius);
     } else {
-      // draw_dithered_circle(ctx, center.x, center.y, radius,
-      //   GColorBlack, GColorWhite, sColors[layerNo]);
       fill_dithered_circle(ctx, center, radius, sColors[layerNo]);
     }
   }
