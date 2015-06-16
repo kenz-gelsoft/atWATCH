@@ -8,23 +8,15 @@ static Layer  *s_layer[LAYER_COUNT];
 static DitheringPattern sColors[LAYER_COUNT]; // TODO 構造体
 static int h=0, m=0, s=0;
 
-/*
-      (19, 3) (58, 1) (98, 3)
-  ( 1,38) (34,32) (76,32) (116,38)
-      (12,68) (52,66) (98,68)
-( 1,106) (34,106) (76,106) (116,106)
-     (19,141) (58,144) (98,141)
-*/
-
 #define CLOCK_LAYER 9
 
 #define RECT(x,y,w,h) (x),(y),(w),(h)
 static int16_t sIconAreas[] = {
-            RECT(19,3,28,28), RECT(58,0,28,28), RECT(98,3,28,28),
-  RECT(1,37,28,28), RECT(34,31,35,35), RECT(76,31,35,35), RECT(116,37,28,28),
+                    RECT(19,3,28,28), RECT(58,0,28,28), RECT(98,3,28,28),
+           RECT(1,37,28,28), RECT(34,31,35,35), RECT(76,31,35,35), RECT(116,37,28,28),
 RECT(0,79,10,10), RECT(12,67,35,35), RECT(51,64,42,42), RECT(98,67,35,35), RECT(135,79,10,10),
-  RECT(1,105,28,28), RECT(34,105,35,35), RECT(76,105,35,35), RECT(116,105,28,28),
-            RECT(19,138,28,28), RECT(58,141,28,28), RECT(98,138,28,28),
+         RECT(1,105,28,28), RECT(34,105,35,35), RECT(76,105,35,35), RECT(116,105,28,28),
+                RECT(19,138,28,28), RECT(58,141,28,28), RECT(98,138,28,28),
 };
 
 static void draw_bold_line(GContext *ctx, GPoint p1, GPoint p2) {
