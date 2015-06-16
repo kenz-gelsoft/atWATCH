@@ -9,14 +9,15 @@ static DitheringPattern sColors[LAYER_COUNT]; // TODO 構造体
 static int h=0, m=0, s=0;
 
 #define CLOCK_LAYER 9
+#define CLOCK_SIZE 41
 
 #define RECT(x,y,w,h) (x),(y),(w),(h)
 static int16_t sIconAreas[] = {
-                    RECT(19,3,28,28), RECT(58,0,28,28), RECT(98,3,28,28),
-           RECT(1,37,28,28), RECT(34,31,35,35), RECT(76,31,35,35), RECT(116,37,28,28),
-RECT(0,79,10,10), RECT(12,67,35,35), RECT(51,64,42,42), RECT(98,67,35,35), RECT(135,79,10,10),
-         RECT(1,105,28,28), RECT(34,105,35,35), RECT(76,105,35,35), RECT(116,105,28,28),
-                RECT(19,138,28,28), RECT(58,141,28,28), RECT(98,138,28,28),
+                   RECT(19,1,29,29), RECT(57,-1,30,30), RECT(98,1,29,29),
+           RECT(0,35,29,29), RECT(33,28,36,36), RECT(75,28,36,36), RECT(117,35,29,29),
+RECT(0,79,10,10), RECT(12,65,36,36), RECT(52,63,CLOCK_SIZE,CLOCK_SIZE), RECT(97,65,36,36), RECT(135,79,10,10),
+         RECT(0,104,29,29), RECT(33,102,36,36), RECT(75,102,36,36), RECT(116,104,29,29),
+                RECT(19,138,29,29), RECT(57,140,30,30), RECT(98,138,29,29),
 };
 
 static void draw_bold_line(GContext *ctx, GPoint p1, GPoint p2) {
@@ -140,7 +141,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static void main_window_load(Window *window) {
-  float scale = 168.f / 40.f;
+  float scale = 168.f / CLOCK_SIZE;
   for (int i = 0; i < LAYER_COUNT; ++i) {
     GRect to_rect = GRect(sIconAreas[i*4],sIconAreas[i*4+1],sIconAreas[i*4+2],sIconAreas[i*4+3]);
     int16_t cx = 144 / 2;
