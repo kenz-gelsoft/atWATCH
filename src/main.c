@@ -1,7 +1,7 @@
 #include <pebble.h>
 #include "dithering.h"
 
-#define LAYER_COUNT 17
+#define LAYER_COUNT 19
 
 static Window *s_main_window;
 static Layer  *s_layer[LAYER_COUNT];
@@ -16,11 +16,13 @@ static int h=0, m=0, s=0;
      (19,141) (58,144) (98,141)
 */
 
+#define CLOCK_LAYER 9
+
 #define RECT(x,y,w,h) (x),(y),(w),(h)
 static int16_t sIconAreas[] = {
             RECT(19,3,28,28), RECT(58,0,28,28), RECT(98,3,28,28),
   RECT(1,37,28,28), RECT(34,31,35,35), RECT(76,31,35,35), RECT(116,37,28,28),
-            RECT(12,67,35,35), RECT(51,64,42,42), RECT(98,67,35,35),
+RECT(0,79,10,10), RECT(12,67,35,35), RECT(51,64,42,42), RECT(98,67,35,35), RECT(135,79,10,10),
   RECT(1,105,28,28), RECT(34,105,35,35), RECT(76,105,35,35), RECT(116,105,28,28),
             RECT(19,138,28,28), RECT(58,141,28,28), RECT(98,138,28,28),
 };
@@ -62,7 +64,7 @@ static void update_layer(Layer *layer, GContext *ctx) {
   GPoint center = GPoint(r.size.w / 2,
                          r.size.h / 2-1);
   uint16_t radius = r.size.w / 2 - 1;
-  if (layerNo == 8) {
+  if (layerNo == CLOCK_LAYER) {
     // 背景
     if (animating) {
       graphics_context_set_stroke_color(ctx, GColorWhite);
@@ -138,7 +140,7 @@ static void update_time() {
   m = tick_time->tm_min;
   s = tick_time->tm_sec;
   //APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d", h, m);
-  layer_mark_dirty(s_layer[8]);
+  layer_mark_dirty(s_layer[CLOCK_LAYER]);
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
