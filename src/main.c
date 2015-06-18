@@ -13,7 +13,7 @@ static IconLayer *sLayers[LAYER_COUNT];
 #define CLOCK_SIZE 41
 
 #define RECT(x,y,w,h) (x),(y),(w),(h)
-static int16_t sIconAreas[] = {
+static int16_t sIconFrames[] = {
                    RECT(19,1,29,29), RECT(57,-1,30,30), RECT(98,1,29,29),
            RECT(0,35,29,29), RECT(33,28,36,36), RECT(75,28,36,36), RECT(117,35,29,29),
 RECT(0,79,10,10), RECT(12,65,36,36), RECT(52,63,CLOCK_SIZE,CLOCK_SIZE), RECT(97,65,36,36), RECT(135,79,10,10),
@@ -28,9 +28,9 @@ static void anim_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
 static void make_circle_layer(int32_t aIndex, IconLayer **aOutLayer, GRect *aFromRect, GRect *aToRect) {
   GRect initR = *aFromRect;
   if (aIndex == CLOCK_LAYER) {
-    *aOutLayer = clock_layer_create(aIndex, initR, *aToRect);
+    *aOutLayer = clock_layer_create(initR, *aToRect);
   } else {
-    *aOutLayer = icon_layer_create(aIndex, initR, *aToRect);
+    *aOutLayer = icon_layer_create(initR, *aToRect);
   }
   layer_add_child(window_get_root_layer(sMainWindow), *aOutLayer);
   
@@ -56,7 +56,7 @@ static void tick_handler(struct tm *aTickTime, TimeUnits aUnitsChanged) {
 static void main_window_load(Window *aWindow) {
   float scale = 168.f / CLOCK_SIZE;
   for (int32_t i = 0; i < LAYER_COUNT; ++i) {
-    GRect to_rect = GRect(sIconAreas[i*4],sIconAreas[i*4+1],sIconAreas[i*4+2],sIconAreas[i*4+3]);
+    GRect to_rect = GRect(sIconFrames[i*4],sIconFrames[i*4+1],sIconFrames[i*4+2],sIconFrames[i*4+3]);
     int16_t cx = 144 / 2;
     int16_t cy = 168 / 2;
     GRect r = to_rect;
@@ -75,7 +75,11 @@ static void main_window_load(Window *aWindow) {
 static void main_window_unload(Window *aWindow) {
   animation_unschedule_all();
   for (int i = 0; i < LAYER_COUNT; ++i) {
-    icon_layer_destroy(sLayers[i]);
+    if (i == CLOCK_LAYER) {
+      clock_layer_destroy(sLayers[i]);
+    } else {
+      icon_layer_destroy(sLayers[i]);
+    }
   }
 }
 
