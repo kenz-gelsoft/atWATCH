@@ -17,7 +17,7 @@ typedef struct {
 
 typedef IconLayer ClockLayer;
 
-ClockLayer *clock_layer_create(int32_t aIndex, GRect aFromFrame, GRect aToFrame);
+ClockLayer *clock_layer_create(GRect aFromFrame, GRect aToFrame);
 void clock_layer_destroy(ClockLayer *aLayer);
 
 void clock_layer_update_time(ClockLayer *aLayer);

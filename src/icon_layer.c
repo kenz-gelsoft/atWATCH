@@ -14,9 +14,6 @@ static void update_layer(IconLayer *aLayer, GContext *aCtx) {
     // 不可視
     return;
   }
-  int layerNo = icon_layer_get_index(aLayer);
-  // APP_LOG(APP_LOG_LEVEL_DEBUG, "layer[%d] = (%d, %d, %d, %d)",
-  //   layerNo, r.origin.x, r.origin.y, r.size.w, r.size.h);
   GRect finalRect = icon_layer_get_to_frame(aLayer);
   bool animating = !grect_equal(&r, &finalRect);
 
@@ -33,16 +30,15 @@ static void update_layer(IconLayer *aLayer, GContext *aCtx) {
   }
 }
 
-IconLayer *icon_layer_create(int32_t aIndex, GRect aFromFrame, GRect aToFrame) {
-  return icon_layer_create_with_data(aIndex, aFromFrame, aToFrame, sizeof(icon_layer_data));
+IconLayer *icon_layer_create(GRect aFromFrame, GRect aToFrame) {
+  return icon_layer_create_with_data(aFromFrame, aToFrame, sizeof(icon_layer_data));
 }
 
-IconLayer *icon_layer_create_with_data(int32_t aIndex, GRect aFromFrame, GRect aToFrame, size_t aDataSize) {
+IconLayer *icon_layer_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize) {
 	IconLayer *layer = layer_create_with_data(aFromFrame, aDataSize);
   layer_set_update_proc(layer, update_layer);
 
 	icon_layer_data *data = icon_layer_data_get(layer);
-  data->mIndex = aIndex;
 	data->mColor = rand() % 3;
 	data->mToFrame = aToFrame;
   
@@ -51,10 +47,6 @@ IconLayer *icon_layer_create_with_data(int32_t aIndex, GRect aFromFrame, GRect a
 
 void icon_layer_destroy(IconLayer *aLayer) {
 	layer_destroy(aLayer);
-}
-
-int32_t icon_layer_get_index(IconLayer *aLayer) {
-  return icon_layer_data_get(aLayer)->mIndex;
 }
 
 DitheringPattern icon_layer_get_color(IconLayer *aLayer) {

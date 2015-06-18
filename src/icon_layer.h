@@ -5,18 +5,16 @@
 
 
 typedef struct {
-	int32_t mIndex;
 	DitheringPattern mColor;
 	GRect mToFrame;
 } icon_layer_data;
 
 typedef Layer IconLayer;
 
-IconLayer *icon_layer_create_with_data(int32_t aIndex, GRect aFromFrame, GRect aToFrame, size_t aDataSize);
-IconLayer *icon_layer_create(int32_t aIndex, GRect aFromFrame, GRect aToFrame);
+IconLayer *icon_layer_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize);
+IconLayer *icon_layer_create(GRect aFromFrame, GRect aToFrame);
 void icon_layer_destroy(IconLayer *aLayer);
 
-int32_t icon_layer_get_index(IconLayer *aLayer);
 DitheringPattern icon_layer_get_color(IconLayer *aLayer);
 GRect icon_layer_get_to_frame(IconLayer *aLayer);
 

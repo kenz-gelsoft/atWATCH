@@ -72,8 +72,8 @@ static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
     graphics_draw_line(aCtx, center, secHand);
 }
 
-ClockLayer *clock_layer_create(int32_t aIndex, GRect aFromFrame, GRect aToFrame) {
-    ClockLayer *layer = icon_layer_create_with_data(aIndex, aFromFrame, aToFrame,
+ClockLayer *clock_layer_create(GRect aFromFrame, GRect aToFrame) {
+    ClockLayer *layer = icon_layer_create_with_data(aFromFrame, aToFrame,
         sizeof(clock_layer_data));
     layer_set_update_proc(layer, update_layer);
     
