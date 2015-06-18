@@ -12,6 +12,7 @@ typedef struct {
 
 typedef Layer IconLayer;
 
+IconLayer *icon_layer_create_with_data(int32_t aIndex, GRect aFromFrame, GRect aToFrame, size_t aDataSize);
 IconLayer *icon_layer_create(int32_t aIndex, GRect aFromFrame, GRect aToFrame);
 void icon_layer_destroy(IconLayer *aLayer);
 

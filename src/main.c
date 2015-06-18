@@ -45,8 +45,8 @@ static void make_circle_layer(int32_t aIndex, IconLayer **aOutLayer, GRect *aFro
 }
 
 static void update_time() {
-  update_time2();
-  layer_mark_dirty(sLayers[CLOCK_LAYER]);
+  ClockLayer *clock = sLayers[CLOCK_LAYER];
+  clock_layer_update_time(clock);
 }
 
 static void tick_handler(struct tm *aTickTime, TimeUnits aUnitsChanged) {

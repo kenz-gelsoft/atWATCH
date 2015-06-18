@@ -1,16 +1,8 @@
 #include "clock_layer.h"
 
 
-static int h=0, m=0, s=0;
-
-
-void update_time2() {
-  time_t temp = time(NULL);
-  struct tm *tick_time = localtime(&temp);
-  h = tick_time->tm_hour % 12;
-  m = tick_time->tm_min;
-  s = tick_time->tm_sec;
-  //APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d", h, m);
+static clock_layer_data *clock_layer_data_get(ClockLayer *aLayer) {
+    return (clock_layer_data *)layer_get_data(aLayer);
 }
 
 static void draw_bold_line(GContext *aCtx, GPoint aPt1, GPoint aPt2) {
@@ -81,7 +73,8 @@ static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
 }
 
 ClockLayer *clock_layer_create(int32_t aIndex, GRect aFromFrame, GRect aToFrame) {
-    ClockLayer *layer = icon_layer_create(aIndex, aFromFrame, aToFrame);
+    ClockLayer *layer = icon_layer_create_with_data(aIndex, aFromFrame, aToFrame,
+        sizeof(clock_layer_data));
     layer_set_update_proc(layer, update_layer);
     
     return layer;
@@ -89,4 +82,16 @@ ClockLayer *clock_layer_create(int32_t aIndex, GRect aFromFrame, GRect aToFrame)
 
 void clock_layer_destroy(ClockLayer *aLayer) {
     icon_layer_destroy(aLayer);
+}
+
+void clock_layer_update_time(ClockLayer *aLayer) {
+    time_t temp = time(NULL);
+    struct tm *tick_time = localtime(&temp);
+    
+    clock_layer_data *data = clock_layer_data_get(aLayer);
+    data->h = tick_time->tm_hour % 12;
+    data->m = tick_time->tm_min;
+    data->s = tick_time->tm_sec;
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d", h, m);
+    layer_mark_dirty(aLayer);
 }

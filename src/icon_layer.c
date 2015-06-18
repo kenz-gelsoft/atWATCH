@@ -33,9 +33,12 @@ static void update_layer(IconLayer *aLayer, GContext *aCtx) {
   }
 }
 
-
 IconLayer *icon_layer_create(int32_t aIndex, GRect aFromFrame, GRect aToFrame) {
-	IconLayer *layer = layer_create_with_data(aFromFrame, sizeof(icon_layer_data));
+  return icon_layer_create_with_data(aIndex, aFromFrame, aToFrame, sizeof(icon_layer_data));
+}
+
+IconLayer *icon_layer_create_with_data(int32_t aIndex, GRect aFromFrame, GRect aToFrame, size_t aDataSize) {
+	IconLayer *layer = layer_create_with_data(aFromFrame, aDataSize);
   layer_set_update_proc(layer, update_layer);
 
 	icon_layer_data *data = icon_layer_data_get(layer);

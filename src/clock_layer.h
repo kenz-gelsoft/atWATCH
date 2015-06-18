@@ -9,6 +9,7 @@ void update_time2();
   // TODO 本来であればこの中にあるべきではない
 
 typedef struct {
+	icon_layer_data mBase;
 	int32_t h;
 	int32_t m;
 	int32_t s;
@@ -18,5 +19,7 @@ typedef IconLayer ClockLayer;
 
 ClockLayer *clock_layer_create(int32_t aIndex, GRect aFromFrame, GRect aToFrame);
 void clock_layer_destroy(ClockLayer *aLayer);
+
+void clock_layer_update_time(ClockLayer *aLayer);
 
 #endif
