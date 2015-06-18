@@ -47,11 +47,7 @@ static void update_layer(IconLayer *aLayer, GContext *aCtx) {
   }
   // APP_LOG(APP_LOG_LEVEL_DEBUG, "layer[%d] = (%d, %d, %d, %d)",
   //   layerNo, r.origin.x, r.origin.y, r.size.w, r.size.h);
-  GRect finalRect = GRect(
-    sIconAreas[layerNo*4],
-    sIconAreas[layerNo*4+1],
-    sIconAreas[layerNo*4+2],
-    sIconAreas[layerNo*4+3]);
+  GRect finalRect = icon_layer_get_to_frame(aLayer);
   bool animating = !grect_equal(&r, &finalRect);
 
   GPoint center = GPoint(r.size.w / 2,
@@ -113,7 +109,7 @@ static void anim_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
 
 static void make_circle_layer(IconLayer **aOutLayer, GRect *aFromRect, GRect *aToRect) {
   GRect initR = *aFromRect;
-  *aOutLayer = icon_layer_create(initR);
+  *aOutLayer = icon_layer_create(initR, *aToRect);
   layer_set_update_proc(*aOutLayer, update_layer);
   layer_add_child(window_get_root_layer(sMainWindow), *aOutLayer);
   
