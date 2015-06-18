@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "dithering.h"
+#include "icon_layer.h"
 
 #define LAYER_COUNT 19
 
@@ -31,7 +32,7 @@ static void draw_bold_line(GContext *ctx, GPoint p1, GPoint p2) {
   graphics_draw_line(ctx, GPoint(x1 + 1, y1 + 1), GPoint(x2 + 1, y2 + 1));
 }
 
-static void update_layer(Layer *layer, GContext *ctx) {
+static void update_layer(IconLayer *layer, GContext *ctx) {
   GRect r = layer_get_frame(layer);
   if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
       r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
@@ -110,9 +111,9 @@ static void anim_stopped(Animation *animation, bool finished, void *context) {
   property_animation_destroy((PropertyAnimation *)animation);
 }
 
-static void make_circle_layer(Layer **p_layer, GRect *from, GRect *to) {
+static void make_circle_layer(IconLayer **p_layer, GRect *from, GRect *to) {
   GRect initR = *from;
-  *p_layer = layer_create(initR);
+  *p_layer = icon_layer_create(initR);
   layer_set_update_proc(*p_layer, update_layer);
   layer_add_child(window_get_root_layer(s_main_window), *p_layer);
   
@@ -162,7 +163,7 @@ static void main_window_load(Window *window) {
 static void main_window_unload(Window *window) {
   animation_unschedule_all();
   for (int i = 0; i < LAYER_COUNT; ++i) {
-    layer_destroy(s_layer[i]);
+    icon_layer_destroy(s_layer[i]);
   }
 }
 
