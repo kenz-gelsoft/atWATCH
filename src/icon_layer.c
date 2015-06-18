@@ -3,32 +3,8 @@
 #include "icon_layer.h"
 
 
-static int h=0, m=0, s=0;
-
-
-void update_time2() {
-  time_t temp = time(NULL);
-  struct tm *tick_time = localtime(&temp);
-  h = tick_time->tm_hour % 12;
-  m = tick_time->tm_min;
-  s = tick_time->tm_sec;
-  //APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d", h, m);
-}
-
-
 static icon_layer_data *icon_layer_data_get(IconLayer *aLayer) {
 	return (icon_layer_data *)layer_get_data(aLayer);
-}
-
-static void draw_bold_line(GContext *aCtx, GPoint aPt1, GPoint aPt2) {
-  int32_t x1 = aPt1.x;
-  int32_t y1 = aPt1.y;
-  int32_t x2 = aPt2.x;
-  int32_t y2 = aPt2.y;
-  graphics_draw_line(aCtx, aPt1, aPt2);
-  graphics_draw_line(aCtx, GPoint(x1 + 1, y1),     GPoint(x2 + 1, y2));
-  graphics_draw_line(aCtx, GPoint(x1,     y1 + 1), GPoint(x2    , y2 + 1));
-  graphics_draw_line(aCtx, GPoint(x1 + 1, y1 + 1), GPoint(x2 + 1, y2 + 1));
 }
 
 static void update_layer(IconLayer *aLayer, GContext *aCtx) {
@@ -47,53 +23,13 @@ static void update_layer(IconLayer *aLayer, GContext *aCtx) {
   GPoint center = GPoint(r.size.w / 2,
                          r.size.h / 2-1);
   uint16_t radius = r.size.w / 2 - 1;
-  if (layerNo == CLOCK_LAYER) {
-    // 背景
-    if (animating) {
-      graphics_context_set_stroke_color(aCtx, GColorWhite);
-      graphics_draw_circle(aCtx, center, radius);
-      graphics_context_set_fill_color(aCtx, GColorWhite);
-      graphics_context_set_stroke_color(aCtx, GColorWhite);
-    } else {
-      graphics_context_set_fill_color(aCtx, GColorWhite);
-      graphics_fill_circle(aCtx, center, radius);
-      graphics_context_set_fill_color(aCtx, GColorBlack);
-      graphics_context_set_stroke_color(aCtx, GColorBlack);
-    }
-
-    // 時針
-    int32_t hourLength = radius * 12 / 20;
-    int32_t hourAngle = TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f;
-    GPoint hourHand;
-    hourHand.y = (-cos_lookup(hourAngle) * hourLength / TRIG_MAX_RATIO) + center.y;
-    hourHand.x = ( sin_lookup(hourAngle) * hourLength / TRIG_MAX_RATIO) + center.x;
-    draw_bold_line(aCtx, center, hourHand);
-    
-    // 分針
-    int32_t minLength = radius * 18 / 20;
-    int32_t minAngle = TRIG_MAX_ANGLE * (m + s / 60.f) / 60.f;
-    GPoint minHand;
-    minHand.y = (-cos_lookup(minAngle) * minLength / TRIG_MAX_RATIO) + center.y;
-    minHand.x = ( sin_lookup(minAngle) * minLength / TRIG_MAX_RATIO) + center.x;
-    draw_bold_line(aCtx, center, minHand);
-
-    
-    // 秒針
-    int32_t secLength = radius * 18 / 20;
-    int32_t secAngle = TRIG_MAX_ANGLE * s / 60.f;
-    GPoint secHand;
-    secHand.y = (-cos_lookup(secAngle) * secLength / TRIG_MAX_RATIO) + center.y;
-    secHand.x = ( sin_lookup(secAngle) * secLength / TRIG_MAX_RATIO) + center.x;
-    graphics_draw_line(aCtx, center, secHand);
+  if (animating) {
+    // アニメーション中は枠線だけ描画する
+    graphics_context_set_stroke_color(aCtx, GColorWhite);
+    graphics_draw_circle(aCtx, center, radius);
   } else {
-    if (animating) {
-      // アニメーション中は枠線だけ描画する
-      graphics_context_set_stroke_color(aCtx, GColorWhite);
-      graphics_draw_circle(aCtx, center, radius);
-    } else {
-      fill_dithered_circle(aCtx, center, radius,
-        icon_layer_get_color(aLayer));
-    }
+    fill_dithered_circle(aCtx, center, radius,
+      icon_layer_get_color(aLayer));
   }
 }
 

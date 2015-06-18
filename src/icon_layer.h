@@ -4,10 +4,6 @@
 #include "dithering.h"
 
 
-#define CLOCK_LAYER 9
-void update_time2();
-  // TODO 本来であればこの中にあるべきではない
-
 typedef struct {
 	int32_t mIndex;
 	DitheringPattern mColor;

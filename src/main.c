@@ -1,6 +1,9 @@
 #include <pebble.h>
+
 #include "dithering.h"
+#include "clock_layer.h"
 #include "icon_layer.h"
+
 
 #define LAYER_COUNT 19
 
@@ -24,7 +27,11 @@ static void anim_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
 
 static void make_circle_layer(int32_t aIndex, IconLayer **aOutLayer, GRect *aFromRect, GRect *aToRect) {
   GRect initR = *aFromRect;
-  *aOutLayer = icon_layer_create(aIndex, initR, *aToRect);
+  if (aIndex == CLOCK_LAYER) {
+    *aOutLayer = clock_layer_create(aIndex, initR, *aToRect);
+  } else {
+    *aOutLayer = icon_layer_create(aIndex, initR, *aToRect);
+  }
   layer_add_child(window_get_root_layer(sMainWindow), *aOutLayer);
   
   PropertyAnimation *animation = property_animation_create_layer_frame(*aOutLayer, NULL, aToRect);
