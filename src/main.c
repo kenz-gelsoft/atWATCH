@@ -137,7 +137,7 @@ static void update_time() {
   layer_mark_dirty(sLayers[CLOCK_LAYER]);
 }
 
-static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
+static void tick_handler(struct tm *aTickTime, TimeUnits aUnitsChanged) {
   update_time();
 }
 
