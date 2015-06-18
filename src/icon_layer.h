@@ -10,7 +10,9 @@ typedef struct {
 
 typedef Layer IconLayer;
 
-IconLayer *icon_layer_create(GRect frame);
-void icon_layer_destroy(IconLayer *layer);
+IconLayer *icon_layer_create(GRect aFrame);
+void icon_layer_destroy(IconLayer *aLayer);
+
+DitheringPattern icon_layer_get_color(IconLayer *aLayer);
 
 #endif

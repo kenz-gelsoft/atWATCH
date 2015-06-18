@@ -5,8 +5,7 @@
 #define LAYER_COUNT 19
 
 static Window *s_main_window;
-static Layer  *s_layer[LAYER_COUNT];
-static DitheringPattern sColors[LAYER_COUNT]; // TODO 構造体
+static IconLayer  *s_layer[LAYER_COUNT];
 static int h=0, m=0, s=0;
 
 #define CLOCK_LAYER 9
@@ -102,7 +101,8 @@ static void update_layer(IconLayer *layer, GContext *ctx) {
       graphics_context_set_stroke_color(ctx, GColorWhite);
       graphics_draw_circle(ctx, center, radius);
     } else {
-      fill_dithered_circle(ctx, center, radius, sColors[layerNo]);
+      fill_dithered_circle(ctx, center, radius,
+        icon_layer_get_color(layer));
     }
   }
 }
@@ -169,10 +169,7 @@ static void main_window_unload(Window *window) {
 
 static void init() {
   srand(time(NULL));
-  for (int i = 0; i < LAYER_COUNT; ++i) {
-    sColors[i] = rand() % 3;
-  }
-  
+
   s_main_window = window_create();
   window_set_window_handlers(s_main_window, (WindowHandlers) {
     .load   = main_window_load,
