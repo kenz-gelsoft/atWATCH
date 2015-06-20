@@ -7,11 +7,13 @@ typedef enum {
 	Dithering20Percent,
 	Dithering25Percent,
 	Dithering50Percent,
+	Dithering75Percent,
 } DitheringPattern;
 
 bool pattern_20percent(int32_t x, int32_t y);
 bool pattern_25percent(int32_t x, int32_t y);
 bool pattern_50percent(int32_t x, int32_t y);
+bool pattern_75percent(int32_t x, int32_t y);
 
 void fill_dithered_circle(GContext *ctx, GPoint center,
 	int32_t radius, DitheringPattern pattern);

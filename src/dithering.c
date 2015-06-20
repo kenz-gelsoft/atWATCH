@@ -25,10 +25,14 @@ bool pattern_25percent(int32_t x, int32_t y) {
 bool pattern_50percent(int32_t x, int32_t y) {
 	return (x + y) % 2;
 }
+bool pattern_75percent(int32_t x, int32_t y) {
+	return !pattern_25percent(x, y);
+}
 
 FILL_DITHERING_CIRCLE(20);
 FILL_DITHERING_CIRCLE(25);
 FILL_DITHERING_CIRCLE(50);
+FILL_DITHERING_CIRCLE(75);
 
 void fill_dithered_circle(GContext *ctx, GPoint center, int32_t radius, DitheringPattern pattern) {
 	switch (pattern) {
@@ -38,5 +42,7 @@ void fill_dithered_circle(GContext *ctx, GPoint center, int32_t radius, Ditherin
 		fill_25percent_circle(ctx, center, radius); break;
 	case Dithering50Percent:
 		fill_50percent_circle(ctx, center, radius); break;
+	case Dithering75Percent:
+		fill_75percent_circle(ctx, center, radius); break;
 	}
 }
