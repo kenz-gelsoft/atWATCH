@@ -30,7 +30,6 @@ static void update_layer(BatteryLayer *aLayer, GContext *aCtx) {
     GPoint center = GPoint(r.size.w / 2,
                            r.size.h / 2-1);
     uint16_t radius = r.size.w / 2 - 1;
-    // 背景
     graphics_context_set_stroke_color(aCtx, GColorWhite);
     if (animating) {
         graphics_draw_circle(aCtx, center, radius);
@@ -55,7 +54,7 @@ static void update_layer(BatteryLayer *aLayer, GContext *aCtx) {
         snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), "%d", percent);
         graphics_draw_text(aCtx, buffer,
             fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD),
-            GRect(0, 5, r.size.w, 18),
+            GRect(0, (r.size.h - 26) / 2, r.size.w, 18),
             GTextOverflowModeWordWrap,
             GTextAlignmentCenter,
             NULL);

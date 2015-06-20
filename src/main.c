@@ -1,6 +1,7 @@
 #include <pebble.h>
 
 #include "battery_layer.h"
+#include "calendar_layer.h"
 #include "clock_layer.h"
 #include "dithering.h"
 #include "icon_layer.h"
@@ -32,6 +33,8 @@ static void make_circle_layer(int32_t aIndex, IconLayer **aOutLayer, GRect *aFro
     *aOutLayer = clock_layer_create(initR, *aToRect);
   } else if (aIndex == BATTERY_LAYER) {
     *aOutLayer = battery_layer_create(initR, *aToRect);
+  } else if (aIndex == CALENDAR_LAYER) {
+    *aOutLayer = calendar_layer_create(initR, *aToRect);
   } else {
     *aOutLayer = icon_layer_create(initR, *aToRect);
   }
@@ -50,6 +53,9 @@ static void make_circle_layer(int32_t aIndex, IconLayer **aOutLayer, GRect *aFro
 static void update_time() {
   ClockLayer *clock = sLayers[CLOCK_LAYER];
   clock_layer_update_time(clock);
+
+  CalendarLayer *calendar = sLayers[CALENDAR_LAYER];
+  calendar_layer_update(calendar);
 }
 
 static void tick_handler(struct tm *aTickTime, TimeUnits aUnitsChanged) {
@@ -93,6 +99,8 @@ static void main_window_unload(Window *aWindow) {
       clock_layer_destroy(sLayers[i]);
     } else if (i == BATTERY_LAYER) { 
       battery_layer_destroy(sLayers[i]);
+    } else if (i == CALENDAR_LAYER) {
+      calendar_layer_destroy(sLayers[i]);
     } else {
       icon_layer_destroy(sLayers[i]);
     }
