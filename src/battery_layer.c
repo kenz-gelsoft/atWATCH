@@ -32,27 +32,25 @@ static void update_layer(BatteryLayer *aLayer, GContext *aCtx) {
     uint16_t radius = r.size.w / 2 - 1;
     // 背景
     graphics_context_set_stroke_color(aCtx, GColorWhite);
-    graphics_draw_circle(aCtx, center, radius);
-    
-    uint8_t percent = battery_layer_get_percent(aLayer);
-    for (int32_t x = 0; x < r.size.w; ++x) {
-        for (int32_t y = 0; y < r.size.h; ++y) {
-            if (point_in_ring(x-center.x, y-center.y, center.y)) {
-                graphics_context_set_stroke_color(aCtx, GColorWhite);
-                if (!point_in_arc(percent, x-center.x, y-center.y, center.y)) {
-                    if (pattern_25percent(x,y)) {
-                        graphics_context_set_stroke_color(aCtx, GColorBlack);
+    if (animating) {
+        graphics_draw_circle(aCtx, center, radius);
+    } else {
+        uint8_t percent = battery_layer_get_percent(aLayer);
+        for (int32_t x = 0; x < r.size.w; ++x) {
+            for (int32_t y = 0; y < r.size.h; ++y) {
+                if (point_in_ring(x-center.x, y-center.y, center.y)) {
+                    graphics_context_set_stroke_color(aCtx, GColorWhite);
+                    if (!point_in_arc(percent, x-center.x, y-center.y, center.y)) {
+                        if (pattern_25percent(x,y)) {
+                            graphics_context_set_stroke_color(aCtx, GColorBlack);
+                        }
                     }
+                    graphics_draw_pixel(aCtx, GPoint(x, y));
                 }
-            } else {
-                graphics_context_set_stroke_color(aCtx, GColorBlack);
             }
-            graphics_draw_pixel(aCtx, GPoint(x, y));
         }
-    }
     
-    // text
-    if (!animating) {
+        // text
         static char buffer[] = "100";
         snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), "%d", percent);
         graphics_draw_text(aCtx, buffer,
