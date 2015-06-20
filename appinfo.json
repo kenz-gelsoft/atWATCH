@@ -13,6 +13,42 @@
     "dummy": 0
   },
   "resources": {
-    "media": []
+    "media": [
+      {
+        "type": "png",
+        "name": "WEEKDAY0",
+        "file": "sun.png"
+      },
+      {
+        "type": "png",
+        "name": "WEEKDAY1",
+        "file": "mon.png"
+      },
+      {
+        "type": "png",
+        "name": "WEEKDAY2",
+        "file": "tue.png"
+      },
+      {
+        "type": "png",
+        "name": "WEEKDAY3",
+        "file": "wed.png"
+      },
+      {
+        "type": "png",
+        "name": "WEEKDAY4",
+        "file": "thu.png"
+      },
+      {
+        "type": "png",
+        "name": "WEEKDAY5",
+        "file": "fri.png"
+      },
+      {
+        "type": "png",
+        "name": "WEEKDAY6",
+        "file": "sat.png"
+      }
+    ]
   }
 }
