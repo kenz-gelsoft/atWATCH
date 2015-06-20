@@ -5,7 +5,7 @@
 #include "icon_layer.h"
 
 
-#define CALENDAR_LAYER 13
+#define CALENDAR_LAYER 14
 
 
 typedef struct {
