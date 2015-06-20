@@ -5,6 +5,7 @@
 #include "clock_layer.h"
 #include "dithering.h"
 #include "icon_layer.h"
+#include "weather_layer.h"
 
 
 #define LAYER_COUNT 19
@@ -35,6 +36,8 @@ static void make_circle_layer(int32_t aIndex, IconLayer **aOutLayer, GRect *aFro
     *aOutLayer = battery_layer_create(initR, *aToRect);
   } else if (aIndex == CALENDAR_LAYER) {
     *aOutLayer = calendar_layer_create(initR, *aToRect);
+  } else if (aIndex == WEATHER_LAYER) {
+    *aOutLayer = weather_layer_create(initR, *aToRect);
   } else {
     *aOutLayer = icon_layer_create(initR, *aToRect);
   }
@@ -101,6 +104,8 @@ static void main_window_unload(Window *aWindow) {
       battery_layer_destroy(sLayers[i]);
     } else if (i == CALENDAR_LAYER) {
       calendar_layer_destroy(sLayers[i]);
+    } else if (i == WEATHER_LAYER) {
+      weather_layer_destroy(sLayers[i]);
     } else {
       icon_layer_destroy(sLayers[i]);
     }

@@ -48,6 +48,47 @@
         "type": "png",
         "name": "WEEKDAY6",
         "file": "weekday/sat.png"
+      },      
+      
+      {
+        "type": "png",
+        "name": "WEATHER0",
+        "file": "weather/clear_sky.png"
+      },
+      {
+        "type": "png",
+        "name": "WEATHER0_MASK",
+        "file": "weather/mask_clear_sky.png"
+      },
+      {
+        "type": "png",
+        "name": "WEATHER1",
+        "file": "weather/few_clouds.png"
+      },
+      {
+        "type": "png",
+        "name": "WEATHER1_MASK",
+        "file": "weather/mask_few_clouds.png"
+      },
+      {
+        "type": "png",
+        "name": "WEATHER2",
+        "file": "weather/scattered_clouds.png"
+      },
+      {
+        "type": "png",
+        "name": "WEATHER2_MASK",
+        "file": "weather/mask_scattered_clouds.png"
+      },
+      {
+        "type": "png",
+        "name": "WEATHER3",
+        "file": "weather/rain.png"
+      },
+      {
+        "type": "png",
+        "name": "WEATHER3_MASK",
+        "file": "weather/mask_rain.png"
       }
     ]
   }
