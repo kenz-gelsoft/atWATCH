@@ -1,7 +1,8 @@
 #include <pebble.h>
 
-#include "dithering.h"
+#include "battery_layer.h"
 #include "clock_layer.h"
+#include "dithering.h"
 #include "icon_layer.h"
 
 
@@ -29,6 +30,8 @@ static void make_circle_layer(int32_t aIndex, IconLayer **aOutLayer, GRect *aFro
   GRect initR = *aFromRect;
   if (aIndex == CLOCK_LAYER) {
     *aOutLayer = clock_layer_create(initR, *aToRect);
+  } else if (aIndex == BATTERY_LAYER) {
+    *aOutLayer = battery_layer_create(initR, *aToRect);
   } else {
     *aOutLayer = icon_layer_create(initR, *aToRect);
   }
@@ -53,6 +56,15 @@ static void tick_handler(struct tm *aTickTime, TimeUnits aUnitsChanged) {
   update_time();
 }
 
+static void update_battery(BatteryChargeState aCharge) {
+  BatteryLayer *battery = sLayers[BATTERY_LAYER];
+  battery_layer_update(battery, aCharge.charge_percent);
+}
+
+static void battery_handler(BatteryChargeState aCharge) {
+  update_battery(aCharge);
+}
+
 static void main_window_load(Window *aWindow) {
   float scale = 168.f / CLOCK_SIZE;
   for (int32_t i = 0; i < LAYER_COUNT; ++i) {
@@ -70,6 +82,8 @@ static void main_window_load(Window *aWindow) {
   }
   
   update_time();
+  BatteryChargeState charge = battery_state_service_peek();
+  update_battery(charge);
 }
 
 static void main_window_unload(Window *aWindow) {
@@ -77,6 +91,8 @@ static void main_window_unload(Window *aWindow) {
   for (int i = 0; i < LAYER_COUNT; ++i) {
     if (i == CLOCK_LAYER) {
       clock_layer_destroy(sLayers[i]);
+    } else if (i == BATTERY_LAYER) { 
+      battery_layer_destroy(sLayers[i]);
     } else {
       icon_layer_destroy(sLayers[i]);
     }
@@ -95,6 +111,8 @@ static void init() {
   window_stack_push(sMainWindow, true);
   
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
+  
+  battery_state_service_subscribe(battery_handler);
 }
 
 static void deinit() {

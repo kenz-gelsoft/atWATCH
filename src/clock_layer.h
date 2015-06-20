@@ -5,8 +5,7 @@
 
 
 #define CLOCK_LAYER 9
-void update_time2();
-  // TODO 本来であればこの中にあるべきではない
+
 
 typedef struct {
 	icon_layer_data mBase;
