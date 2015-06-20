@@ -16,13 +16,13 @@
 		} \
 	}
 
-static bool pattern_20percent(int32_t x, int32_t y) {
+bool pattern_20percent(int32_t x, int32_t y) {
 	return (y % 4 && x % 4) || ((y+2) % 4 && (x+2) % 4);
 }
-static bool pattern_25percent(int32_t x, int32_t y) {
+bool pattern_25percent(int32_t x, int32_t y) {
 	return (y % 4 && x % 2) || ((y+2) % 4 && (x+1) % 2);
 }
-static bool pattern_50percent(int32_t x, int32_t y) {
+bool pattern_50percent(int32_t x, int32_t y) {
 	return (x + y) % 2;
 }
 

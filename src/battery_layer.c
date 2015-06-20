@@ -34,15 +34,13 @@ static void update_layer(BatteryLayer *aLayer, GContext *aCtx) {
     graphics_context_set_stroke_color(aCtx, GColorWhite);
     graphics_draw_circle(aCtx, center, radius);
     
-    // TODO
     uint8_t percent = battery_layer_get_percent(aLayer);
-    
     for (int32_t x = 0; x < r.size.w; ++x) {
         for (int32_t y = 0; y < r.size.h; ++y) {
             if (point_in_ring(x-center.x, y-center.y, center.y)) {
                 graphics_context_set_stroke_color(aCtx, GColorWhite);
                 if (!point_in_arc(percent, x-center.x, y-center.y, center.y)) {
-                    if ((x + y) % 2) {
+                    if (pattern_25percent(x,y)) {
                         graphics_context_set_stroke_color(aCtx, GColorBlack);
                     }
                 }
@@ -52,13 +50,24 @@ static void update_layer(BatteryLayer *aLayer, GContext *aCtx) {
             graphics_draw_pixel(aCtx, GPoint(x, y));
         }
     }
+    
+    // text
+    if (!animating) {
+        static char buffer[] = "100";
+        snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), "%d", percent);
+        graphics_draw_text(aCtx, buffer,
+            fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD),
+            GRect(0, 5, r.size.w, 18),
+            GTextOverflowModeWordWrap,
+            GTextAlignmentCenter,
+            NULL);
+    }
 }
 
 BatteryLayer *battery_layer_create(GRect aFromFrame, GRect aToFrame) {
     BatteryLayer *layer = icon_layer_create_with_data(aFromFrame, aToFrame,
         sizeof(battery_layer_data));
     layer_set_update_proc(layer, update_layer);
-    
     return layer;
 }
 
