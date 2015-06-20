@@ -17,37 +17,37 @@
       {
         "type": "png",
         "name": "WEEKDAY0",
-        "file": "sun.png"
+        "file": "weekday/sun.png"
       },
       {
         "type": "png",
         "name": "WEEKDAY1",
-        "file": "mon.png"
+        "file": "weekday/mon.png"
       },
       {
         "type": "png",
         "name": "WEEKDAY2",
-        "file": "tue.png"
+        "file": "weekday/tue.png"
       },
       {
         "type": "png",
         "name": "WEEKDAY3",
-        "file": "wed.png"
+        "file": "weekday/wed.png"
       },
       {
         "type": "png",
         "name": "WEEKDAY4",
-        "file": "thu.png"
+        "file": "weekday/thu.png"
       },
       {
         "type": "png",
         "name": "WEEKDAY5",
-        "file": "fri.png"
+        "file": "weekday/fri.png"
       },
       {
         "type": "png",
         "name": "WEEKDAY6",
-        "file": "sat.png"
+        "file": "weekday/sat.png"
       }
     ]
   }
