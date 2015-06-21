@@ -74,6 +74,13 @@ static void battery_handler(BatteryChargeState aCharge) {
   update_battery(aCharge);
 }
 
+static void tap_handler(AccelAxisType aAxis, int32_t aDirection) {
+  if (aAxis == ACCEL_AXIS_Y || aAxis == ACCEL_AXIS_Z) {
+    ClockLayer *clock = sLayers[CLOCK_LAYER];
+    clock_layer_toggle_color(clock);
+  }
+}
+
 static void main_window_load(Window *aWindow) {
   float scale = 168.f / CLOCK_SIZE;
   for (int32_t i = 0; i < LAYER_COUNT; ++i) {
@@ -124,8 +131,8 @@ static void init() {
   window_stack_push(sMainWindow, true);
   
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
-  
   battery_state_service_subscribe(battery_handler);
+  accel_tap_service_subscribe(tap_handler);
 }
 
 static void deinit() {

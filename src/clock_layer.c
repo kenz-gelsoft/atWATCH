@@ -16,6 +16,8 @@ static void draw_bold_line(GContext *aCtx, GPoint aPt1, GPoint aPt2) {
   graphics_draw_line(aCtx, GPoint(x1 + 1, y1 + 1), GPoint(x2 + 1, y2 + 1));
 }
 
+static bool sToggle = false;
+
 static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
     GRect r = layer_get_frame(aLayer);
     if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
@@ -30,7 +32,7 @@ static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
                            r.size.h / 2-1);
     uint16_t radius = r.size.w / 2 - 1;
     // 背景
-    if (animating) {
+    if (animating || sToggle) {
         graphics_context_set_stroke_color(aCtx, GColorWhite);
         graphics_draw_circle(aCtx, center, radius);
         graphics_context_set_fill_color(aCtx, GColorWhite);
@@ -93,5 +95,10 @@ void clock_layer_update_time(ClockLayer *aLayer) {
     data->m = tick_time->tm_min;
     data->s = tick_time->tm_sec;
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d", h, m);
+    layer_mark_dirty(aLayer);
+}
+
+void clock_layer_toggle_color(ClockLayer *aLayer) {
+    sToggle = !sToggle;
     layer_mark_dirty(aLayer);
 }
