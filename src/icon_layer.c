@@ -11,15 +11,34 @@ static void anim_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
   property_animation_destroy((PropertyAnimation *)aAnimation);
 }
 
-static void start_animation(IconLayer *aLayer) {
+static void zoom_out(IconLayer *aLayer, int32_t aDelay) {
   GRect toRect = icon_layer_get_to_frame(aLayer);
   PropertyAnimation *animation = property_animation_create_layer_frame(aLayer, NULL, &toRect);
   animation_set_duration((Animation *)animation, 500);
-  animation_set_delay((Animation *)animation, 300);
+  animation_set_delay((Animation *)animation, aDelay);
   animation_set_curve((Animation *)animation, AnimationCurveEaseInOut);
   animation_set_handlers((Animation *)animation, (AnimationHandlers) {
     .stopped = anim_stopped
   }, NULL);
+  animation_schedule((Animation *)animation);
+}
+
+static void zoom_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
+  property_animation_destroy((PropertyAnimation *)aAnimation);
+  
+  IconLayer *layer = (IconLayer *)aCtx;
+  zoom_out(layer, 1000);
+}
+
+void icon_layer_zoom_in(IconLayer *aLayer) {
+  GRect fromFrame = icon_layer_get_from_frame(aLayer);
+  PropertyAnimation *animation = property_animation_create_layer_frame(aLayer, NULL, &fromFrame);
+  animation_set_duration((Animation *)animation, 500);
+  animation_set_delay((Animation *)animation, 300);
+  animation_set_curve((Animation *)animation, AnimationCurveEaseInOut);
+  animation_set_handlers((Animation *)animation, (AnimationHandlers) {
+    .stopped = zoom_stopped
+  }, aLayer);
   animation_schedule((Animation *)animation);
 }
 
@@ -56,9 +75,10 @@ IconLayer *icon_layer_create_with_data(GRect aFromFrame, GRect aToFrame, size_t 
 
 	icon_layer_data *data = icon_layer_data_get(layer);
 	data->mColor = rand() % 4;
-	data->mToFrame = aToFrame;
+  data->mFromFrame = aFromFrame;
+	data->mToFrame   = aToFrame;
   
-  start_animation(layer);
+  zoom_out(layer, 300);
   
 	return layer;
 }
@@ -71,6 +91,9 @@ DitheringPattern icon_layer_get_color(IconLayer *aLayer) {
 	return icon_layer_data_get(aLayer)->mColor;
 }
 
+GRect icon_layer_get_from_frame(IconLayer *aLayer) {
+	return icon_layer_data_get(aLayer)->mFromFrame;
+}
 GRect icon_layer_get_to_frame(IconLayer *aLayer) {
 	return icon_layer_data_get(aLayer)->mToFrame;
 }

@@ -62,14 +62,13 @@ static void battery_handler(BatteryChargeState aCharge) {
 }
 
 static void tap_handler(AccelAxisType aAxis, int32_t aDirection) {
-  if (aAxis == ACCEL_AXIS_Y || aAxis == ACCEL_AXIS_Z) {
-    ClockLayer *clock = sLayers[CLOCK_LAYER];
-    clock_layer_toggle_color(clock);
-  }
+    for (int32_t i = 0; i < LAYER_COUNT; ++i) {
+      icon_layer_zoom_in(sLayers[i]);
+    }
 }
 
 static void main_window_load(Window *aWindow) {
-  float scale = 168.f / CLOCK_SIZE;
+  float scale = 144.f / CLOCK_SIZE;
   for (int32_t i = 0; i < LAYER_COUNT; ++i) {
     GRect to_rect = GRect(sIconFrames[i*4],sIconFrames[i*4+1],sIconFrames[i*4+2],sIconFrames[i*4+3]);
     int16_t cx = 144 / 2;

@@ -6,6 +6,7 @@
 
 typedef struct {
 	DitheringPattern mColor;
+	GRect mFromFrame;
 	GRect mToFrame;
 } icon_layer_data;
 
@@ -16,6 +17,9 @@ IconLayer *icon_layer_create(GRect aFromFrame, GRect aToFrame);
 void icon_layer_destroy(IconLayer *aLayer);
 
 DitheringPattern icon_layer_get_color(IconLayer *aLayer);
+GRect icon_layer_get_from_frame(IconLayer *aLayer);
 GRect icon_layer_get_to_frame(IconLayer *aLayer);
+
+void icon_layer_zoom_in(IconLayer *aLayer);
 
 #endif

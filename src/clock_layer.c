@@ -97,8 +97,3 @@ void clock_layer_update_time(ClockLayer *aLayer) {
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d", h, m);
     layer_mark_dirty(aLayer);
 }
-
-void clock_layer_toggle_color(ClockLayer *aLayer) {
-    sToggle = !sToggle;
-    layer_mark_dirty(aLayer);
-}

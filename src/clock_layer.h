@@ -20,6 +20,5 @@ ClockLayer *clock_layer_create(GRect aFromFrame, GRect aToFrame);
 void clock_layer_destroy(ClockLayer *aLayer);
 
 void clock_layer_update_time(ClockLayer *aLayer);
-void clock_layer_toggle_color(ClockLayer *aLayer);
 
 #endif
