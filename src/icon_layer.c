@@ -27,7 +27,7 @@ static void zoom_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
   property_animation_destroy((PropertyAnimation *)aAnimation);
   
   IconLayer *layer = (IconLayer *)aCtx;
-  zoom_out(layer, 1000);
+  zoom_out(layer, 2500);
 }
 
 void icon_layer_zoom_in(IconLayer *aLayer) {
@@ -51,14 +51,18 @@ static void update_layer(IconLayer *aLayer, GContext *aCtx) {
   }
   GRect finalRect = icon_layer_get_to_frame(aLayer);
   bool animating = !grect_equal(&r, &finalRect);
+  GRect fromFrame = icon_layer_get_from_frame(aLayer);
+  bool zoomedIn  =  grect_equal(&r, &fromFrame);
 
   GPoint center = GPoint(r.size.w / 2,
                          r.size.h / 2-1);
   uint16_t radius = r.size.w / 2 - 1;
   if (animating) {
     // アニメーション中は枠線だけ描画する
-    graphics_context_set_stroke_color(aCtx, GColorWhite);
-    graphics_draw_circle(aCtx, center, radius);
+    if (!zoomedIn) {
+      graphics_context_set_stroke_color(aCtx, GColorWhite);
+      graphics_draw_circle(aCtx, center, radius);
+    }
   } else {
     fill_dithered_circle(aCtx, center, radius,
       icon_layer_get_color(aLayer));

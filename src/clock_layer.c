@@ -16,8 +16,6 @@ static void draw_bold_line(GContext *aCtx, GPoint aPt1, GPoint aPt2) {
   graphics_draw_line(aCtx, GPoint(x1 + 1, y1 + 1), GPoint(x2 + 1, y2 + 1));
 }
 
-static bool sToggle = false;
-
 static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
     GRect r = layer_get_frame(aLayer);
     if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
@@ -25,16 +23,33 @@ static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
         // 不可視
         return;
     }
-    GRect finalRect = icon_layer_get_to_frame(aLayer);
-    bool animating = !grect_equal(&r, &finalRect);
+    GRect toFrame   = icon_layer_get_to_frame(aLayer);
+    bool animating = !grect_equal(&r, &toFrame);
+    GRect fromFrame = icon_layer_get_from_frame(aLayer);
+    bool zoomedIn  =  grect_equal(&r, &fromFrame);
     
     GPoint center = GPoint(r.size.w / 2,
                            r.size.h / 2-1);
     uint16_t radius = r.size.w / 2 - 1;
     // 背景
-    if (animating || sToggle) {
+    if (animating) {
         graphics_context_set_stroke_color(aCtx, GColorWhite);
-        graphics_draw_circle(aCtx, center, radius);
+        for (int32_t i = 0; i < 60; ++i) {
+            int32_t len1 = radius;
+            int32_t len2 = radius * ((i % 5 == 0) ? 16 : 19) / 20;
+            int32_t angle = TRIG_MAX_ANGLE * i / 60.f;
+            GPoint tickOuter;
+            tickOuter.y = (-cos_lookup(angle) * len1 / TRIG_MAX_RATIO) + center.y;
+            tickOuter.x = ( sin_lookup(angle) * len1 / TRIG_MAX_RATIO) + center.x;
+            GPoint tickInner;
+            tickInner.y = (-cos_lookup(angle) * len2 / TRIG_MAX_RATIO) + center.y;
+            tickInner.x = ( sin_lookup(angle) * len2 / TRIG_MAX_RATIO) + center.x;
+            if (i % 5 == 0) {
+                draw_bold_line(aCtx, tickInner, tickOuter);                
+            } else {
+                graphics_draw_line(aCtx, tickInner, tickOuter);
+            }
+        }
         graphics_context_set_fill_color(aCtx, GColorWhite);
         graphics_context_set_stroke_color(aCtx, GColorWhite);
     } else {

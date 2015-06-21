@@ -26,13 +26,17 @@ static void update_layer(BatteryLayer *aLayer, GContext *aCtx) {
     }
     GRect finalRect = icon_layer_get_to_frame(aLayer);
     bool animating = !grect_equal(&r, &finalRect);
-    
+    GRect fromFrame = icon_layer_get_from_frame(aLayer);
+    bool zoomedIn  =  grect_equal(&r, &fromFrame);
+      
     GPoint center = GPoint(r.size.w / 2,
                            r.size.h / 2-1);
     uint16_t radius = r.size.w / 2 - 1;
     graphics_context_set_stroke_color(aCtx, GColorWhite);
     if (animating) {
-        graphics_draw_circle(aCtx, center, radius);
+        if (!zoomedIn) {
+            graphics_draw_circle(aCtx, center, radius);
+        }
     } else {
         uint8_t percent = battery_layer_get_percent(aLayer);
         for (int32_t x = 0; x < r.size.w; ++x) {

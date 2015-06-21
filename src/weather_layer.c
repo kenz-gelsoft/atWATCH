@@ -39,13 +39,17 @@ static void update_layer(WeatherLayer *aLayer, GContext *aCtx) {
     }
     GRect finalRect = icon_layer_get_to_frame(aLayer);
     bool animating = !grect_equal(&r, &finalRect);
+    GRect fromFrame = icon_layer_get_from_frame(aLayer);
+    bool zoomedIn  =  grect_equal(&r, &fromFrame);
     
     GPoint center = GPoint(r.size.w / 2,
                            r.size.h / 2-1);
     uint16_t radius = r.size.w / 2 - 1;
     if (animating) {
-        graphics_context_set_stroke_color(aCtx, GColorWhite);
-        graphics_draw_circle(aCtx, center, radius);
+        if (!zoomedIn) {
+            graphics_context_set_stroke_color(aCtx, GColorWhite);
+            graphics_draw_circle(aCtx, center, radius);
+        }
     } else {
         // 背景
         fill_dithered_circle(aCtx, center, radius, Dithering50Percent);
