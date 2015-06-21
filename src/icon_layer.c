@@ -7,6 +7,22 @@ static icon_layer_data *icon_layer_data_get(IconLayer *aLayer) {
 	return (icon_layer_data *)layer_get_data(aLayer);
 }
 
+static void anim_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
+  property_animation_destroy((PropertyAnimation *)aAnimation);
+}
+
+static void start_animation(IconLayer *aLayer) {
+  GRect toRect = icon_layer_get_to_frame(aLayer);
+  PropertyAnimation *animation = property_animation_create_layer_frame(aLayer, NULL, &toRect);
+  animation_set_duration((Animation *)animation, 500);
+  animation_set_delay((Animation *)animation, 300);
+  animation_set_curve((Animation *)animation, AnimationCurveEaseInOut);
+  animation_set_handlers((Animation *)animation, (AnimationHandlers) {
+    .stopped = anim_stopped
+  }, NULL);
+  animation_schedule((Animation *)animation);
+}
+
 static void update_layer(IconLayer *aLayer, GContext *aCtx) {
   GRect r = layer_get_frame(aLayer);
   if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
@@ -41,6 +57,8 @@ IconLayer *icon_layer_create_with_data(GRect aFromFrame, GRect aToFrame, size_t 
 	icon_layer_data *data = icon_layer_data_get(layer);
 	data->mColor = rand() % 4;
 	data->mToFrame = aToFrame;
+  
+  start_animation(layer);
   
 	return layer;
 }

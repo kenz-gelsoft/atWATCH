@@ -24,10 +24,6 @@ RECT(0,79,10,10), RECT(12,65,36,36), RECT(52,63,CLOCK_SIZE,CLOCK_SIZE), RECT(97,
                 RECT(19,138,29,29), RECT(57,140,30,30), RECT(98,138,29,29),
 };
 
-static void anim_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
-  property_animation_destroy((PropertyAnimation *)aAnimation);
-}
-
 static void make_circle_layer(int32_t aIndex, IconLayer **aOutLayer, GRect *aFromRect, GRect *aToRect) {
   GRect initR = *aFromRect;
   if (aIndex == CLOCK_LAYER) {
@@ -42,15 +38,6 @@ static void make_circle_layer(int32_t aIndex, IconLayer **aOutLayer, GRect *aFro
     *aOutLayer = icon_layer_create(initR, *aToRect);
   }
   layer_add_child(window_get_root_layer(sMainWindow), *aOutLayer);
-  
-  PropertyAnimation *animation = property_animation_create_layer_frame(*aOutLayer, NULL, aToRect);
-  animation_set_duration((Animation *)animation, 500);
-  animation_set_delay((Animation *)animation, 300);
-  animation_set_curve((Animation *)animation, AnimationCurveEaseInOut);
-  animation_set_handlers((Animation *)animation, (AnimationHandlers) {
-    .stopped = anim_stopped
-  }, NULL);
-  animation_schedule((Animation *)animation);
 }
 
 static void update_time() {
