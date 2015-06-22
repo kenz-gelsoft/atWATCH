@@ -32,6 +32,23 @@ static void draw_very_bold_line(GContext *aCtx, GPoint aPt1, GPoint aPt2) {
   graphics_draw_line(aCtx, GPoint(x1 + 1, y1 + 1), GPoint(x2 + 1, y2 + 1));
 }
 
+static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
+        bool aZoomedIn, int32_t aHandLen, int32_t aAngle) {
+    int32_t handLen2 = aRadius * 3 / 20;
+    GPoint hand1;
+    hand1.y = (-cos_lookup(aAngle) * aHandLen / TRIG_MAX_RATIO) + aCenter.y;
+    hand1.x = ( sin_lookup(aAngle) * aHandLen / TRIG_MAX_RATIO) + aCenter.x;
+    if (aZoomedIn) {
+        GPoint hand2;
+        hand2.y = (-cos_lookup(aAngle) * handLen2 / TRIG_MAX_RATIO) + aCenter.y;
+        hand2.x = ( sin_lookup(aAngle) * handLen2 / TRIG_MAX_RATIO) + aCenter.x;
+        graphics_draw_line(aCtx, aCenter, hand2);
+        draw_very_bold_line(aCtx, hand2, hand1);
+    } else {
+        draw_bold_line(aCtx, aCenter, hand1);
+    }
+}
+
 static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
     GRect r = layer_get_frame(aLayer);
     if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
@@ -81,38 +98,14 @@ static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
     int32_t s = data->s;
     
     // 時針
-    int32_t hourLength = radius * 12 / 20;
-    int32_t hourLength2 = radius * 3 / 20;
-    int32_t hourAngle = TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f;
-    GPoint hourHand1;
-    hourHand1.y = (-cos_lookup(hourAngle) * hourLength / TRIG_MAX_RATIO) + center.y;
-    hourHand1.x = ( sin_lookup(hourAngle) * hourLength / TRIG_MAX_RATIO) + center.x;
-    if (zoomedIn) {
-        GPoint hourHand2;
-        hourHand2.y = (-cos_lookup(hourAngle) * hourLength2 / TRIG_MAX_RATIO) + center.y;
-        hourHand2.x = ( sin_lookup(hourAngle) * hourLength2 / TRIG_MAX_RATIO) + center.x;
-        graphics_draw_line(aCtx, center, hourHand2);
-        draw_very_bold_line(aCtx, hourHand2, hourHand1);
-    } else {
-        draw_bold_line(aCtx, center, hourHand1);
-    }
+    draw_clock_hand(aCtx, center, radius, zoomedIn,
+        radius * 12 / 20,
+        TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f);
     
     // 分針
-    int32_t minLength = radius * 18 / 20;
-    int32_t minLength2 = radius * 3 / 20;
-    int32_t minAngle = TRIG_MAX_ANGLE * (m + s / 60.f) / 60.f;
-    GPoint minHand1;
-    minHand1.y = (-cos_lookup(minAngle) * minLength / TRIG_MAX_RATIO) + center.y;
-    minHand1.x = ( sin_lookup(minAngle) * minLength / TRIG_MAX_RATIO) + center.x;
-    if (zoomedIn) {
-        GPoint minHand2;
-        minHand2.y = (-cos_lookup(minAngle) * minLength2 / TRIG_MAX_RATIO) + center.y;
-        minHand2.x = ( sin_lookup(minAngle) * minLength2 / TRIG_MAX_RATIO) + center.x;
-        graphics_draw_line(aCtx, center, minHand2);
-        draw_very_bold_line(aCtx, minHand2, minHand1);
-    } else {
-        draw_bold_line(aCtx, center, minHand1);
-    }
+    draw_clock_hand(aCtx, center, radius, zoomedIn,
+        radius * 18 / 20,
+        TRIG_MAX_ANGLE * (m + s / 60.f) / 60.f);
     
     // 秒針
     int32_t secLength = radius * 18 / 20;
