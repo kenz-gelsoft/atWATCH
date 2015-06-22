@@ -5,38 +5,35 @@ static clock_layer_data *clock_layer_data_get(ClockLayer *aLayer) {
     return (clock_layer_data *)layer_get_data(aLayer);
 }
 
-static void draw_bold_line(GContext *aCtx, GPoint aPt1, GPoint aPt2) {
-  int32_t x1 = aPt1.x;
-  int32_t y1 = aPt1.y;
-  int32_t x2 = aPt2.x;
-  int32_t y2 = aPt2.y;
-  graphics_draw_line(aCtx, aPt1, aPt2);
-  graphics_draw_line(aCtx, GPoint(x1 + 1, y1),     GPoint(x2 + 1, y2));
-  graphics_draw_line(aCtx, GPoint(x1,     y1 + 1), GPoint(x2    , y2 + 1));
-  graphics_draw_line(aCtx, GPoint(x1 + 1, y1 + 1), GPoint(x2 + 1, y2 + 1));
-}
-
-static void draw_very_bold_line(GContext *aCtx, GPoint aPt1, GPoint aPt2) {
-  int32_t x1 = aPt1.x;
-  int32_t y1 = aPt1.y;
-  int32_t x2 = aPt2.x;
-  int32_t y2 = aPt2.y;
-  graphics_draw_line(aCtx, GPoint(x1 - 1, y1 - 1), GPoint(x2 - 1, y2 - 1));
-  graphics_draw_line(aCtx, GPoint(x1    , y1 - 1), GPoint(x2    , y2 - 1));
-  graphics_draw_line(aCtx, GPoint(x1 + 1, y1 - 1), GPoint(x2 + 1, y2 - 1));
-  graphics_draw_line(aCtx, GPoint(x1 - 1, y1),     GPoint(x2 - 1, y2));
-  graphics_draw_line(aCtx, aPt1, aPt2);
-  graphics_draw_line(aCtx, GPoint(x1 + 1, y1),     GPoint(x2 + 1, y2));
-  graphics_draw_line(aCtx, GPoint(x1 - 1, y1 + 1), GPoint(x2 - 1, y2 + 1));
-  graphics_draw_line(aCtx, GPoint(x1    , y1 + 1), GPoint(x2    , y2 + 1));
-  graphics_draw_line(aCtx, GPoint(x1 + 1, y1 + 1), GPoint(x2 + 1, y2 + 1));
-}
-
 typedef enum {
     LineWidth1,
     LineWidth2,
     LineWidth3
 } LineWidth;
+
+static void draw_width_line(GContext *aCtx, GPoint aPt1, GPoint aPt2, LineWidth aLineWidth) {
+  int32_t x1 = aPt1.x;
+  int32_t y1 = aPt1.y;
+  int32_t x2 = aPt2.x;
+  int32_t y2 = aPt2.y;
+  switch (aLineWidth) {
+  case LineWidth3:
+      // 3x3 very bold line
+      graphics_draw_line(aCtx, GPoint(x1 - 1, y1 - 1), GPoint(x2 - 1, y2 - 1));
+      graphics_draw_line(aCtx, GPoint(x1    , y1 - 1), GPoint(x2    , y2 - 1));
+      graphics_draw_line(aCtx, GPoint(x1 + 1, y1 - 1), GPoint(x2 + 1, y2 - 1));
+      graphics_draw_line(aCtx, GPoint(x1 - 1, y1),     GPoint(x2 - 1, y2));
+      graphics_draw_line(aCtx, GPoint(x1 - 1, y1 + 1), GPoint(x2 - 1, y2 + 1));
+  case LineWidth2:
+      // 2x2 bold line
+      graphics_draw_line(aCtx, GPoint(x1 + 1, y1),     GPoint(x2 + 1, y2));
+      graphics_draw_line(aCtx, GPoint(x1    , y1 + 1), GPoint(x2    , y2 + 1));
+      graphics_draw_line(aCtx, GPoint(x1 + 1, y1 + 1), GPoint(x2 + 1, y2 + 1));
+  case LineWidth1:
+      // 1x1 normal line
+      graphics_draw_line(aCtx, aPt1, aPt2);
+  }
+}
 
 static void draw_angle_line(GContext *aCtx, GPoint aCenter, int32_t aAngle,
         int32_t aRadiusFrom, int32_t aRadiusTo, LineWidth aLineWidth) {
@@ -54,17 +51,7 @@ static void draw_angle_line(GContext *aCtx, GPoint aCenter, int32_t aAngle,
         pt2.y = (-cos_lookup(aAngle) * aRadiusTo / TRIG_MAX_RATIO) + aCenter.y;
         pt2.x = ( sin_lookup(aAngle) * aRadiusTo / TRIG_MAX_RATIO) + aCenter.x;
     }
-    switch (aLineWidth) {
-    case LineWidth1:
-        graphics_draw_line(aCtx, pt1, pt2);
-        break;
-    case LineWidth2:
-        draw_bold_line(aCtx, pt1, pt2);
-        break;
-    case LineWidth3:
-        draw_very_bold_line(aCtx, pt1, pt2);
-        break;
-    }
+    draw_width_line(aCtx, pt1, pt2, aLineWidth);
 }
 
 static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
