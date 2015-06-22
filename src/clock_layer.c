@@ -58,7 +58,7 @@ static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
         bool aZoomedIn, int32_t aHandLen, int32_t aAngle) {
     int32_t handLen2 = aRadius * 3 / 20;
     if (aZoomedIn) {
-        draw_angle_line(aCtx, aCenter, aAngle, 0, handLen2, LineWidth1);
+        draw_angle_line(aCtx, aCenter, aAngle, 3, handLen2, LineWidth1);
         draw_angle_line(aCtx, aCenter, aAngle, handLen2, aHandLen, LineWidth3);
     } else {
         draw_angle_line(aCtx, aCenter, aAngle, 0, aHandLen, LineWidth2);
@@ -117,7 +117,12 @@ static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
     // 秒針
     int32_t secLength = radius * 18 / 20;
     int32_t secAngle = TRIG_MAX_ANGLE * s / 60.f;
-    draw_angle_line(aCtx, center, secAngle, 0, secLength, LineWidth1);
+    if (zoomedIn) {
+        draw_angle_line(aCtx, center, secAngle, 3, secLength, LineWidth1);
+        graphics_draw_circle(aCtx, center, 2);
+    } else {
+        draw_angle_line(aCtx, center, secAngle, 0, secLength, LineWidth1);
+    }
 }
 
 ClockLayer *clock_layer_create(GRect aFromFrame, GRect aToFrame) {
