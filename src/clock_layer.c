@@ -56,7 +56,7 @@ static void draw_angle_line(GContext *aCtx, GPoint aCenter, int32_t aAngle,
 
 static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
         bool aZoomedIn, int32_t aHandLen, int32_t aAngle) {
-    int32_t handLen2 = aRadius * 3 / 20;
+    int32_t handLen2 = aRadius * 4 / 20;
     if (aZoomedIn) {
         draw_angle_line(aCtx, aCenter, aAngle, 3, handLen2, LineWidth1);
         draw_angle_line(aCtx, aCenter, aAngle, handLen2, aHandLen, LineWidth3);
