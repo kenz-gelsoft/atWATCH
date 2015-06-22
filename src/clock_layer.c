@@ -32,20 +32,49 @@ static void draw_very_bold_line(GContext *aCtx, GPoint aPt1, GPoint aPt2) {
   graphics_draw_line(aCtx, GPoint(x1 + 1, y1 + 1), GPoint(x2 + 1, y2 + 1));
 }
 
+typedef enum {
+    LineWidth1,
+    LineWidth2,
+    LineWidth3
+} LineWidth;
+
+static void draw_angle_line(GContext *aCtx, GPoint aCenter, int32_t aAngle,
+        int32_t aRadiusFrom, int32_t aRadiusTo, LineWidth aLineWidth) {
+    GPoint pt1;
+    if (aRadiusFrom == 0) {
+        pt1 = aCenter;
+    } else {
+        pt1.y = (-cos_lookup(aAngle) * aRadiusFrom / TRIG_MAX_RATIO) + aCenter.y;
+        pt1.x = ( sin_lookup(aAngle) * aRadiusFrom / TRIG_MAX_RATIO) + aCenter.x;
+    }
+    GPoint pt2;
+    if (aRadiusTo == 0) {
+        pt2 = aCenter;
+    } else {
+        pt2.y = (-cos_lookup(aAngle) * aRadiusTo / TRIG_MAX_RATIO) + aCenter.y;
+        pt2.x = ( sin_lookup(aAngle) * aRadiusTo / TRIG_MAX_RATIO) + aCenter.x;
+    }
+    switch (aLineWidth) {
+    case LineWidth1:
+        graphics_draw_line(aCtx, pt1, pt2);
+        break;
+    case LineWidth2:
+        draw_bold_line(aCtx, pt1, pt2);
+        break;
+    case LineWidth3:
+        draw_very_bold_line(aCtx, pt1, pt2);
+        break;
+    }
+}
+
 static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
         bool aZoomedIn, int32_t aHandLen, int32_t aAngle) {
     int32_t handLen2 = aRadius * 3 / 20;
-    GPoint hand1;
-    hand1.y = (-cos_lookup(aAngle) * aHandLen / TRIG_MAX_RATIO) + aCenter.y;
-    hand1.x = ( sin_lookup(aAngle) * aHandLen / TRIG_MAX_RATIO) + aCenter.x;
     if (aZoomedIn) {
-        GPoint hand2;
-        hand2.y = (-cos_lookup(aAngle) * handLen2 / TRIG_MAX_RATIO) + aCenter.y;
-        hand2.x = ( sin_lookup(aAngle) * handLen2 / TRIG_MAX_RATIO) + aCenter.x;
-        graphics_draw_line(aCtx, aCenter, hand2);
-        draw_very_bold_line(aCtx, hand2, hand1);
+        draw_angle_line(aCtx, aCenter, aAngle, 0, handLen2, LineWidth1);
+        draw_angle_line(aCtx, aCenter, aAngle, handLen2, aHandLen, LineWidth3);
     } else {
-        draw_bold_line(aCtx, aCenter, hand1);
+        draw_angle_line(aCtx, aCenter, aAngle, 0, aHandLen, LineWidth2);
     }
 }
 
@@ -71,17 +100,8 @@ static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
             int32_t len1 = radius;
             int32_t len2 = radius * ((i % 5 == 0) ? 16 : 19) / 20;
             int32_t angle = TRIG_MAX_ANGLE * i / 60.f;
-            GPoint tickOuter;
-            tickOuter.y = (-cos_lookup(angle) * len1 / TRIG_MAX_RATIO) + center.y;
-            tickOuter.x = ( sin_lookup(angle) * len1 / TRIG_MAX_RATIO) + center.x;
-            GPoint tickInner;
-            tickInner.y = (-cos_lookup(angle) * len2 / TRIG_MAX_RATIO) + center.y;
-            tickInner.x = ( sin_lookup(angle) * len2 / TRIG_MAX_RATIO) + center.x;
-            if (i % 5 == 0) {
-                draw_bold_line(aCtx, tickInner, tickOuter);                
-            } else {
-                graphics_draw_line(aCtx, tickInner, tickOuter);
-            }
+            draw_angle_line(aCtx, center, angle, len1, len2,
+                (i % 5 == 0) ? LineWidth2 : LineWidth1);
         }
         graphics_context_set_fill_color(aCtx, GColorWhite);
         graphics_context_set_stroke_color(aCtx, GColorWhite);
@@ -110,10 +130,7 @@ static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
     // 秒針
     int32_t secLength = radius * 18 / 20;
     int32_t secAngle = TRIG_MAX_ANGLE * s / 60.f;
-    GPoint secHand;
-    secHand.y = (-cos_lookup(secAngle) * secLength / TRIG_MAX_RATIO) + center.y;
-    secHand.x = ( sin_lookup(secAngle) * secLength / TRIG_MAX_RATIO) + center.x;
-    graphics_draw_line(aCtx, center, secHand);
+    draw_angle_line(aCtx, center, secAngle, 0, secLength, LineWidth1);
 }
 
 ClockLayer *clock_layer_create(GRect aFromFrame, GRect aToFrame) {
