@@ -11,7 +11,7 @@
 #define LAYER_COUNT 19
 
 static Window *sMainWindow;
-static Icon *sLayers[LAYER_COUNT];
+static Icon *sIcons[LAYER_COUNT];
 
 #define CLOCK_SIZE 41
 
@@ -45,10 +45,10 @@ static void make_circle_layer(int32_t aIndex, Icon **aOutLayer, GRect *aFromRect
 }
 
 static void update_time() {
-  ClockIcon *clock = sLayers[CLOCK_ICON];
+  ClockIcon *clock = sIcons[CLOCK_ICON];
   clock_icon_update_time(clock);
 
-  CalendarIcon *calendar = sLayers[CALENDAR_ICON];
+  CalendarIcon *calendar = sIcons[CALENDAR_ICON];
   calendar_icon_update(calendar);
 }
 
@@ -57,7 +57,7 @@ static void tick_handler(struct tm *aTickTime, TimeUnits aUnitsChanged) {
 }
 
 static void update_battery(BatteryChargeState aCharge) {
-  BatteryIcon *battery = sLayers[BATTERY_ICON];
+  BatteryIcon *battery = sIcons[BATTERY_ICON];
   battery_icon_update(battery, aCharge.charge_percent);
 }
 
@@ -67,7 +67,7 @@ static void battery_handler(BatteryChargeState aCharge) {
 
 static void tap_handler(AccelAxisType aAxis, int32_t aDirection) {
     for (int32_t i = 0; i < LAYER_COUNT; ++i) {
-      icon_zoom_in(sLayers[i]);
+      icon_zoom_in(sIcons[i]);
     }
 }
 
@@ -76,7 +76,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   while (t != NULL) {
     switch (t->key) {
     case KEY_WEATHER_ID:
-      weather_icon_update(sLayers[WEATHER_ICON], t->value->int32);
+      weather_icon_update(sIcons[WEATHER_ICON], t->value->int32);
       break;
     }
     t = dict_read_next(iterator);
@@ -108,7 +108,7 @@ static void main_window_load(Window *aWindow) {
     r.size.h *= scale;
     // APP_LOG(APP_LOG_LEVEL_DEBUG, "from_rect = (%d, %d, %d, %d)",
     //   r.origin.x, r.origin.y, r.size.w, r.size.h);
-    make_circle_layer(i, &sLayers[i], &r, &to_rect);
+    make_circle_layer(i, &sIcons[i], &r, &to_rect);
   }
   
   update_time();
@@ -120,15 +120,15 @@ static void main_window_unload(Window *aWindow) {
   animation_unschedule_all();
   for (int i = 0; i < LAYER_COUNT; ++i) {
     if (i == CLOCK_ICON) {
-      clock_icon_destroy(sLayers[i]);
+      clock_icon_destroy(sIcons[i]);
     } else if (i == BATTERY_ICON) { 
-      battery_icon_destroy(sLayers[i]);
+      battery_icon_destroy(sIcons[i]);
     } else if (i == CALENDAR_ICON) {
-      calendar_icon_destroy(sLayers[i]);
+      calendar_icon_destroy(sIcons[i]);
     } else if (i == WEATHER_ICON) {
-      weather_icon_destroy(sLayers[i]);
+      weather_icon_destroy(sIcons[i]);
     } else {
-      icon_destroy(sLayers[i]);
+      icon_destroy(sIcons[i]);
     }
   }
 }
