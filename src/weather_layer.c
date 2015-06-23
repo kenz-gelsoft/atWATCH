@@ -81,10 +81,14 @@ static void update_layer(WeatherLayer *aLayer, GContext *aCtx) {
             
         GBitmap* mask = weather_layer_get_mask(aLayer);
         graphics_context_set_compositing_mode(aCtx, GCompOpClear);
-        graphics_draw_bitmap_in_rect(aCtx, mask, GRect(
-            1 + (r.size.w - 24) / 2,
-            (r.size.h - 24) / 2,
-            24, 24));
+        for (int dx = -1; dx <= +1; ++dx) {
+            for (int dy = -1; dy <= +1; ++dy) {
+                graphics_draw_bitmap_in_rect(aCtx, mask, GRect(
+                    dx + 1 + (r.size.w - 24) / 2,
+                    dy + (r.size.h - 24) / 2,
+                    24, 24));
+            }
+        }
             
         GBitmap* weather = weather_layer_get_weather(aLayer);
         graphics_context_set_compositing_mode(aCtx, GCompOpSet);
