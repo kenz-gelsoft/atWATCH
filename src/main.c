@@ -28,20 +28,36 @@ RECT(0,79,10,10), RECT(12,65,36,36), RECT(52,63,CLOCK_SIZE,CLOCK_SIZE), RECT(97,
                 RECT(19,138,29,29), RECT(57,140,30,30), RECT(98,138,29,29),
 };
 
-static void make_circle_layer(int32_t aIndex, Icon **aOutLayer, GRect *aFromRect, GRect *aToRect) {
+static Icon *create_icon(int32_t aIndex, GRect *aFromRect, GRect *aToRect) {
   GRect initR = *aFromRect;
+  Icon *icon;
   if (aIndex == CLOCK_ICON) {
-    *aOutLayer = clock_icon_create(initR, *aToRect);
+    icon = clock_icon_create(initR, *aToRect);
   } else if (aIndex == BATTERY_ICON) {
-    *aOutLayer = battery_icon_create(initR, *aToRect);
+    icon = battery_icon_create(initR, *aToRect);
   } else if (aIndex == CALENDAR_ICON) {
-    *aOutLayer = calendar_icon_create(initR, *aToRect);
+    icon = calendar_icon_create(initR, *aToRect);
   } else if (aIndex == WEATHER_ICON) {
-    *aOutLayer = weather_icon_create(initR, *aToRect);
+    icon = weather_icon_create(initR, *aToRect);
   } else {
-    *aOutLayer = icon_create(initR, *aToRect);
+    icon = icon_create(initR, *aToRect);
   }
-  layer_add_child(window_get_root_layer(sMainWindow), *aOutLayer);
+  layer_add_child(window_get_root_layer(sMainWindow), icon);
+  return icon;
+}
+
+static void destroy_icon_at_index(int32_t i) {
+  if (i == CLOCK_ICON) {
+    clock_icon_destroy(sIcons[i]);
+  } else if (i == BATTERY_ICON) { 
+    battery_icon_destroy(sIcons[i]);
+  } else if (i == CALENDAR_ICON) {
+    calendar_icon_destroy(sIcons[i]);
+  } else if (i == WEATHER_ICON) {
+    weather_icon_destroy(sIcons[i]);
+  } else {
+    icon_destroy(sIcons[i]);
+  }
 }
 
 static void update_time() {
@@ -108,7 +124,7 @@ static void main_window_load(Window *aWindow) {
     r.size.h *= scale;
     // APP_LOG(APP_LOG_LEVEL_DEBUG, "from_rect = (%d, %d, %d, %d)",
     //   r.origin.x, r.origin.y, r.size.w, r.size.h);
-    make_circle_layer(i, &sIcons[i], &r, &to_rect);
+    sIcons[i] = create_icon(i, &r, &to_rect);
   }
   
   update_time();
@@ -119,17 +135,7 @@ static void main_window_load(Window *aWindow) {
 static void main_window_unload(Window *aWindow) {
   animation_unschedule_all();
   for (int i = 0; i < LAYER_COUNT; ++i) {
-    if (i == CLOCK_ICON) {
-      clock_icon_destroy(sIcons[i]);
-    } else if (i == BATTERY_ICON) { 
-      battery_icon_destroy(sIcons[i]);
-    } else if (i == CALENDAR_ICON) {
-      calendar_icon_destroy(sIcons[i]);
-    } else if (i == WEATHER_ICON) {
-      weather_icon_destroy(sIcons[i]);
-    } else {
-      icon_destroy(sIcons[i]);
-    }
+    destroy_icon_at_index(i);
   }
 }
 
