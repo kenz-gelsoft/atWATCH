@@ -62,9 +62,9 @@ static void update_layer(WeatherLayer *aLayer, GContext *aCtx) {
         // 不可視
         return;
     }
-    GRect finalRect = icon_layer_get_to_frame(aLayer);
+    GRect finalRect = icon_get_to_frame(aLayer);
     bool animating = !grect_equal(&r, &finalRect);
-    GRect fromFrame = icon_layer_get_from_frame(aLayer);
+    GRect fromFrame = icon_get_from_frame(aLayer);
     bool zoomedIn  =  grect_equal(&r, &fromFrame);
     
     GPoint center = GPoint(r.size.w / 2,
@@ -100,7 +100,7 @@ static void update_layer(WeatherLayer *aLayer, GContext *aCtx) {
 }
 
 WeatherLayer *weather_layer_create(GRect aFromFrame, GRect aToFrame) {
-    WeatherLayer *layer = icon_layer_create_with_data(aFromFrame, aToFrame,
+    WeatherLayer *layer = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(weather_layer_data));
     layer_set_update_proc(layer, update_layer);
     
@@ -118,7 +118,7 @@ void weather_layer_destroy(WeatherLayer *aLayer) {
     if (data->mMask) {
         gbitmap_destroy(data->mMask);
     }
-    icon_layer_destroy(aLayer);
+    icon_destroy(aLayer);
 }
 
 GBitmap *weather_layer_get_weather(WeatherLayer *aLayer) {

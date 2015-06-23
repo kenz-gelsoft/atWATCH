@@ -72,9 +72,9 @@ static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
         // 不可視
         return;
     }
-    GRect toFrame   = icon_layer_get_to_frame(aLayer);
+    GRect toFrame   = icon_get_to_frame(aLayer);
     bool animating = !grect_equal(&r, &toFrame);
-    GRect fromFrame = icon_layer_get_from_frame(aLayer);
+    GRect fromFrame = icon_get_from_frame(aLayer);
     bool zoomedIn  =  grect_equal(&r, &fromFrame);
     
     GPoint center = GPoint(r.size.w / 2,
@@ -126,7 +126,7 @@ static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
 }
 
 ClockLayer *clock_layer_create(GRect aFromFrame, GRect aToFrame) {
-    ClockLayer *layer = icon_layer_create_with_data(aFromFrame, aToFrame,
+    ClockLayer *layer = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(clock_layer_data));
     layer_set_update_proc(layer, update_layer);
     
@@ -134,7 +134,7 @@ ClockLayer *clock_layer_create(GRect aFromFrame, GRect aToFrame) {
 }
 
 void clock_layer_destroy(ClockLayer *aLayer) {
-    icon_layer_destroy(aLayer);
+    icon_destroy(aLayer);
 }
 
 void clock_layer_update_time(ClockLayer *aLayer) {

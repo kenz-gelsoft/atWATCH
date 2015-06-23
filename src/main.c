@@ -4,14 +4,14 @@
 #include "calendar_layer.h"
 #include "clock_layer.h"
 #include "dithering.h"
-#include "icon_layer.h"
+#include "icon.h"
 #include "weather_layer.h"
 
 
 #define LAYER_COUNT 19
 
 static Window *sMainWindow;
-static IconLayer *sLayers[LAYER_COUNT];
+static Icon *sLayers[LAYER_COUNT];
 
 #define CLOCK_SIZE 41
 
@@ -28,7 +28,7 @@ RECT(0,79,10,10), RECT(12,65,36,36), RECT(52,63,CLOCK_SIZE,CLOCK_SIZE), RECT(97,
                 RECT(19,138,29,29), RECT(57,140,30,30), RECT(98,138,29,29),
 };
 
-static void make_circle_layer(int32_t aIndex, IconLayer **aOutLayer, GRect *aFromRect, GRect *aToRect) {
+static void make_circle_layer(int32_t aIndex, Icon **aOutLayer, GRect *aFromRect, GRect *aToRect) {
   GRect initR = *aFromRect;
   if (aIndex == CLOCK_LAYER) {
     *aOutLayer = clock_layer_create(initR, *aToRect);
@@ -39,7 +39,7 @@ static void make_circle_layer(int32_t aIndex, IconLayer **aOutLayer, GRect *aFro
   } else if (aIndex == WEATHER_LAYER) {
     *aOutLayer = weather_layer_create(initR, *aToRect);
   } else {
-    *aOutLayer = icon_layer_create(initR, *aToRect);
+    *aOutLayer = icon_create(initR, *aToRect);
   }
   layer_add_child(window_get_root_layer(sMainWindow), *aOutLayer);
 }
@@ -67,7 +67,7 @@ static void battery_handler(BatteryChargeState aCharge) {
 
 static void tap_handler(AccelAxisType aAxis, int32_t aDirection) {
     for (int32_t i = 0; i < LAYER_COUNT; ++i) {
-      icon_layer_zoom_in(sLayers[i]);
+      icon_zoom_in(sLayers[i]);
     }
 }
 
@@ -128,7 +128,7 @@ static void main_window_unload(Window *aWindow) {
     } else if (i == WEATHER_LAYER) {
       weather_layer_destroy(sLayers[i]);
     } else {
-      icon_layer_destroy(sLayers[i]);
+      icon_destroy(sLayers[i]);
     }
   }
 }

@@ -27,9 +27,9 @@ static void update_layer(CalendarLayer *aLayer, GContext *aCtx) {
         // 不可視
         return;
     }
-    GRect finalRect = icon_layer_get_to_frame(aLayer);
+    GRect finalRect = icon_get_to_frame(aLayer);
     bool animating = !grect_equal(&r, &finalRect);
-    GRect fromFrame = icon_layer_get_from_frame(aLayer);
+    GRect fromFrame = icon_get_from_frame(aLayer);
     bool zoomedIn  =  grect_equal(&r, &fromFrame);
     
     GPoint center = GPoint(r.size.w / 2,
@@ -67,7 +67,7 @@ static void update_layer(CalendarLayer *aLayer, GContext *aCtx) {
 }
 
 CalendarLayer *calendar_layer_create(GRect aFromFrame, GRect aToFrame) {
-    CalendarLayer *layer = icon_layer_create_with_data(aFromFrame, aToFrame,
+    CalendarLayer *layer = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(calendar_layer_data));
     layer_set_update_proc(layer, update_layer);
     return layer;
@@ -78,7 +78,7 @@ void calendar_layer_destroy(CalendarLayer *aLayer) {
     if (data->mWeekday) {
         gbitmap_destroy(data->mWeekday);
     }
-    icon_layer_destroy(aLayer);
+    icon_destroy(aLayer);
 }
 
 uint8_t calendar_layer_get_date(CalendarLayer *aLayer) {

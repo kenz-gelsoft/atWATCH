@@ -2,18 +2,18 @@
 #define INCLUDE_GUARD_B4024748_FAC3_461F_933C_5B997B6A075F
 
 #include <pebble.h>
-#include "icon_layer.h"
+#include "icon.h"
 
 
 #define BATTERY_LAYER 5
 
 
 typedef struct {
-	icon_layer_data mBase;
+	icon_data mBase;
 	uint8_t mPercent;
 } battery_layer_data;
 
-typedef IconLayer BatteryLayer;
+typedef Icon BatteryLayer;
 
 BatteryLayer *battery_layer_create(GRect aFromFrame, GRect aToFrame);
 void battery_layer_destroy(BatteryLayer *aLayer);

@@ -24,9 +24,9 @@ static void update_layer(BatteryLayer *aLayer, GContext *aCtx) {
         // 不可視
         return;
     }
-    GRect finalRect = icon_layer_get_to_frame(aLayer);
+    GRect finalRect = icon_get_to_frame(aLayer);
     bool animating = !grect_equal(&r, &finalRect);
-    GRect fromFrame = icon_layer_get_from_frame(aLayer);
+    GRect fromFrame = icon_get_from_frame(aLayer);
     bool zoomedIn  =  grect_equal(&r, &fromFrame);
       
     GPoint center = GPoint(r.size.w / 2,
@@ -66,14 +66,14 @@ static void update_layer(BatteryLayer *aLayer, GContext *aCtx) {
 }
 
 BatteryLayer *battery_layer_create(GRect aFromFrame, GRect aToFrame) {
-    BatteryLayer *layer = icon_layer_create_with_data(aFromFrame, aToFrame,
+    BatteryLayer *layer = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(battery_layer_data));
     layer_set_update_proc(layer, update_layer);
     return layer;
 }
 
 void battery_layer_destroy(BatteryLayer *aLayer) {
-    icon_layer_destroy(aLayer);
+    icon_destroy(aLayer);
 }
 
 uint8_t battery_layer_get_percent(BatteryLayer *aLayer) {
