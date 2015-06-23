@@ -1,4 +1,4 @@
-#include "calendar_layer.h"
+#include "calendar_icon.h"
 
 
 #define WEEKDAY_IMAGE(n) \
@@ -16,11 +16,11 @@ static GBitmap *bitmap_for_weekday(uint8_t aWeekday) {
     return NULL;
 }
 
-static calendar_layer_data *calendar_layer_data_get(CalendarLayer *aLayer) {
-    return (calendar_layer_data *)layer_get_data(aLayer);
+static calendar_icon_data *calendar_icon_data_get(CalendarIcon *aLayer) {
+    return (calendar_icon_data *)layer_get_data(aLayer);
 }
 
-static void update_layer(CalendarLayer *aLayer, GContext *aCtx) {
+static void update_layer(CalendarIcon *aLayer, GContext *aCtx) {
     GRect r = layer_get_frame(aLayer);
     if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
         r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
@@ -46,9 +46,9 @@ static void update_layer(CalendarLayer *aLayer, GContext *aCtx) {
         graphics_fill_circle(aCtx, center, radius);
         graphics_context_set_text_color(aCtx, GColorBlack);
         
-        uint8_t date = calendar_layer_get_date(aLayer);
+        uint8_t date = calendar_icon_get_date(aLayer);
         
-        GBitmap* weekday = calendar_layer_get_weekday(aLayer);
+        GBitmap* weekday = calendar_icon_get_weekday(aLayer);
         graphics_draw_bitmap_in_rect(aCtx, weekday, GRect(
             1 + (r.size.w - 15) / 2,
             r.size.h / 5 - 7 / 2,
@@ -66,33 +66,33 @@ static void update_layer(CalendarLayer *aLayer, GContext *aCtx) {
     }
 }
 
-CalendarLayer *calendar_layer_create(GRect aFromFrame, GRect aToFrame) {
-    CalendarLayer *layer = icon_create_with_data(aFromFrame, aToFrame,
-        sizeof(calendar_layer_data));
+CalendarIcon *calendar_icon_create(GRect aFromFrame, GRect aToFrame) {
+    CalendarIcon *layer = icon_create_with_data(aFromFrame, aToFrame,
+        sizeof(calendar_icon_data));
     layer_set_update_proc(layer, update_layer);
     return layer;
 }
 
-void calendar_layer_destroy(CalendarLayer *aLayer) {
-    calendar_layer_data *data = calendar_layer_data_get(aLayer);
+void calendar_icon_destroy(CalendarIcon *aLayer) {
+    calendar_icon_data *data = calendar_icon_data_get(aLayer);
     if (data->mWeekday) {
         gbitmap_destroy(data->mWeekday);
     }
     icon_destroy(aLayer);
 }
 
-uint8_t calendar_layer_get_date(CalendarLayer *aLayer) {
-    return calendar_layer_data_get(aLayer)->mDate;
+uint8_t calendar_icon_get_date(CalendarIcon *aLayer) {
+    return calendar_icon_data_get(aLayer)->mDate;
 }
-GBitmap *calendar_layer_get_weekday(CalendarLayer *aLayer) {
-    return calendar_layer_data_get(aLayer)->mWeekday;
+GBitmap *calendar_icon_get_weekday(CalendarIcon *aLayer) {
+    return calendar_icon_data_get(aLayer)->mWeekday;
 }
 
-void calendar_layer_update(CalendarLayer *aLayer) {
+void calendar_icon_update(CalendarIcon *aLayer) {
     time_t temp = time(NULL);
     struct tm *tick_time = localtime(&temp);
 
-    calendar_layer_data *data = calendar_layer_data_get(aLayer);
+    calendar_icon_data *data = calendar_icon_data_get(aLayer);
     uint8_t oldDate = data->mDate;
     if (oldDate != tick_time->tm_mday) {
         data->mDate = tick_time->tm_mday;
