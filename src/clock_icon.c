@@ -1,8 +1,8 @@
-#include "clock_layer.h"
+#include "clock_icon.h"
 
 
-static clock_layer_data *clock_layer_data_get(ClockLayer *aLayer) {
-    return (clock_layer_data *)layer_get_data(aLayer);
+static clock_icon_data *clock_icon_data_get(ClockIcon *aLayer) {
+    return (clock_icon_data *)layer_get_data(aLayer);
 }
 
 typedef enum {
@@ -65,7 +65,7 @@ static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
     }
 }
 
-static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
+static void update_layer(ClockIcon *aLayer, GContext *aCtx) {
     GRect r = layer_get_frame(aLayer);
     if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
         r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
@@ -99,7 +99,7 @@ static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
         graphics_context_set_stroke_color(aCtx, GColorBlack);
     }
     
-    clock_layer_data *data = layer_get_data(aLayer);
+    clock_icon_data *data = layer_get_data(aLayer);
     int32_t h = data->h;
     int32_t m = data->m;
     int32_t s = data->s;
@@ -125,23 +125,23 @@ static void update_layer(ClockLayer *aLayer, GContext *aCtx) {
     }
 }
 
-ClockLayer *clock_layer_create(GRect aFromFrame, GRect aToFrame) {
-    ClockLayer *layer = icon_create_with_data(aFromFrame, aToFrame,
-        sizeof(clock_layer_data));
+ClockIcon *clock_icon_create(GRect aFromFrame, GRect aToFrame) {
+    ClockIcon *layer = icon_create_with_data(aFromFrame, aToFrame,
+        sizeof(clock_icon_data));
     layer_set_update_proc(layer, update_layer);
     
     return layer;
 }
 
-void clock_layer_destroy(ClockLayer *aLayer) {
+void clock_icon_destroy(ClockIcon *aLayer) {
     icon_destroy(aLayer);
 }
 
-void clock_layer_update_time(ClockLayer *aLayer) {
+void clock_icon_update_time(ClockIcon *aLayer) {
     time_t temp = time(NULL);
     struct tm *tick_time = localtime(&temp);
     
-    clock_layer_data *data = clock_layer_data_get(aLayer);
+    clock_icon_data *data = clock_icon_data_get(aLayer);
     data->h = tick_time->tm_hour % 12;
     data->m = tick_time->tm_min;
     data->s = tick_time->tm_sec;

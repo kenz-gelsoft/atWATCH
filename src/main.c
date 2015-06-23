@@ -2,7 +2,7 @@
 
 #include "battery_layer.h"
 #include "calendar_layer.h"
-#include "clock_layer.h"
+#include "clock_icon.h"
 #include "dithering.h"
 #include "icon.h"
 #include "weather_layer.h"
@@ -30,8 +30,8 @@ RECT(0,79,10,10), RECT(12,65,36,36), RECT(52,63,CLOCK_SIZE,CLOCK_SIZE), RECT(97,
 
 static void make_circle_layer(int32_t aIndex, Icon **aOutLayer, GRect *aFromRect, GRect *aToRect) {
   GRect initR = *aFromRect;
-  if (aIndex == CLOCK_LAYER) {
-    *aOutLayer = clock_layer_create(initR, *aToRect);
+  if (aIndex == CLOCK_ICON) {
+    *aOutLayer = clock_icon_create(initR, *aToRect);
   } else if (aIndex == BATTERY_LAYER) {
     *aOutLayer = battery_layer_create(initR, *aToRect);
   } else if (aIndex == CALENDAR_LAYER) {
@@ -45,8 +45,8 @@ static void make_circle_layer(int32_t aIndex, Icon **aOutLayer, GRect *aFromRect
 }
 
 static void update_time() {
-  ClockLayer *clock = sLayers[CLOCK_LAYER];
-  clock_layer_update_time(clock);
+  ClockIcon *clock = sLayers[CLOCK_ICON];
+  clock_icon_update_time(clock);
 
   CalendarLayer *calendar = sLayers[CALENDAR_LAYER];
   calendar_layer_update(calendar);
@@ -119,8 +119,8 @@ static void main_window_load(Window *aWindow) {
 static void main_window_unload(Window *aWindow) {
   animation_unschedule_all();
   for (int i = 0; i < LAYER_COUNT; ++i) {
-    if (i == CLOCK_LAYER) {
-      clock_layer_destroy(sLayers[i]);
+    if (i == CLOCK_ICON) {
+      clock_icon_destroy(sLayers[i]);
     } else if (i == BATTERY_LAYER) { 
       battery_layer_destroy(sLayers[i]);
     } else if (i == CALENDAR_LAYER) {
