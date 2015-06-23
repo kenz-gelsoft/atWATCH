@@ -8,10 +8,10 @@
 #include "weather_icon.h"
 
 
-#define LAYER_COUNT 19
+#define ICON_COUNT 19
 
 static Window *sMainWindow;
-static Icon *sIcons[LAYER_COUNT];
+static Icon *sIcons[ICON_COUNT];
 
 #define CLOCK_SIZE 41
 
@@ -82,7 +82,7 @@ static void battery_handler(BatteryChargeState aCharge) {
 }
 
 static void tap_handler(AccelAxisType aAxis, int32_t aDirection) {
-    for (int32_t i = 0; i < LAYER_COUNT; ++i) {
+    for (int32_t i = 0; i < ICON_COUNT; ++i) {
       icon_zoom_in(sIcons[i]);
     }
 }
@@ -113,7 +113,7 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
 
 static void main_window_load(Window *aWindow) {
   float scale = 144.f / CLOCK_SIZE;
-  for (int32_t i = 0; i < LAYER_COUNT; ++i) {
+  for (int32_t i = 0; i < ICON_COUNT; ++i) {
     GRect to_rect = GRect(sIconFrames[i*4],sIconFrames[i*4+1],sIconFrames[i*4+2],sIconFrames[i*4+3]);
     int16_t cx = 144 / 2;
     int16_t cy = 168 / 2;
@@ -134,7 +134,7 @@ static void main_window_load(Window *aWindow) {
 
 static void main_window_unload(Window *aWindow) {
   animation_unschedule_all();
-  for (int i = 0; i < LAYER_COUNT; ++i) {
+  for (int i = 0; i < ICON_COUNT; ++i) {
     destroy_icon_at_index(i);
   }
 }
