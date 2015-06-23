@@ -5,7 +5,7 @@
 #include "clock_icon.h"
 #include "dithering.h"
 #include "icon.h"
-#include "weather_layer.h"
+#include "weather_icon.h"
 
 
 #define LAYER_COUNT 19
@@ -36,8 +36,8 @@ static void make_circle_layer(int32_t aIndex, Icon **aOutLayer, GRect *aFromRect
     *aOutLayer = battery_icon_create(initR, *aToRect);
   } else if (aIndex == CALENDAR_ICON) {
     *aOutLayer = calendar_icon_create(initR, *aToRect);
-  } else if (aIndex == WEATHER_LAYER) {
-    *aOutLayer = weather_layer_create(initR, *aToRect);
+  } else if (aIndex == WEATHER_ICON) {
+    *aOutLayer = weather_icon_create(initR, *aToRect);
   } else {
     *aOutLayer = icon_create(initR, *aToRect);
   }
@@ -76,7 +76,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   while (t != NULL) {
     switch (t->key) {
     case KEY_WEATHER_ID:
-      weather_layer_update(sLayers[WEATHER_LAYER], t->value->int32);
+      weather_icon_update(sLayers[WEATHER_ICON], t->value->int32);
       break;
     }
     t = dict_read_next(iterator);
@@ -125,8 +125,8 @@ static void main_window_unload(Window *aWindow) {
       battery_icon_destroy(sLayers[i]);
     } else if (i == CALENDAR_ICON) {
       calendar_icon_destroy(sLayers[i]);
-    } else if (i == WEATHER_LAYER) {
-      weather_layer_destroy(sLayers[i]);
+    } else if (i == WEATHER_ICON) {
+      weather_icon_destroy(sLayers[i]);
     } else {
       icon_destroy(sLayers[i]);
     }

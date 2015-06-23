@@ -1,4 +1,4 @@
-#include "weather_layer.h"
+#include "weather_icon.h"
 #include "dithering.h"
 
 
@@ -51,11 +51,11 @@ WeatherImage weather_for_id(int32_t aWeatherId) {
     return WeatherFewClouds;
 }
 
-static weather_layer_data *weather_layer_data_get(WeatherLayer *aLayer) {
-    return (weather_layer_data *)layer_get_data(aLayer);
+static weather_icon_data *weather_icon_data_get(WeatherIcon *aLayer) {
+    return (weather_icon_data *)layer_get_data(aLayer);
 }
 
-static void update_layer(WeatherLayer *aLayer, GContext *aCtx) {
+static void update_layer(WeatherIcon *aLayer, GContext *aCtx) {
     GRect r = layer_get_frame(aLayer);
     if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
         r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
@@ -79,7 +79,7 @@ static void update_layer(WeatherLayer *aLayer, GContext *aCtx) {
         // 背景
         fill_dithered_circle(aCtx, center, radius, Dithering50Percent);
             
-        GBitmap* mask = weather_layer_get_mask(aLayer);
+        GBitmap* mask = weather_icon_get_mask(aLayer);
         graphics_context_set_compositing_mode(aCtx, GCompOpClear);
         for (int dx = -1; dx <= +1; ++dx) {
             for (int dy = -1; dy <= +1; ++dy) {
@@ -90,7 +90,7 @@ static void update_layer(WeatherLayer *aLayer, GContext *aCtx) {
             }
         }
             
-        GBitmap* weather = weather_layer_get_weather(aLayer);
+        GBitmap* weather = weather_icon_get_weather(aLayer);
         graphics_context_set_compositing_mode(aCtx, GCompOpSet);
         graphics_draw_bitmap_in_rect(aCtx, weather, GRect(
             1 + (r.size.w - 24) / 2,
@@ -99,19 +99,19 @@ static void update_layer(WeatherLayer *aLayer, GContext *aCtx) {
     }
 }
 
-WeatherLayer *weather_layer_create(GRect aFromFrame, GRect aToFrame) {
-    WeatherLayer *layer = icon_create_with_data(aFromFrame, aToFrame,
-        sizeof(weather_layer_data));
+WeatherIcon *weather_icon_create(GRect aFromFrame, GRect aToFrame) {
+    WeatherIcon *layer = icon_create_with_data(aFromFrame, aToFrame,
+        sizeof(weather_icon_data));
     layer_set_update_proc(layer, update_layer);
     
-    weather_layer_data *data = weather_layer_data_get(layer);
+    weather_icon_data *data = weather_icon_data_get(layer);
     data->mWeather = bitmap_for_weather(1);
     data->mMask    = mask_for_weather(1);
     return layer;
 }
 
-void weather_layer_destroy(WeatherLayer *aLayer) {
-    weather_layer_data *data = weather_layer_data_get(aLayer);
+void weather_icon_destroy(WeatherIcon *aLayer) {
+    weather_icon_data *data = weather_icon_data_get(aLayer);
     if (data->mWeather) {
         gbitmap_destroy(data->mWeather);
     }
@@ -121,15 +121,15 @@ void weather_layer_destroy(WeatherLayer *aLayer) {
     icon_destroy(aLayer);
 }
 
-GBitmap *weather_layer_get_weather(WeatherLayer *aLayer) {
-    return weather_layer_data_get(aLayer)->mWeather;
+GBitmap *weather_icon_get_weather(WeatherIcon *aLayer) {
+    return weather_icon_data_get(aLayer)->mWeather;
 }
-GBitmap *weather_layer_get_mask(WeatherLayer *aLayer) {
-    return weather_layer_data_get(aLayer)->mMask;
+GBitmap *weather_icon_get_mask(WeatherIcon *aLayer) {
+    return weather_icon_data_get(aLayer)->mMask;
 }
 
-void weather_layer_update(WeatherLayer *aLayer, int32_t aWeatherId) {
-    weather_layer_data *data = weather_layer_data_get(aLayer);
+void weather_icon_update(WeatherIcon *aLayer, int32_t aWeatherId) {
+    weather_icon_data *data = weather_icon_data_get(aLayer);
     if (data->mWeather) {
         gbitmap_destroy(data->mWeather);
     }
