@@ -3,17 +3,17 @@
 #include "icon.h"
 
 
-static icon_data *icon_data_get(Icon *aLayer) {
-	return (icon_data *)layer_get_data(aLayer);
+static icon_data *icon_data_get(Icon *aIcon) {
+	return (icon_data *)layer_get_data(aIcon);
 }
 
 static void anim_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
   property_animation_destroy((PropertyAnimation *)aAnimation);
 }
 
-static void zoom_out(Icon *aLayer, int32_t aDelay) {
-  GRect toRect = icon_get_to_frame(aLayer);
-  PropertyAnimation *animation = property_animation_create_layer_frame(aLayer, NULL, &toRect);
+static void zoom_out(Icon *aIcon, int32_t aDelay) {
+  GRect toRect = icon_get_to_frame(aIcon);
+  PropertyAnimation *animation = property_animation_create_layer_frame(aIcon, NULL, &toRect);
   animation_set_duration((Animation *)animation, 500);
   animation_set_delay((Animation *)animation, aDelay);
   animation_set_curve((Animation *)animation, AnimationCurveEaseInOut);
@@ -30,28 +30,28 @@ static void zoom_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
   zoom_out(layer, 2500);
 }
 
-void icon_zoom_in(Icon *aLayer) {
-  GRect fromFrame = icon_get_from_frame(aLayer);
-  PropertyAnimation *animation = property_animation_create_layer_frame(aLayer, NULL, &fromFrame);
+void icon_zoom_in(Icon *aIcon) {
+  GRect fromFrame = icon_get_from_frame(aIcon);
+  PropertyAnimation *animation = property_animation_create_layer_frame(aIcon, NULL, &fromFrame);
   animation_set_duration((Animation *)animation, 500);
   animation_set_delay((Animation *)animation, 300);
   animation_set_curve((Animation *)animation, AnimationCurveEaseInOut);
   animation_set_handlers((Animation *)animation, (AnimationHandlers) {
     .stopped = zoom_stopped
-  }, aLayer);
+  }, aIcon);
   animation_schedule((Animation *)animation);
 }
 
-static void update_layer(Icon *aLayer, GContext *aCtx) {
-  GRect r = layer_get_frame(aLayer);
+static void update_layer(Icon *aIcon, GContext *aCtx) {
+  GRect r = layer_get_frame(aIcon);
   if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
       r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
     // 不可視
     return;
   }
-  GRect finalRect = icon_get_to_frame(aLayer);
+  GRect finalRect = icon_get_to_frame(aIcon);
   bool animating = !grect_equal(&r, &finalRect);
-  GRect fromFrame = icon_get_from_frame(aLayer);
+  GRect fromFrame = icon_get_from_frame(aIcon);
   bool zoomedIn  =  grect_equal(&r, &fromFrame);
 
   GPoint center = GPoint(r.size.w / 2,
@@ -65,7 +65,7 @@ static void update_layer(Icon *aLayer, GContext *aCtx) {
     }
   } else {
     fill_dithered_circle(aCtx, center, radius,
-      icon_get_color(aLayer));
+      icon_get_color(aIcon));
   }
 }
 
@@ -87,17 +87,17 @@ Icon *icon_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize) 
 	return layer;
 }
 
-void icon_destroy(Icon *aLayer) {
-	layer_destroy(aLayer);
+void icon_destroy(Icon *aIcon) {
+	layer_destroy(aIcon);
 }
 
-DitheringPattern icon_get_color(Icon *aLayer) {
-	return icon_data_get(aLayer)->mColor;
+DitheringPattern icon_get_color(Icon *aIcon) {
+	return icon_data_get(aIcon)->mColor;
 }
 
-GRect icon_get_from_frame(Icon *aLayer) {
-	return icon_data_get(aLayer)->mFromFrame;
+GRect icon_get_from_frame(Icon *aIcon) {
+	return icon_data_get(aIcon)->mFromFrame;
 }
-GRect icon_get_to_frame(Icon *aLayer) {
-	return icon_data_get(aLayer)->mToFrame;
+GRect icon_get_to_frame(Icon *aIcon) {
+	return icon_data_get(aIcon)->mToFrame;
 }

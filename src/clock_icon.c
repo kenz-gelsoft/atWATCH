@@ -1,8 +1,8 @@
 #include "clock_icon.h"
 
 
-static clock_icon_data *clock_icon_data_get(ClockIcon *aLayer) {
-    return (clock_icon_data *)layer_get_data(aLayer);
+static clock_icon_data *clock_icon_data_get(ClockIcon *aIcon) {
+    return (clock_icon_data *)layer_get_data(aIcon);
 }
 
 typedef enum {
@@ -65,16 +65,16 @@ static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
     }
 }
 
-static void update_layer(ClockIcon *aLayer, GContext *aCtx) {
-    GRect r = layer_get_frame(aLayer);
+static void update_layer(ClockIcon *aIcon, GContext *aCtx) {
+    GRect r = layer_get_frame(aIcon);
     if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
         r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
         // 不可視
         return;
     }
-    GRect toFrame   = icon_get_to_frame(aLayer);
+    GRect toFrame   = icon_get_to_frame(aIcon);
     bool animating = !grect_equal(&r, &toFrame);
-    GRect fromFrame = icon_get_from_frame(aLayer);
+    GRect fromFrame = icon_get_from_frame(aIcon);
     bool zoomedIn  =  grect_equal(&r, &fromFrame);
     
     GPoint center = GPoint(r.size.w / 2,
@@ -99,7 +99,7 @@ static void update_layer(ClockIcon *aLayer, GContext *aCtx) {
         graphics_context_set_stroke_color(aCtx, GColorBlack);
     }
     
-    clock_icon_data *data = layer_get_data(aLayer);
+    clock_icon_data *data = layer_get_data(aIcon);
     int32_t h = data->h;
     int32_t m = data->m;
     int32_t s = data->s;
@@ -133,18 +133,18 @@ ClockIcon *clock_icon_create(GRect aFromFrame, GRect aToFrame) {
     return layer;
 }
 
-void clock_icon_destroy(ClockIcon *aLayer) {
-    icon_destroy(aLayer);
+void clock_icon_destroy(ClockIcon *aIcon) {
+    icon_destroy(aIcon);
 }
 
-void clock_icon_update_time(ClockIcon *aLayer) {
+void clock_icon_update_time(ClockIcon *aIcon) {
     time_t temp = time(NULL);
     struct tm *tick_time = localtime(&temp);
     
-    clock_icon_data *data = clock_icon_data_get(aLayer);
+    clock_icon_data *data = clock_icon_data_get(aIcon);
     data->h = tick_time->tm_hour % 12;
     data->m = tick_time->tm_min;
     data->s = tick_time->tm_sec;
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d", h, m);
-    layer_mark_dirty(aLayer);
+    layer_mark_dirty(aIcon);
 }

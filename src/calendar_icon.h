@@ -17,11 +17,11 @@ typedef struct {
 typedef Icon CalendarIcon;
 
 CalendarIcon *calendar_icon_create(GRect aFromFrame, GRect aToFrame);
-void calendar_icon_destroy(CalendarIcon *aLayer);
+void calendar_icon_destroy(CalendarIcon *aIcon);
 
-uint8_t calendar_icon_get_date(CalendarIcon *aLayer);
-GBitmap *calendar_icon_get_weekday(CalendarIcon *aLayer);
+uint8_t calendar_icon_get_date(CalendarIcon *aIcon);
+GBitmap *calendar_icon_get_weekday(CalendarIcon *aIcon);
 
-void calendar_icon_update(CalendarIcon *aLayer);
+void calendar_icon_update(CalendarIcon *aIcon);
 
 #endif

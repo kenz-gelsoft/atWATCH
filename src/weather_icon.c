@@ -51,20 +51,20 @@ WeatherImage weather_for_id(int32_t aWeatherId) {
     return WeatherFewClouds;
 }
 
-static weather_icon_data *weather_icon_data_get(WeatherIcon *aLayer) {
-    return (weather_icon_data *)layer_get_data(aLayer);
+static weather_icon_data *weather_icon_data_get(WeatherIcon *aIcon) {
+    return (weather_icon_data *)layer_get_data(aIcon);
 }
 
-static void update_layer(WeatherIcon *aLayer, GContext *aCtx) {
-    GRect r = layer_get_frame(aLayer);
+static void update_layer(WeatherIcon *aIcon, GContext *aCtx) {
+    GRect r = layer_get_frame(aIcon);
     if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
         r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
         // 不可視
         return;
     }
-    GRect finalRect = icon_get_to_frame(aLayer);
+    GRect finalRect = icon_get_to_frame(aIcon);
     bool animating = !grect_equal(&r, &finalRect);
-    GRect fromFrame = icon_get_from_frame(aLayer);
+    GRect fromFrame = icon_get_from_frame(aIcon);
     bool zoomedIn  =  grect_equal(&r, &fromFrame);
     
     GPoint center = GPoint(r.size.w / 2,
@@ -79,7 +79,7 @@ static void update_layer(WeatherIcon *aLayer, GContext *aCtx) {
         // 背景
         fill_dithered_circle(aCtx, center, radius, Dithering50Percent);
             
-        GBitmap* mask = weather_icon_get_mask(aLayer);
+        GBitmap* mask = weather_icon_get_mask(aIcon);
         graphics_context_set_compositing_mode(aCtx, GCompOpClear);
         for (int dx = -1; dx <= +1; ++dx) {
             for (int dy = -1; dy <= +1; ++dy) {
@@ -90,7 +90,7 @@ static void update_layer(WeatherIcon *aLayer, GContext *aCtx) {
             }
         }
             
-        GBitmap* weather = weather_icon_get_weather(aLayer);
+        GBitmap* weather = weather_icon_get_weather(aIcon);
         graphics_context_set_compositing_mode(aCtx, GCompOpSet);
         graphics_draw_bitmap_in_rect(aCtx, weather, GRect(
             1 + (r.size.w - 24) / 2,
@@ -110,26 +110,26 @@ WeatherIcon *weather_icon_create(GRect aFromFrame, GRect aToFrame) {
     return layer;
 }
 
-void weather_icon_destroy(WeatherIcon *aLayer) {
-    weather_icon_data *data = weather_icon_data_get(aLayer);
+void weather_icon_destroy(WeatherIcon *aIcon) {
+    weather_icon_data *data = weather_icon_data_get(aIcon);
     if (data->mWeather) {
         gbitmap_destroy(data->mWeather);
     }
     if (data->mMask) {
         gbitmap_destroy(data->mMask);
     }
-    icon_destroy(aLayer);
+    icon_destroy(aIcon);
 }
 
-GBitmap *weather_icon_get_weather(WeatherIcon *aLayer) {
-    return weather_icon_data_get(aLayer)->mWeather;
+GBitmap *weather_icon_get_weather(WeatherIcon *aIcon) {
+    return weather_icon_data_get(aIcon)->mWeather;
 }
-GBitmap *weather_icon_get_mask(WeatherIcon *aLayer) {
-    return weather_icon_data_get(aLayer)->mMask;
+GBitmap *weather_icon_get_mask(WeatherIcon *aIcon) {
+    return weather_icon_data_get(aIcon)->mMask;
 }
 
-void weather_icon_update(WeatherIcon *aLayer, int32_t aWeatherId) {
-    weather_icon_data *data = weather_icon_data_get(aLayer);
+void weather_icon_update(WeatherIcon *aIcon, int32_t aWeatherId) {
+    weather_icon_data *data = weather_icon_data_get(aIcon);
     if (data->mWeather) {
         gbitmap_destroy(data->mWeather);
     }

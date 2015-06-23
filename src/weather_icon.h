@@ -17,11 +17,11 @@ typedef struct {
 typedef Icon WeatherIcon;
 
 WeatherIcon *weather_icon_create(GRect aFromFrame, GRect aToFrame);
-void weather_icon_destroy(WeatherIcon *aLayer);
+void weather_icon_destroy(WeatherIcon *aIcon);
 
-GBitmap *weather_icon_get_weather(WeatherIcon *aLayer);
-GBitmap *weather_icon_get_mask(WeatherIcon *aLayer);
+GBitmap *weather_icon_get_weather(WeatherIcon *aIcon);
+GBitmap *weather_icon_get_mask(WeatherIcon *aIcon);
 
-void weather_icon_update(WeatherIcon *aLayer, int32_t aWeatherId);
+void weather_icon_update(WeatherIcon *aIcon, int32_t aWeatherId);
 
 #endif

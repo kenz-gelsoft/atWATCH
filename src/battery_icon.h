@@ -16,10 +16,10 @@ typedef struct {
 typedef Icon BatteryIcon;
 
 BatteryIcon *battery_icon_create(GRect aFromFrame, GRect aToFrame);
-void battery_icon_destroy(BatteryIcon *aLayer);
+void battery_icon_destroy(BatteryIcon *aIcon);
 
-uint8_t battery_icon_get_percent(BatteryIcon *aLayer);
+uint8_t battery_icon_get_percent(BatteryIcon *aIcon);
 
-void battery_icon_update(BatteryIcon *aLayer, uint8_t aPercent);
+void battery_icon_update(BatteryIcon *aIcon, uint8_t aPercent);
 
 #endif

@@ -14,12 +14,12 @@ typedef Layer Icon;
 
 Icon *icon_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize);
 Icon *icon_create(GRect aFromFrame, GRect aToFrame);
-void icon_destroy(Icon *aLayer);
+void icon_destroy(Icon *aIcon);
 
-DitheringPattern icon_get_color(Icon *aLayer);
-GRect icon_get_from_frame(Icon *aLayer);
-GRect icon_get_to_frame(Icon *aLayer);
+DitheringPattern icon_get_color(Icon *aIcon);
+GRect icon_get_from_frame(Icon *aIcon);
+GRect icon_get_to_frame(Icon *aIcon);
 
-void icon_zoom_in(Icon *aLayer);
+void icon_zoom_in(Icon *aIcon);
 
 #endif

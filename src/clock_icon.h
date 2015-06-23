@@ -17,8 +17,8 @@ typedef struct {
 typedef Icon ClockIcon;
 
 ClockIcon *clock_icon_create(GRect aFromFrame, GRect aToFrame);
-void clock_icon_destroy(ClockIcon *aLayer);
+void clock_icon_destroy(ClockIcon *aIcon);
 
-void clock_icon_update_time(ClockIcon *aLayer);
+void clock_icon_update_time(ClockIcon *aIcon);
 
 #endif
