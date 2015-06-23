@@ -126,11 +126,11 @@ static void update_layer(ClockIcon *aIcon, GContext *aCtx) {
 }
 
 ClockIcon *clock_icon_create(GRect aFromFrame, GRect aToFrame) {
-    ClockIcon *layer = icon_create_with_data(aFromFrame, aToFrame,
+    ClockIcon *icon = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(clock_icon_data));
-    layer_set_update_proc(layer, update_layer);
+    layer_set_update_proc(icon, update_layer);
     
-    return layer;
+    return icon;
 }
 
 void clock_icon_destroy(ClockIcon *aIcon) {

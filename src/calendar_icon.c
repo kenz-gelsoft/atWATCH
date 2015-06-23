@@ -67,10 +67,10 @@ static void update_layer(CalendarIcon *aIcon, GContext *aCtx) {
 }
 
 CalendarIcon *calendar_icon_create(GRect aFromFrame, GRect aToFrame) {
-    CalendarIcon *layer = icon_create_with_data(aFromFrame, aToFrame,
+    CalendarIcon *icon = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(calendar_icon_data));
-    layer_set_update_proc(layer, update_layer);
-    return layer;
+    layer_set_update_proc(icon, update_layer);
+    return icon;
 }
 
 void calendar_icon_destroy(CalendarIcon *aIcon) {

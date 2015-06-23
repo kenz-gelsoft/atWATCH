@@ -26,8 +26,8 @@ static void zoom_out(Icon *aIcon, int32_t aDelay) {
 static void zoom_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
   property_animation_destroy((PropertyAnimation *)aAnimation);
   
-  Icon *layer = (Icon *)aCtx;
-  zoom_out(layer, 2500);
+  Icon *icon = (Icon *)aCtx;
+  zoom_out(icon, 2500);
 }
 
 void icon_zoom_in(Icon *aIcon) {
@@ -74,17 +74,17 @@ Icon *icon_create(GRect aFromFrame, GRect aToFrame) {
 }
 
 Icon *icon_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize) {
-	Icon *layer = layer_create_with_data(aFromFrame, aDataSize);
-  layer_set_update_proc(layer, update_layer);
+	Icon *icon = layer_create_with_data(aFromFrame, aDataSize);
+  layer_set_update_proc(icon, update_layer);
 
-	icon_data *data = icon_data_get(layer);
+	icon_data *data = icon_data_get(icon);
 	data->mColor = rand() % 4;
   data->mFromFrame = aFromFrame;
 	data->mToFrame   = aToFrame;
   
-  zoom_out(layer, 300);
+  zoom_out(icon, 300);
   
-	return layer;
+	return icon;
 }
 
 void icon_destroy(Icon *aIcon) {

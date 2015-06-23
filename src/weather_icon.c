@@ -100,14 +100,14 @@ static void update_layer(WeatherIcon *aIcon, GContext *aCtx) {
 }
 
 WeatherIcon *weather_icon_create(GRect aFromFrame, GRect aToFrame) {
-    WeatherIcon *layer = icon_create_with_data(aFromFrame, aToFrame,
+    WeatherIcon *icon = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(weather_icon_data));
-    layer_set_update_proc(layer, update_layer);
+    layer_set_update_proc(icon, update_layer);
     
-    weather_icon_data *data = weather_icon_data_get(layer);
+    weather_icon_data *data = weather_icon_data_get(icon);
     data->mWeather = bitmap_for_weather(1);
     data->mMask    = mask_for_weather(1);
-    return layer;
+    return icon;
 }
 
 void weather_icon_destroy(WeatherIcon *aIcon) {

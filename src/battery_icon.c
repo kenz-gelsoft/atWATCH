@@ -66,10 +66,10 @@ static void update_layer(BatteryIcon *aIcon, GContext *aCtx) {
 }
 
 BatteryIcon *battery_icon_create(GRect aFromFrame, GRect aToFrame) {
-    BatteryIcon *layer = icon_create_with_data(aFromFrame, aToFrame,
+    BatteryIcon *icon = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(battery_icon_data));
-    layer_set_update_proc(layer, update_layer);
-    return layer;
+    layer_set_update_proc(icon, update_layer);
+    return icon;
 }
 
 void battery_icon_destroy(BatteryIcon *aIcon) {
