@@ -70,6 +70,14 @@ static void update_time() {
 
 static void tick_handler(struct tm *aTickTime, TimeUnits aUnitsChanged) {
   update_time();
+  
+  if (aTickTime->tm_min % 30 == 0) {
+    // request updating the weather per 30min.
+    DictionaryIterator *iter;
+    app_message_outbox_begin(&iter);
+    dict_write_uint8(iter, 0, 0);
+    app_message_outbox_send();
+  }
 }
 
 static void update_battery(BatteryChargeState aCharge) {
