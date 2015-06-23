@@ -22,4 +22,6 @@ void weather_layer_destroy(WeatherLayer *aLayer);
 GBitmap *weather_layer_get_weather(WeatherLayer *aLayer);
 GBitmap *weather_layer_get_mask(WeatherLayer *aLayer);
 
+void weather_layer_update(WeatherLayer *aLayer, int32_t aWeatherId);
+
 #endif

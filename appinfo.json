@@ -10,8 +10,9 @@
     "watchface": true
   },
   "appKeys": {
-    "dummy": 0
+    "KEY_WEATHER_ID": 1
   },
+  "capabilities": [ "location" ],
   "resources": {
     "media": [
       {

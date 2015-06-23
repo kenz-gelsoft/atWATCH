@@ -15,6 +15,10 @@ static IconLayer *sLayers[LAYER_COUNT];
 
 #define CLOCK_SIZE 41
 
+enum {
+  KEY_WEATHER_ID = 1
+};
+
 #define RECT(x,y,w,h) (x),(y),(w),(h)
 static int16_t sIconFrames[] = {
                    RECT(19,1,29,29), RECT(57,-1,30,30), RECT(98,1,29,29),
@@ -65,6 +69,30 @@ static void tap_handler(AccelAxisType aAxis, int32_t aDirection) {
     for (int32_t i = 0; i < LAYER_COUNT; ++i) {
       icon_layer_zoom_in(sLayers[i]);
     }
+}
+
+static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
+  Tuple *t = dict_read_first(iterator);
+  while (t != NULL) {
+    switch (t->key) {
+    case KEY_WEATHER_ID:
+      weather_layer_update(sLayers[WEATHER_LAYER], t->value->int32);
+      break;
+    }
+    t = dict_read_next(iterator);
+  }
+}
+
+static void inbox_dropped_callback(AppMessageResult reason, void *context) {
+  APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped!");
+}
+
+static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResult reason, void *context) {
+  APP_LOG(APP_LOG_LEVEL_ERROR, "Outbox send failed!");
+}
+
+static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
+  APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
 }
 
 static void main_window_load(Window *aWindow) {
@@ -119,6 +147,13 @@ static void init() {
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
   battery_state_service_subscribe(battery_handler);
   accel_tap_service_subscribe(tap_handler);
+  
+  app_message_register_inbox_received(inbox_received_callback);
+  app_message_register_inbox_dropped(inbox_dropped_callback);
+  app_message_register_outbox_failed(outbox_failed_callback);
+  app_message_register_outbox_sent(outbox_sent_callback);
+  
+  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 }
 
 static void deinit() {

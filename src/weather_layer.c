@@ -2,6 +2,13 @@
 #include "dithering.h"
 
 
+typedef enum {
+    WeatherClearSky,
+    WeatherFewClouds,
+    WeatherScatteredClouds,
+    WeatherRain,
+} WeatherImage;
+
 #define WEATHER_IMAGE(n) \
     case n: return gbitmap_create_with_resource(RESOURCE_ID_WEATHER##n);
 static GBitmap *bitmap_for_weather(uint8_t aWeather) {
@@ -24,6 +31,24 @@ static GBitmap *mask_for_weather(uint8_t aWeather) {
     WEATHER_MASK(3);
     }
     return NULL;
+}
+
+WeatherImage weather_for_id(int32_t aWeatherId) {
+    if (200 <= aWeatherId && aWeatherId < 700) {
+        return WeatherRain;
+    }
+    if (700 <= aWeatherId && aWeatherId < 800) {
+        return WeatherFewClouds;
+    }
+    switch (aWeatherId) {
+        case 800: return WeatherClearSky;
+        case 801: return WeatherFewClouds;
+        case 802:
+        case 803:
+        case 804: return WeatherScatteredClouds;
+    }
+    // TODO: error handling
+    return WeatherFewClouds;
 }
 
 static weather_layer_data *weather_layer_data_get(WeatherLayer *aLayer) {
@@ -97,4 +122,17 @@ GBitmap *weather_layer_get_weather(WeatherLayer *aLayer) {
 }
 GBitmap *weather_layer_get_mask(WeatherLayer *aLayer) {
     return weather_layer_data_get(aLayer)->mMask;
+}
+
+void weather_layer_update(WeatherLayer *aLayer, int32_t aWeatherId) {
+    weather_layer_data *data = weather_layer_data_get(aLayer);
+    if (data->mWeather) {
+        gbitmap_destroy(data->mWeather);
+    }
+    if (data->mMask) {
+        gbitmap_destroy(data->mMask);
+    }
+    WeatherImage w = weather_for_id(aWeatherId);
+    data->mWeather = bitmap_for_weather(w);
+    data->mMask    = mask_for_weather(w);
 }
