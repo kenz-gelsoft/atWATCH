@@ -1,8 +1,8 @@
-#include "battery_layer.h"
+#include "battery_icon.h"
 
 
-static battery_layer_data *battery_layer_data_get(BatteryLayer *aLayer) {
-    return (battery_layer_data *)layer_get_data(aLayer);
+static battery_icon_data *battery_icon_data_get(BatteryIcon *aLayer) {
+    return (battery_icon_data *)layer_get_data(aLayer);
 }
 
 static bool point_in_ring(int32_t x, int32_t y, int32_t radius) {
@@ -17,7 +17,7 @@ static bool point_in_arc(int32_t aPercent, int32_t x, int32_t y, int32_t radius)
   return (0 <= a && a < degree);
 }
 
-static void update_layer(BatteryLayer *aLayer, GContext *aCtx) {
+static void update_layer(BatteryIcon *aLayer, GContext *aCtx) {
     GRect r = layer_get_frame(aLayer);
     if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
         r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
@@ -38,7 +38,7 @@ static void update_layer(BatteryLayer *aLayer, GContext *aCtx) {
             graphics_draw_circle(aCtx, center, radius);
         }
     } else {
-        uint8_t percent = battery_layer_get_percent(aLayer);
+        uint8_t percent = battery_icon_get_percent(aLayer);
         for (int32_t x = 0; x < r.size.w; ++x) {
             for (int32_t y = 0; y < r.size.h; ++y) {
                 if (point_in_ring(x-center.x, y-center.y, center.y)) {
@@ -65,23 +65,23 @@ static void update_layer(BatteryLayer *aLayer, GContext *aCtx) {
     }
 }
 
-BatteryLayer *battery_layer_create(GRect aFromFrame, GRect aToFrame) {
-    BatteryLayer *layer = icon_create_with_data(aFromFrame, aToFrame,
-        sizeof(battery_layer_data));
+BatteryIcon *battery_icon_create(GRect aFromFrame, GRect aToFrame) {
+    BatteryIcon *layer = icon_create_with_data(aFromFrame, aToFrame,
+        sizeof(battery_icon_data));
     layer_set_update_proc(layer, update_layer);
     return layer;
 }
 
-void battery_layer_destroy(BatteryLayer *aLayer) {
+void battery_icon_destroy(BatteryIcon *aLayer) {
     icon_destroy(aLayer);
 }
 
-uint8_t battery_layer_get_percent(BatteryLayer *aLayer) {
-    return battery_layer_data_get(aLayer)->mPercent;
+uint8_t battery_icon_get_percent(BatteryIcon *aLayer) {
+    return battery_icon_data_get(aLayer)->mPercent;
 }
 
-void battery_layer_update(BatteryLayer *aLayer, uint8_t aPercent) {
-    battery_layer_data *data = battery_layer_data_get(aLayer);
+void battery_icon_update(BatteryIcon *aLayer, uint8_t aPercent) {
+    battery_icon_data *data = battery_icon_data_get(aLayer);
     data->mPercent = aPercent;
     layer_mark_dirty(aLayer);
 }
