@@ -3,6 +3,9 @@
 #include "weather_icon.h"
 
 
+#define WEATHER_ICON_SIZE   24
+
+
 typedef enum {
     WeatherClearSky,
     WeatherFewClouds,
@@ -35,6 +38,8 @@ static GBitmap *mask_for_weather(uint8_t aWeather) {
 }
 
 WeatherImage weather_for_id(int32_t aWeatherId) {
+    // see about weather IDs at
+    // http://openweathermap.org/weather-conditions#Weather-Condition-Codes-2
     if (200 <= aWeatherId && aWeatherId < 700) {
         return WeatherRain;
     }
@@ -85,18 +90,18 @@ static void update_layer(WeatherIcon *aIcon, GContext *aCtx) {
         for (int dx = -1; dx <= +1; ++dx) {
             for (int dy = -1; dy <= +1; ++dy) {
                 graphics_draw_bitmap_in_rect(aCtx, mask, GRect(
-                    dx + 1 + (r.size.w - 24) / 2,
-                    dy + (r.size.h - 24) / 2,
-                    24, 24));
+                    dx + 1 + (r.size.w - WEATHER_ICON_SIZE) / 2,
+                    dy + (r.size.h - WEATHER_ICON_SIZE) / 2,
+                    WEATHER_ICON_SIZE, WEATHER_ICON_SIZE));
             }
         }
             
         GBitmap* weather = weather_icon_get_weather(aIcon);
         graphics_context_set_compositing_mode(aCtx, GCompOpSet);
         graphics_draw_bitmap_in_rect(aCtx, weather, GRect(
-            1 + (r.size.w - 24) / 2,
-            (r.size.h - 24) / 2,
-            24, 24));
+            1 + (r.size.w - WEATHER_ICON_SIZE) / 2,
+            (r.size.h - WEATHER_ICON_SIZE) / 2,
+            WEATHER_ICON_SIZE, WEATHER_ICON_SIZE));
     }
 }
 
@@ -106,8 +111,8 @@ WeatherIcon *weather_icon_create(GRect aFromFrame, GRect aToFrame) {
     layer_set_update_proc(icon, update_layer);
     
     weather_icon_data *data = weather_icon_data_get(icon);
-    data->mWeather = bitmap_for_weather(1);
-    data->mMask    = mask_for_weather(1);
+    data->mWeather = bitmap_for_weather(WeatherFewClouds);
+    data->mMask    = mask_for_weather(WeatherFewClouds);
     return icon;
 }
 
