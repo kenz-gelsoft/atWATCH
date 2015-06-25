@@ -22,27 +22,27 @@ typedef enum {
 } LineWidth;
 
 static void draw_width_line(GContext *aCtx, GPoint aPt1, GPoint aPt2, LineWidth aLineWidth) {
-  int32_t x1 = aPt1.x;
-  int32_t y1 = aPt1.y;
-  int32_t x2 = aPt2.x;
-  int32_t y2 = aPt2.y;
-  switch (aLineWidth) {
-  case LineWidth3:
-      // 3x3 very bold line
-      graphics_draw_line(aCtx, GPoint(x1 - 1, y1 - 1), GPoint(x2 - 1, y2 - 1));
-      graphics_draw_line(aCtx, GPoint(x1    , y1 - 1), GPoint(x2    , y2 - 1));
-      graphics_draw_line(aCtx, GPoint(x1 + 1, y1 - 1), GPoint(x2 + 1, y2 - 1));
-      graphics_draw_line(aCtx, GPoint(x1 - 1, y1),     GPoint(x2 - 1, y2));
-      graphics_draw_line(aCtx, GPoint(x1 - 1, y1 + 1), GPoint(x2 - 1, y2 + 1));
-  case LineWidth2:
-      // 2x2 bold line
-      graphics_draw_line(aCtx, GPoint(x1 + 1, y1),     GPoint(x2 + 1, y2));
-      graphics_draw_line(aCtx, GPoint(x1    , y1 + 1), GPoint(x2    , y2 + 1));
-      graphics_draw_line(aCtx, GPoint(x1 + 1, y1 + 1), GPoint(x2 + 1, y2 + 1));
-  case LineWidth1:
-      // 1x1 normal line
-      graphics_draw_line(aCtx, aPt1, aPt2);
-  }
+    int32_t x1 = aPt1.x;
+    int32_t y1 = aPt1.y;
+    int32_t x2 = aPt2.x;
+    int32_t y2 = aPt2.y;
+    switch (aLineWidth) {
+    case LineWidth3:
+        // 3x3 very bold line
+        graphics_draw_line(aCtx, GPoint(x1 - 1, y1 - 1), GPoint(x2 - 1, y2 - 1));
+        graphics_draw_line(aCtx, GPoint(x1    , y1 - 1), GPoint(x2    , y2 - 1));
+        graphics_draw_line(aCtx, GPoint(x1 + 1, y1 - 1), GPoint(x2 + 1, y2 - 1));
+        graphics_draw_line(aCtx, GPoint(x1 - 1, y1),     GPoint(x2 - 1, y2));
+        graphics_draw_line(aCtx, GPoint(x1 - 1, y1 + 1), GPoint(x2 - 1, y2 + 1));
+    case LineWidth2:
+        // 2x2 bold line
+        graphics_draw_line(aCtx, GPoint(x1 + 1, y1),     GPoint(x2 + 1, y2));
+        graphics_draw_line(aCtx, GPoint(x1    , y1 + 1), GPoint(x2    , y2 + 1));
+        graphics_draw_line(aCtx, GPoint(x1 + 1, y1 + 1), GPoint(x2 + 1, y2 + 1));
+    case LineWidth1:
+        // 1x1 normal line
+        graphics_draw_line(aCtx, aPt1, aPt2);
+    }
 }
 
 static void draw_angle_line(GContext *aCtx, GPoint aCenter, int32_t aAngle,

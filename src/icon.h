@@ -5,9 +5,9 @@
 
 
 typedef struct {
-	DitheringPattern mColor;
-	GRect mFromFrame;
-	GRect mToFrame;
+    DitheringPattern mColor;
+    GRect mFromFrame;
+    GRect mToFrame;
 } icon_data;
 
 typedef Layer Icon;
