@@ -2,6 +2,15 @@
 #include "common.h"
 
 
+#define CLOCK_CENTER_RADIUS     3
+#define CLOCK_HAND_NARROW_RATIO (4.f / 20.f)
+#define CLOCK_HOUR_HAND_RATIO   (12.f / 20.f)
+#define CLOCK_MIN_HAND_RATIO    (18.f / 20.f)
+#define CLOCK_SEC_HAND_RATIO    (18.f / 20.f)
+#define CLOCK_HOUR_MARK_RATIO   (4.f / 20.f)
+#define CLOCK_MIN_MARK_RATIO    (1.f / 20.f)
+
+
 static clock_icon_data *clock_icon_data_get(ClockIcon *aIcon) {
     return (clock_icon_data *)layer_get_data(aIcon);
 }
@@ -57,9 +66,9 @@ static void draw_angle_line(GContext *aCtx, GPoint aCenter, int32_t aAngle,
 
 static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
         bool aZoomedIn, int32_t aHandLen, int32_t aAngle) {
-    int32_t handLen2 = aRadius * 4 / 20;
+    int32_t handLen2 = aRadius * CLOCK_HAND_NARROW_RATIO;
     if (aZoomedIn) {
-        draw_angle_line(aCtx, aCenter, aAngle, 3, handLen2, LineWidth1);
+        draw_angle_line(aCtx, aCenter, aAngle, CLOCK_CENTER_RADIUS, handLen2, LineWidth1);
         draw_angle_line(aCtx, aCenter, aAngle, handLen2, aHandLen, LineWidth3);
     } else {
         draw_angle_line(aCtx, aCenter, aAngle, 0, aHandLen, LineWidth2);
@@ -86,7 +95,7 @@ static void update_layer(ClockIcon *aIcon, GContext *aCtx) {
         graphics_context_set_stroke_color(aCtx, GColorWhite);
         for (int32_t i = 0; i < 60; ++i) {
             int32_t len1 = radius;
-            int32_t len2 = radius * ((i % 5 == 0) ? 16 : 19) / 20;
+            int32_t len2 = radius * (1.f - ((i % 5 == 0) ? CLOCK_HOUR_MARK_RATIO : CLOCK_MIN_MARK_RATIO));
             int32_t angle = TRIG_MAX_ANGLE * i / 60.f;
             draw_angle_line(aCtx, center, angle, len1, len2,
                 (i % 5 == 0) ? LineWidth2 : LineWidth1);
@@ -107,20 +116,20 @@ static void update_layer(ClockIcon *aIcon, GContext *aCtx) {
     
     // 時針
     draw_clock_hand(aCtx, center, radius, zoomedIn,
-        radius * 12 / 20,
+        radius * CLOCK_HOUR_HAND_RATIO,
         TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f);
     
     // 分針
     draw_clock_hand(aCtx, center, radius, zoomedIn,
-        radius * 18 / 20,
+        radius * CLOCK_MIN_HAND_RATIO,
         TRIG_MAX_ANGLE * (m + s / 60.f) / 60.f);
     
     // 秒針
-    int32_t secLength = radius * 18 / 20;
+    int32_t secLength = radius * CLOCK_SEC_HAND_RATIO;
     int32_t secAngle = TRIG_MAX_ANGLE * s / 60.f;
     if (zoomedIn) {
-        draw_angle_line(aCtx, center, secAngle, 3, secLength, LineWidth1);
-        graphics_draw_circle(aCtx, center, 2);
+        draw_angle_line(aCtx, center, secAngle, CLOCK_CENTER_RADIUS, secLength, LineWidth1);
+        graphics_draw_circle(aCtx, center, CLOCK_CENTER_RADIUS - 1);
     } else {
         draw_angle_line(aCtx, center, secAngle, 0, secLength, LineWidth1);
     }
