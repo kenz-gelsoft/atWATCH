@@ -10,23 +10,28 @@
 
 
 #define ICON_COUNT 19
-
-static Window *sMainWindow;
-static Icon *sIcons[ICON_COUNT];
-
 #define CLOCK_SIZE 41
 
 enum {
   KEY_WEATHER_ID = 1
 };
 
-#define RECT(x,y,w,h) (x),(y),(w),(h)
+
+static Window *sMainWindow;
+static Icon *sIcons[ICON_COUNT];
+
+
+#define ICON_XL(x,y) (x),(y),CLOCK_SIZE,CLOCK_SIZE
+#define ICON_L(x,y) (x),(y),36,36
+#define ICON_M(x,y) (x),(y),30,30
+#define ICON_S(x,y) (x),(y),29,29
+#define ICON_XS(x,y) (x),(y),10,10
 static int16_t sIconFrames[] = {
-                   RECT(19,1,29,29), RECT(57,-1,30,30), RECT(98,1,29,29),
-           RECT(0,35,29,29), RECT(33,28,36,36), RECT(75,28,36,36), RECT(117,35,29,29),
-RECT(0,79,10,10), RECT(12,65,36,36), RECT(52,63,CLOCK_SIZE,CLOCK_SIZE), RECT(97,65,36,36), RECT(135,79,10,10),
-         RECT(0,104,29,29), RECT(33,102,36,36), RECT(75,102,36,36), RECT(116,104,29,29),
-                RECT(19,138,29,29), RECT(57,140,30,30), RECT(98,138,29,29),
+                 ICON_S(19,1), ICON_M(57,-1), ICON_S(98,1),
+            ICON_S(0,35), ICON_L(33,28), ICON_L(75,28), ICON_S(117,35),
+ICON_XS(0,79), ICON_L(12,65), ICON_XL(52,63), ICON_L(97,65), ICON_XS(135,79),
+          ICON_S(0,104), ICON_L(33,102), ICON_L(75,102), ICON_S(116,104),
+               ICON_S(19,138), ICON_M(57,140), ICON_S(98,138),
 };
 
 static Icon *create_icon(int32_t aIndex, GRect *aFromRect, GRect *aToRect) {
