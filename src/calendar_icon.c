@@ -2,11 +2,11 @@
 #include "common.h"
 
 
-#define WEEKDAY_POSITION    (1 / 5)
+#define WEEKDAY_POSITION    (1.f / 5.f)
 #define WEEKDAY_ICON_WIDTH  15
 #define WEEKDAY_ICON_HEIGHT 7
 
-#define CALENDAR_POSITION           (3 / 5)
+#define CALENDAR_POSITION           (3.f / 5.f)
 #define CALENDAR_FONT               FONT_KEY_ROBOTO_CONDENSED_21
 #define CALENDAR_FONT_SIZE          21
 #define CALENDAR_TEXT_ADJUSTMENT    14
