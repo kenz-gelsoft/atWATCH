@@ -2,6 +2,16 @@
 #include "common.h"
 
 
+#define WEEKDAY_POSITION    (1 / 5)
+#define WEEKDAY_ICON_WIDTH  15
+#define WEEKDAY_ICON_HEIGHT 7
+
+#define CALENDAR_POSITION           (3 / 5)
+#define CALENDAR_FONT               FONT_KEY_ROBOTO_CONDENSED_21
+#define CALENDAR_FONT_SIZE          21
+#define CALENDAR_TEXT_ADJUSTMENT    14
+
+
 #define WEEKDAY_IMAGE(n) \
     case n: return gbitmap_create_with_resource(RESOURCE_ID_WEEKDAY##n);
 static GBitmap *bitmap_for_weekday(uint8_t aWeekday) {
@@ -51,16 +61,17 @@ static void update_layer(CalendarIcon *aIcon, GContext *aCtx) {
         
         GBitmap* weekday = calendar_icon_get_weekday(aIcon);
         graphics_draw_bitmap_in_rect(aCtx, weekday, GRect(
-            1 + (r.size.w - 15) / 2,
-            r.size.h / 5 - 7 / 2,
-            15, 7));
+            1 + (r.size.w - WEEKDAY_ICON_WIDTH) / 2,
+            r.size.h * WEEKDAY_POSITION - WEEKDAY_ICON_HEIGHT / 2,
+            WEEKDAY_ICON_WIDTH, WEEKDAY_ICON_HEIGHT));
     
         // text
         static char buffer[] = "00";
         snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), "%d", date);
         graphics_draw_text(aCtx, buffer,
-            fonts_get_system_font(FONT_KEY_ROBOTO_CONDENSED_21),
-            GRect(1, 1 + r.size.h * 3 / 5 - 14, r.size.w, 21),
+            fonts_get_system_font(CALENDAR_FONT),
+            GRect(1, 1 + r.size.h * CALENDAR_POSITION - CALENDAR_TEXT_ADJUSTMENT,
+                r.size.w, CALENDAR_FONT_SIZE),
             GTextOverflowModeWordWrap,
             GTextAlignmentCenter,
             NULL);
