@@ -124,12 +124,16 @@ static void update_layer(ClockIcon *aIcon, GContext *aCtx) {
         CLOCK_MIN_HAND_LENGTH(radius),
         TRIG_MAX_ANGLE * (m + s / 60.f) / 60.f);
     
+    graphics_draw_circle(aCtx, center, CLOCK_CENTER_RADIUS - 1);
+    
     // seconds hand
     int32_t secLength = CLOCK_SEC_HAND_LENGTH(radius);
     int32_t secAngle = TRIG_MAX_ANGLE * s / 60.f;
+#ifdef PBL_COLOR
+    graphics_context_set_stroke_color(aCtx, GColorChromeYellow);
+#endif
     if (zoomedIn) {
         draw_angle_line(aCtx, center, secAngle, CLOCK_CENTER_RADIUS, secLength, LineWidth1);
-        graphics_draw_circle(aCtx, center, CLOCK_CENTER_RADIUS - 1);
     } else {
         draw_angle_line(aCtx, center, secAngle, 0, secLength, LineWidth1);
     }

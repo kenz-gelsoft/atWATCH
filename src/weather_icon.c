@@ -83,8 +83,14 @@ static void update_layer(WeatherIcon *aIcon, GContext *aCtx) {
         }
     } else {
         // background
+#ifdef PBL_COLOR
+        graphics_context_set_fill_color(aCtx, GColorVividCerulean);
+        graphics_fill_circle(aCtx, center, radius);
+#else
         fill_dithered_circle(aCtx, center, radius, Dithering50Percent);
-            
+#endif
+
+#ifndef PBL_COLOR            
         GBitmap* mask = weather_icon_get_mask(aIcon);
         graphics_context_set_compositing_mode(aCtx, GCompOpClear);
         for (int dx = -1; dx <= +1; ++dx) {
@@ -95,6 +101,7 @@ static void update_layer(WeatherIcon *aIcon, GContext *aCtx) {
                     WEATHER_ICON_SIZE, WEATHER_ICON_SIZE));
             }
         }
+#endif
             
         GBitmap* weather = weather_icon_get_weather(aIcon);
         graphics_context_set_compositing_mode(aCtx, GCompOpSet);
