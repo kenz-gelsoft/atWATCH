@@ -79,7 +79,7 @@ static void update_layer(ClockIcon *aIcon, GContext *aCtx) {
     GRect r = layer_get_frame(aIcon);
     if (r.origin.x + r.size.w < 0 || SCREEN_WIDTH  < r.origin.x ||
         r.origin.y + r.size.h < 0 || SCREEN_HEIGHT < r.origin.y) {
-        // 不可視
+        // invisible
         return;
     }
     GRect toFrame   = icon_get_to_frame(aIcon);
@@ -90,7 +90,7 @@ static void update_layer(ClockIcon *aIcon, GContext *aCtx) {
     GPoint center = GPoint(r.size.w / 2,
                            r.size.h / 2-1);
     uint16_t radius = r.size.w / 2 - 1;
-    // 背景
+    // background
     if (animating) {
         graphics_context_set_stroke_color(aCtx, GColorWhite);
         for (int32_t i = 0; i < 60; ++i) {
@@ -114,17 +114,17 @@ static void update_layer(ClockIcon *aIcon, GContext *aCtx) {
     int32_t m = data->m;
     int32_t s = data->s;
     
-    // 時針
+    // hour hand
     draw_clock_hand(aCtx, center, radius, zoomedIn,
         CLOCK_HOUR_HAND_LENGTH(radius),
         TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f);
     
-    // 分針
+    // minutes hand
     draw_clock_hand(aCtx, center, radius, zoomedIn,
         CLOCK_MIN_HAND_LENGTH(radius),
         TRIG_MAX_ANGLE * (m + s / 60.f) / 60.f);
     
-    // 秒針
+    // seconds hand
     int32_t secLength = CLOCK_SEC_HAND_LENGTH(radius);
     int32_t secAngle = TRIG_MAX_ANGLE * s / 60.f;
     if (zoomedIn) {

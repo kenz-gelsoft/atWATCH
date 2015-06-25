@@ -52,7 +52,7 @@ static void update_layer(Icon *aIcon, GContext *aCtx) {
     GRect r = layer_get_frame(aIcon);
     if (r.origin.x + r.size.w < 0 || SCREEN_WIDTH  < r.origin.x ||
         r.origin.y + r.size.h < 0 || SCREEN_HEIGHT < r.origin.y) {
-        // 不可視
+        // invisible
         return;
     }
     GRect finalRect = icon_get_to_frame(aIcon);
@@ -64,7 +64,7 @@ static void update_layer(Icon *aIcon, GContext *aCtx) {
                            r.size.h / 2-1);
     uint16_t radius = r.size.w / 2 - 1;
     if (animating) {
-        // アニメーション中は枠線だけ描画する
+        // draws only borders on animation
         if (!zoomedIn) {
             graphics_context_set_stroke_color(aCtx, GColorWhite);
             graphics_draw_circle(aCtx, center, radius);

@@ -35,7 +35,7 @@ static void update_layer(CalendarIcon *aIcon, GContext *aCtx) {
     GRect r = layer_get_frame(aIcon);
     if (r.origin.x + r.size.w < 0 || SCREEN_WIDTH  < r.origin.x ||
         r.origin.y + r.size.h < 0 || SCREEN_HEIGHT < r.origin.y) {
-        // 不可視
+        // invisible
         return;
     }
     GRect finalRect = icon_get_to_frame(aIcon);
@@ -52,7 +52,7 @@ static void update_layer(CalendarIcon *aIcon, GContext *aCtx) {
             graphics_draw_circle(aCtx, center, radius);
         }
     } else {
-        // 背景
+        // background
         graphics_context_set_fill_color(aCtx, GColorWhite);
         graphics_fill_circle(aCtx, center, radius);
         graphics_context_set_text_color(aCtx, GColorBlack);
