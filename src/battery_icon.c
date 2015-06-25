@@ -2,25 +2,31 @@
 #include "common.h"
 
 
+#define RING_WIDTH              0.2f
+#define BATTERY_FONT            FONT_KEY_GOTHIC_18_BOLD
+#define BATTERY_FONT_SIZE       18
+#define BATTERY_TEXT_ADJUSTMENT 26
+
+
 static battery_icon_data *battery_icon_data_get(BatteryIcon *aIcon) {
     return (battery_icon_data *)layer_get_data(aIcon);
 }
 
 static bool point_in_ring(int32_t x, int32_t y, int32_t radius) {
-  float r2 = radius * 0.8f;
-  return (x*x + y*y <= radius*radius) &&
+    float r2 = radius * (1.f-RING_WIDTH);
+    return (x*x + y*y <= radius*radius) &&
          (x*x + y*y > r2*r2);
 }
 
 static bool point_in_arc(int32_t aPercent, int32_t x, int32_t y, int32_t radius) {
-  int32_t a = atan2_lookup(x, -y);
-  int32_t degree = TRIG_MAX_ANGLE * aPercent / 100;
-  return (0 <= a && a < degree);
+    int32_t a = atan2_lookup(x, -y);
+    int32_t degree = TRIG_MAX_ANGLE * aPercent / 100;
+    return (0 <= a && a < degree);
 }
 
 static void update_layer(BatteryIcon *aIcon, GContext *aCtx) {
     GRect r = layer_get_frame(aIcon);
-    if (r.origin.x + r.size.w < 0 || SCREEN_WIDTH < r.origin.x ||
+    if (r.origin.x + r.size.w < 0 || SCREEN_WIDTH  < r.origin.x ||
         r.origin.y + r.size.h < 0 || SCREEN_HEIGHT < r.origin.y) {
         // 不可視
         return;
@@ -58,8 +64,9 @@ static void update_layer(BatteryIcon *aIcon, GContext *aCtx) {
         static char buffer[] = "100";
         snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), "%d", percent);
         graphics_draw_text(aCtx, buffer,
-            fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD),
-            GRect(0, (r.size.h - 26) / 2, r.size.w, 18),
+            fonts_get_system_font(BATTERY_FONT),
+            GRect(0, (r.size.h - BATTERY_TEXT_ADJUSTMENT) / 2,
+                r.size.w, BATTERY_FONT_SIZE),
             GTextOverflowModeWordWrap,
             GTextAlignmentCenter,
             NULL);
