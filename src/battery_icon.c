@@ -1,4 +1,5 @@
 #include "battery_icon.h"
+#include "common.h"
 
 
 static battery_icon_data *battery_icon_data_get(BatteryIcon *aIcon) {
@@ -19,8 +20,8 @@ static bool point_in_arc(int32_t aPercent, int32_t x, int32_t y, int32_t radius)
 
 static void update_layer(BatteryIcon *aIcon, GContext *aCtx) {
     GRect r = layer_get_frame(aIcon);
-    if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
-        r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
+    if (r.origin.x + r.size.w < 0 || SCREEN_WIDTH < r.origin.x ||
+        r.origin.y + r.size.h < 0 || SCREEN_HEIGHT < r.origin.y) {
         // 不可視
         return;
     }

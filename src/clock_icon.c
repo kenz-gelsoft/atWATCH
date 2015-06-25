@@ -1,4 +1,5 @@
 #include "clock_icon.h"
+#include "common.h"
 
 
 static clock_icon_data *clock_icon_data_get(ClockIcon *aIcon) {
@@ -67,8 +68,8 @@ static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
 
 static void update_layer(ClockIcon *aIcon, GContext *aCtx) {
     GRect r = layer_get_frame(aIcon);
-    if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
-        r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
+    if (r.origin.x + r.size.w < 0 || SCREEN_WIDTH  < r.origin.x ||
+        r.origin.y + r.size.h < 0 || SCREEN_HEIGHT < r.origin.y) {
         // 不可視
         return;
     }

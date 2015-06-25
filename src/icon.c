@@ -1,5 +1,6 @@
 #include <pebble.h>
 
+#include "common.h"
 #include "icon.h"
 
 
@@ -44,8 +45,8 @@ void icon_zoom_in(Icon *aIcon) {
 
 static void update_layer(Icon *aIcon, GContext *aCtx) {
   GRect r = layer_get_frame(aIcon);
-  if (r.origin.x + r.size.w < 0 || 144 < r.origin.x ||
-      r.origin.y + r.size.h < 0 || 168 < r.origin.y) {
+  if (r.origin.x + r.size.w < 0 || SCREEN_WIDTH  < r.origin.x ||
+      r.origin.y + r.size.h < 0 || SCREEN_HEIGHT < r.origin.y) {
     // 不可視
     return;
   }

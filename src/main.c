@@ -3,6 +3,7 @@
 #include "battery_icon.h"
 #include "calendar_icon.h"
 #include "clock_icon.h"
+#include "common.h"
 #include "dithering.h"
 #include "icon.h"
 #include "weather_icon.h"
@@ -120,11 +121,11 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
 }
 
 static void main_window_load(Window *aWindow) {
-  float scale = 144.f / CLOCK_SIZE;
+  float scale = ((float)SCREEN_WIDTH) / CLOCK_SIZE;
   for (int32_t i = 0; i < ICON_COUNT; ++i) {
     GRect to_rect = GRect(sIconFrames[i*4],sIconFrames[i*4+1],sIconFrames[i*4+2],sIconFrames[i*4+3]);
-    int16_t cx = 144 / 2;
-    int16_t cy = 168 / 2;
+    int16_t cx = SCREEN_WIDTH  / 2;
+    int16_t cy = SCREEN_HEIGHT / 2;
     GRect r = to_rect;
     r.origin.x = cx + (r.origin.x - cx) * scale;
     r.origin.y = cy + (r.origin.y - cy) * scale;
