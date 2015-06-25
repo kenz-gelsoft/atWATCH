@@ -4,6 +4,11 @@
 #include "icon.h"
 
 
+#define ANIMATION_DURATION  500
+#define ZOOM_DELAY          300
+#define ZOOM_STOP_DELAY     2500
+
+
 static icon_data *icon_data_get(Icon *aIcon) {
 	return (icon_data *)layer_get_data(aIcon);
 }
@@ -15,7 +20,7 @@ static void anim_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
 static void zoom_out(Icon *aIcon, int32_t aDelay) {
   GRect toRect = icon_get_to_frame(aIcon);
   PropertyAnimation *animation = property_animation_create_layer_frame(aIcon, NULL, &toRect);
-  animation_set_duration((Animation *)animation, 500);
+  animation_set_duration((Animation *)animation, ANIMATION_DURATION);
   animation_set_delay((Animation *)animation, aDelay);
   animation_set_curve((Animation *)animation, AnimationCurveEaseInOut);
   animation_set_handlers((Animation *)animation, (AnimationHandlers) {
@@ -28,14 +33,14 @@ static void zoom_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
   property_animation_destroy((PropertyAnimation *)aAnimation);
   
   Icon *icon = (Icon *)aCtx;
-  zoom_out(icon, 2500);
+  zoom_out(icon, ZOOM_STOP_DELAY);
 }
 
 void icon_zoom_in(Icon *aIcon) {
   GRect fromFrame = icon_get_from_frame(aIcon);
   PropertyAnimation *animation = property_animation_create_layer_frame(aIcon, NULL, &fromFrame);
-  animation_set_duration((Animation *)animation, 500);
-  animation_set_delay((Animation *)animation, 300);
+  animation_set_duration((Animation *)animation, ANIMATION_DURATION);
+  animation_set_delay((Animation *)animation, ZOOM_DELAY);
   animation_set_curve((Animation *)animation, AnimationCurveEaseInOut);
   animation_set_handlers((Animation *)animation, (AnimationHandlers) {
     .stopped = zoom_stopped
@@ -83,7 +88,7 @@ Icon *icon_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize) 
   data->mFromFrame = aFromFrame;
 	data->mToFrame   = aToFrame;
   
-  zoom_out(icon, 300);
+  zoom_out(icon, ZOOM_DELAY);
   
 	return icon;
 }
