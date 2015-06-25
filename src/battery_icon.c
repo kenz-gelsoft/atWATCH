@@ -14,8 +14,14 @@ static battery_icon_data *battery_icon_data_get(BatteryIcon *aIcon) {
 
 static bool point_in_ring(int32_t x, int32_t y, int32_t radius) {
     float r2 = radius * (1.f-RING_WIDTH);
-    return (x*x + y*y <= radius*radius) &&
-         (x*x + y*y > r2*r2);
+#ifdef PBL_COLOR
+    radius++;
+#endif
+    return (x*x + y*y <= radius*radius) 
+#ifndef PBL_COLOR
+        && (x*x + y*y > r2*r2)
+#endif
+        ;
 }
 
 static bool point_in_arc(int32_t aPercent, int32_t x, int32_t y, int32_t radius) {
@@ -46,19 +52,34 @@ static void update_layer(BatteryIcon *aIcon, GContext *aCtx) {
         }
     } else {
         uint8_t percent = battery_icon_get_percent(aIcon);
+#ifdef PBL_COLOR
+        graphics_context_set_fill_color(aCtx, GColorMalachite);
+        graphics_fill_circle(aCtx, center, radius);
+#endif
         for (int32_t x = 0; x < r.size.w; ++x) {
             for (int32_t y = 0; y < r.size.h; ++y) {
                 if (point_in_ring(x-center.x, y-center.y, center.y)) {
                     graphics_context_set_stroke_color(aCtx, GColorWhite);
                     if (!point_in_arc(percent, x-center.x, y-center.y, center.y)) {
+#ifdef PBL_COLOR
+                        graphics_context_set_stroke_color(aCtx, GColorDarkGray);
+                        graphics_draw_pixel(aCtx, GPoint(x, y));
+#else
                         if (pattern_25percent(x,y)) {
                             graphics_context_set_stroke_color(aCtx, GColorBlack);
                         }
+#endif
                     }
+#ifndef PBL_COLOR
                     graphics_draw_pixel(aCtx, GPoint(x, y));
+#endif
                 }
             }
         }
+#ifdef PBL_COLOR
+        graphics_context_set_fill_color(aCtx, GColorBlack);
+        graphics_fill_circle(aCtx, center, radius * (1.f-RING_WIDTH));
+#endif
     
         // text
         static char buffer[] = "100";
