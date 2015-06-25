@@ -70,8 +70,13 @@ static void update_layer(Icon *aIcon, GContext *aCtx) {
             graphics_draw_circle(aCtx, center, radius);
         }
     } else {
+#ifdef PBL_COLOR
+        graphics_context_set_fill_color(aCtx, icon_get_color(aIcon));
+        graphics_fill_circle(aCtx, center, radius);
+#else
         fill_dithered_circle(aCtx, center, radius,
             icon_get_color(aIcon));
+#endif
     }
 }
 
@@ -82,9 +87,26 @@ Icon *icon_create(GRect aFromFrame, GRect aToFrame) {
 Icon *icon_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize) {
   	Icon *icon = layer_create_with_data(aFromFrame, aDataSize);
     layer_set_update_proc(icon, update_layer);
+
+#ifdef PBL_COLOR
+    GColor sColors[] = {
+        GColorChromeYellow,
+        GColorPictonBlue,
+        GColorSpringBud,
+        GColorFolly,
+        GColorScreaminGreen,
+        GColorLightGray,
+        GColorDarkGray,
+    };
+    int32_t sColorCount = sizeof(sColors)/sizeof(sColors[0]);
+#endif
   
   	icon_data *data = icon_data_get(icon);
+#ifdef PBL_COLOR
+    data->mColor = sColors[rand() % sColorCount];
+#else
   	data->mColor = rand() % 4;
+#endif
     data->mFromFrame = aFromFrame;
   	data->mToFrame   = aToFrame;
     
@@ -97,7 +119,7 @@ void icon_destroy(Icon *aIcon) {
   	layer_destroy(aIcon);
 }
 
-DitheringPattern icon_get_color(Icon *aIcon) {
+IconColor icon_get_color(Icon *aIcon) {
   	return icon_data_get(aIcon)->mColor;
 }
 

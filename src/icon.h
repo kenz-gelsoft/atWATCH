@@ -4,8 +4,15 @@
 #include "dithering.h"
 
 
+#ifdef PBL_COLOR
+typedef GColor IconColor;
+#else
+typedef DitheringPattern IconColor;
+#endif
+
+
 typedef struct {
-    DitheringPattern mColor;
+    IconColor mColor;
     GRect mFromFrame;
     GRect mToFrame;
 } icon_data;
@@ -16,7 +23,7 @@ Icon *icon_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize);
 Icon *icon_create(GRect aFromFrame, GRect aToFrame);
 void icon_destroy(Icon *aIcon);
 
-DitheringPattern icon_get_color(Icon *aIcon);
+IconColor icon_get_color(Icon *aIcon);
 GRect icon_get_from_frame(Icon *aIcon);
 GRect icon_get_to_frame(Icon *aIcon);
 
