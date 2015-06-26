@@ -104,25 +104,8 @@ Icon *icon_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize) 
     icon_set_painter(icon, paint_icon);
     icon_set_animating_painter(icon, paint_animating_icon);
 
-#ifdef PBL_COLOR
-    GColor sColors[] = {
-        GColorChromeYellow,
-        GColorPictonBlue,
-        GColorSpringBud,
-        GColorFolly,
-        GColorScreaminGreen,
-        GColorLightGray,
-        GColorDarkGray,
-    };
-    int32_t sColorCount = sizeof(sColors)/sizeof(sColors[0]);
-#endif
-  
   	icon_data *data = icon_data_get(icon);
-#ifdef PBL_COLOR
-    data->mColor = sColors[rand() % sColorCount];
-#else
-  	data->mColor = rand() % 4;
-#endif
+    data->mColor = icon_color_default();
     data->mFromFrame = aFromFrame;
   	data->mToFrame   = aToFrame;
     
@@ -137,6 +120,9 @@ void icon_destroy(Icon *aIcon) {
 
 IconColor icon_get_color(Icon *aIcon) {
   	return icon_data_get(aIcon)->mColor;
+}
+void icon_set_color(Icon *aIcon, IconColor aColor) {
+    icon_data_get(aIcon)->mColor = aColor;
 }
 
 GRect icon_get_from_frame(Icon *aIcon) {

@@ -34,7 +34,8 @@ ICON_XS(0,79), ICON_L(12,65), ICON_XL(52,63), ICON_L(97,65), ICON_XS(135,79),
                ICON_S(19,138), ICON_M(57,140), ICON_S(98,138),
 };
 
-static Icon *create_icon(int32_t aIndex, GRect *aFromRect, GRect *aToRect) {
+static Icon *create_icon(int32_t aIndex, GRect *aFromRect, GRect *aToRect,
+        IconColor *aIconColors, uint8_t aCount) {
     GRect initR = *aFromRect;
     Icon *icon;
     if (aIndex == CLOCK_ICON) {
@@ -46,7 +47,9 @@ static Icon *create_icon(int32_t aIndex, GRect *aFromRect, GRect *aToRect) {
     } else if (aIndex == WEATHER_ICON) {
         icon = weather_icon_create(initR, *aToRect);
     } else {
+        static uint8_t colorIndex = 0;
         icon = icon_create(initR, *aToRect);
+        icon_set_color(icon, aIconColors[++colorIndex % aCount]);
     }
     layer_add_child(window_get_root_layer(sMainWindow), icon);
     return icon;
@@ -131,6 +134,9 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
 
 static void main_window_load(Window *aWindow) {
     float scale = ((float)SCREEN_WIDTH) / CLOCK_SIZE;
+    
+    uint8_t count;
+    IconColor *iconColors = icon_colors_create(&count);
     for (int32_t i = 0; i < ICON_COUNT; ++i) {
         GRect to_rect = GRect(sIconFrames[i*4],sIconFrames[i*4+1],sIconFrames[i*4+2],sIconFrames[i*4+3]);
         int16_t cx = SCREEN_WIDTH  / 2;
@@ -142,8 +148,9 @@ static void main_window_load(Window *aWindow) {
         r.size.h *= scale;
         // APP_LOG(APP_LOG_LEVEL_DEBUG, "from_rect = (%d, %d, %d, %d)",
         //   r.origin.x, r.origin.y, r.size.w, r.size.h);
-        sIcons[i] = create_icon(i, &r, &to_rect);
+        sIcons[i] = create_icon(i, &r, &to_rect, iconColors, count);
     }
+    icon_colors_destroy(iconColors);
     
     update_time();
     BatteryChargeState charge = battery_state_service_peek();
