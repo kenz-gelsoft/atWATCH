@@ -96,6 +96,10 @@ static void battery_handler(BatteryChargeState aCharge) {
 }
 
 static void tap_handler(AccelAxisType aAxis, int32_t aDirection) {
+    if (icon_is_animating(sIcons[0])) {
+        // don't restart animation while animating
+        return;
+    }
     for (int32_t i = 0; i < ICON_COUNT; ++i) {
         icon_zoom_in(sIcons[i]);
     }

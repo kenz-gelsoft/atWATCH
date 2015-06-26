@@ -20,6 +20,7 @@ typedef struct {
     GRect mToFrame;
     IconPainter mPainter;
     IconPainter mAnimatingPainter;
+    bool mAnimating;
 } icon_data;
 
 Icon *icon_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize);
@@ -34,6 +35,9 @@ void icon_set_painter(Icon *aIcon, IconPainter aIconPainter);
 IconPainter icon_get_painter(Icon *aIcon);
 void icon_set_animating_painter(Icon *aIcon, IconPainter aIconPainter);
 IconPainter icon_get_animating_painter(Icon *aIcon);
+
+bool icon_is_animating(Icon *aIcon);
+void icon_set_animating(Icon *aIcon, bool aAnimating);
 
 void icon_zoom_in(Icon *aIcon);
 

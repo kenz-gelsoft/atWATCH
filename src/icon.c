@@ -14,10 +14,15 @@ static icon_data *icon_data_get(Icon *aIcon) {
 }
 
 static void anim_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
+    Icon *icon = (Icon *)aCtx;
+    icon_set_animating(icon, false);
+    
     property_animation_destroy((PropertyAnimation *)aAnimation);
 }
 
 static void zoom_out(Icon *aIcon, int32_t aDelay) {
+    icon_set_animating(aIcon, true);
+    
     GRect toRect = icon_get_to_frame(aIcon);
     PropertyAnimation *animation = property_animation_create_layer_frame(aIcon, NULL, &toRect);
     animation_set_duration((Animation *)animation, ANIMATION_DURATION);
@@ -25,7 +30,7 @@ static void zoom_out(Icon *aIcon, int32_t aDelay) {
     animation_set_curve((Animation *)animation, AnimationCurveEaseInOut);
     animation_set_handlers((Animation *)animation, (AnimationHandlers) {
         .stopped = anim_stopped
-    }, NULL);
+    }, aIcon);
     animation_schedule((Animation *)animation);
 }
 
@@ -37,6 +42,8 @@ static void zoom_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
 }
 
 void icon_zoom_in(Icon *aIcon) {
+    icon_set_animating(aIcon, true);
+    
     GRect fromFrame = icon_get_from_frame(aIcon);
     PropertyAnimation *animation = property_animation_create_layer_frame(aIcon, NULL, &fromFrame);
     animation_set_duration((Animation *)animation, ANIMATION_DURATION);
@@ -137,6 +144,13 @@ GRect icon_get_from_frame(Icon *aIcon) {
 }
 GRect icon_get_to_frame(Icon *aIcon) {
   	return icon_data_get(aIcon)->mToFrame;
+}
+
+void icon_set_animating(Icon *aIcon, bool aAnimating) {
+    icon_data_get(aIcon)->mAnimating = aAnimating;
+}
+bool icon_is_animating(Icon *aIcon) {
+    return icon_data_get(aIcon)->mAnimating;
 }
 
 void icon_set_painter(Icon *aIcon, IconPainter aIconPainter) {
