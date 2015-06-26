@@ -112,7 +112,9 @@ static void paint_clock(ClockIcon *aIcon, GContext *aCtx, GRect r, GPoint aCente
         CLOCK_MIN_HAND_LENGTH(aRadius),
         TRIG_MAX_ANGLE * (m + s / 60.f) / 60.f);
     
-    graphics_draw_circle(aCtx, aCenter, CLOCK_CENTER_RADIUS - 1);
+    if (aZoomedIn) {
+        graphics_draw_circle(aCtx, aCenter, CLOCK_CENTER_RADIUS - 1);
+    }
     
     // seconds hand
     int32_t secLength = CLOCK_SEC_HAND_LENGTH(aRadius);
