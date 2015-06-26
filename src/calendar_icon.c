@@ -31,30 +31,16 @@ static calendar_icon_data *calendar_icon_data_get(CalendarIcon *aIcon) {
     return (calendar_icon_data *)layer_get_data(aIcon);
 }
 
-static void update_layer(CalendarIcon *aIcon, GContext *aCtx) {
-    GRect r = layer_get_frame(aIcon);
-    if (r.origin.x + r.size.w < 0 || SCREEN_WIDTH  < r.origin.x ||
-        r.origin.y + r.size.h < 0 || SCREEN_HEIGHT < r.origin.y) {
-        // invisible
-        return;
-    }
-    GRect finalRect = icon_get_to_frame(aIcon);
-    bool animating = !grect_equal(&r, &finalRect);
-    GRect fromFrame = icon_get_from_frame(aIcon);
-    bool zoomedIn  =  grect_equal(&r, &fromFrame);
-    
-    GPoint center = GPoint(r.size.w / 2,
-                           r.size.h / 2-1);
-    uint16_t radius = r.size.w / 2 - 1;
-    if (animating) {
-        if (!zoomedIn) {
+static void paint_calendar_icon(CalendarIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn) {
+    if (aAnimating) {
+        if (!aZoomedIn) {
             graphics_context_set_stroke_color(aCtx, GColorWhite);
-            graphics_draw_circle(aCtx, center, radius);
+            graphics_draw_circle(aCtx, aCenter, aRadius);
         }
     } else {
         // background
         graphics_context_set_fill_color(aCtx, GColorWhite);
-        graphics_fill_circle(aCtx, center, radius);
+        graphics_fill_circle(aCtx, aCenter, aRadius);
         graphics_context_set_text_color(aCtx, GColorBlack);
         
         uint8_t date = calendar_icon_get_date(aIcon);
@@ -81,7 +67,7 @@ static void update_layer(CalendarIcon *aIcon, GContext *aCtx) {
 CalendarIcon *calendar_icon_create(GRect aFromFrame, GRect aToFrame) {
     CalendarIcon *icon = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(calendar_icon_data));
-    layer_set_update_proc(icon, update_layer);
+    icon_set_painter(icon, paint_calendar_icon);
     return icon;
 }
 

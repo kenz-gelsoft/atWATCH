@@ -75,36 +75,24 @@ static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
     }
 }
 
-static void update_layer(ClockIcon *aIcon, GContext *aCtx) {
-    GRect r = layer_get_frame(aIcon);
-    if (r.origin.x + r.size.w < 0 || SCREEN_WIDTH  < r.origin.x ||
-        r.origin.y + r.size.h < 0 || SCREEN_HEIGHT < r.origin.y) {
-        // invisible
-        return;
-    }
-    GRect toFrame   = icon_get_to_frame(aIcon);
-    bool animating = !grect_equal(&r, &toFrame);
-    GRect fromFrame = icon_get_from_frame(aIcon);
-    bool zoomedIn  =  grect_equal(&r, &fromFrame);
-    
-    GPoint center = GPoint(r.size.w / 2,
-                           r.size.h / 2-1);
-    uint16_t radius = r.size.w / 2 - 1;
+static void paint_clock_icon(ClockIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn) {
     // background
-    if (animating) {
+    if (aAnimating) {
         graphics_context_set_stroke_color(aCtx, GColorWhite);
         for (int32_t i = 0; i < 60; ++i) {
-            int32_t len1 = radius;
-            int32_t len2 = (i % 5 == 0) ? CLOCK_HOUR_MARK_START_LENGTH(radius) : CLOCK_MIN_MARK_START_LENGTH(radius);
+            int32_t len1 = aRadius;
+            int32_t len2 = (i % 5 == 0)
+                ? CLOCK_HOUR_MARK_START_LENGTH(aRadius)
+                : CLOCK_MIN_MARK_START_LENGTH(aRadius);
             int32_t angle = TRIG_MAX_ANGLE * i / 60.f;
-            draw_angle_line(aCtx, center, angle, len1, len2,
+            draw_angle_line(aCtx, aCenter, angle, len1, len2,
                 (i % 5 == 0) ? LineWidth2 : LineWidth1);
         }
         graphics_context_set_fill_color(aCtx, GColorWhite);
         graphics_context_set_stroke_color(aCtx, GColorWhite);
     } else {
         graphics_context_set_fill_color(aCtx, GColorWhite);
-        graphics_fill_circle(aCtx, center, radius);
+        graphics_fill_circle(aCtx, aCenter, aRadius);
         graphics_context_set_fill_color(aCtx, GColorBlack);
         graphics_context_set_stroke_color(aCtx, GColorBlack);
     }
@@ -115,34 +103,34 @@ static void update_layer(ClockIcon *aIcon, GContext *aCtx) {
     int32_t s = data->s;
     
     // hour hand
-    draw_clock_hand(aCtx, center, radius, zoomedIn,
-        CLOCK_HOUR_HAND_LENGTH(radius),
+    draw_clock_hand(aCtx, aCenter, aRadius, aZoomedIn,
+        CLOCK_HOUR_HAND_LENGTH(aRadius),
         TRIG_MAX_ANGLE * (h + m / 60.f) / 12.f);
     
     // minutes hand
-    draw_clock_hand(aCtx, center, radius, zoomedIn,
-        CLOCK_MIN_HAND_LENGTH(radius),
+    draw_clock_hand(aCtx, aCenter, aRadius, aZoomedIn,
+        CLOCK_MIN_HAND_LENGTH(aRadius),
         TRIG_MAX_ANGLE * (m + s / 60.f) / 60.f);
     
-    graphics_draw_circle(aCtx, center, CLOCK_CENTER_RADIUS - 1);
+    graphics_draw_circle(aCtx, aCenter, CLOCK_CENTER_RADIUS - 1);
     
     // seconds hand
-    int32_t secLength = CLOCK_SEC_HAND_LENGTH(radius);
+    int32_t secLength = CLOCK_SEC_HAND_LENGTH(aRadius);
     int32_t secAngle = TRIG_MAX_ANGLE * s / 60.f;
 #ifdef PBL_COLOR
     graphics_context_set_stroke_color(aCtx, GColorChromeYellow);
 #endif
-    if (zoomedIn) {
-        draw_angle_line(aCtx, center, secAngle, CLOCK_CENTER_RADIUS, secLength, LineWidth1);
+    if (aZoomedIn) {
+        draw_angle_line(aCtx, aCenter, secAngle, CLOCK_CENTER_RADIUS, secLength, LineWidth1);
     } else {
-        draw_angle_line(aCtx, center, secAngle, 0, secLength, LineWidth1);
+        draw_angle_line(aCtx, aCenter, secAngle, 0, secLength, LineWidth1);
     }
 }
 
 ClockIcon *clock_icon_create(GRect aFromFrame, GRect aToFrame) {
     ClockIcon *icon = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(clock_icon_data));
-    layer_set_update_proc(icon, update_layer);
+    icon_set_painter(icon, paint_clock_icon);
     
     return icon;
 }

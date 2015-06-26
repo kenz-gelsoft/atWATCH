@@ -61,33 +61,19 @@ static weather_icon_data *weather_icon_data_get(WeatherIcon *aIcon) {
     return (weather_icon_data *)layer_get_data(aIcon);
 }
 
-static void update_layer(WeatherIcon *aIcon, GContext *aCtx) {
-    GRect r = layer_get_frame(aIcon);
-    if (r.origin.x + r.size.w < 0 || SCREEN_WIDTH  < r.origin.x ||
-        r.origin.y + r.size.h < 0 || SCREEN_HEIGHT < r.origin.y) {
-        // invisible
-        return;
-    }
-    GRect finalRect = icon_get_to_frame(aIcon);
-    bool animating = !grect_equal(&r, &finalRect);
-    GRect fromFrame = icon_get_from_frame(aIcon);
-    bool zoomedIn  =  grect_equal(&r, &fromFrame);
-    
-    GPoint center = GPoint(r.size.w / 2,
-                           r.size.h / 2-1);
-    uint16_t radius = r.size.w / 2 - 1;
-    if (animating) {
-        if (!zoomedIn) {
+static void paint_weather_icon(WeatherIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn) {
+    if (aAnimating) {
+        if (!aZoomedIn) {
             graphics_context_set_stroke_color(aCtx, GColorWhite);
-            graphics_draw_circle(aCtx, center, radius);
+            graphics_draw_circle(aCtx, aCenter, aRadius);
         }
     } else {
         // background
 #ifdef PBL_COLOR
         graphics_context_set_fill_color(aCtx, GColorVividCerulean);
-        graphics_fill_circle(aCtx, center, radius);
+        graphics_fill_circle(aCtx, aCenter, aRadius);
 #else
-        fill_dithered_circle(aCtx, center, radius, Dithering50Percent);
+        fill_dithered_circle(aCtx, aCenter, aRadius, Dithering50Percent);
 #endif
 
 #ifndef PBL_COLOR            
@@ -115,7 +101,7 @@ static void update_layer(WeatherIcon *aIcon, GContext *aCtx) {
 WeatherIcon *weather_icon_create(GRect aFromFrame, GRect aToFrame) {
     WeatherIcon *icon = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(weather_icon_data));
-    layer_set_update_proc(icon, update_layer);
+    icon_set_painter(icon, paint_weather_icon);
     
     weather_icon_data *data = weather_icon_data_get(icon);
     data->mWeather = bitmap_for_weather(WeatherFewClouds);

@@ -30,37 +30,23 @@ static bool point_in_arc(int32_t aPercent, int32_t x, int32_t y, int32_t radius)
     return (0 <= a && a < degree);
 }
 
-static void update_layer(BatteryIcon *aIcon, GContext *aCtx) {
-    GRect r = layer_get_frame(aIcon);
-    if (r.origin.x + r.size.w < 0 || SCREEN_WIDTH  < r.origin.x ||
-        r.origin.y + r.size.h < 0 || SCREEN_HEIGHT < r.origin.y) {
-        // invisible
-        return;
-    }
-    GRect finalRect = icon_get_to_frame(aIcon);
-    bool animating = !grect_equal(&r, &finalRect);
-    GRect fromFrame = icon_get_from_frame(aIcon);
-    bool zoomedIn  =  grect_equal(&r, &fromFrame);
-      
-    GPoint center = GPoint(r.size.w / 2,
-                           r.size.h / 2-1);
-    uint16_t radius = r.size.w / 2 - 1;
+static void paint_battery_icon(BatteryIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn) {
     graphics_context_set_stroke_color(aCtx, GColorWhite);
-    if (animating) {
-        if (!zoomedIn) {
-            graphics_draw_circle(aCtx, center, radius);
+    if (aAnimating) {
+        if (!aZoomedIn) {
+            graphics_draw_circle(aCtx, aCenter, aRadius);
         }
     } else {
         uint8_t percent = battery_icon_get_percent(aIcon);
 #ifdef PBL_COLOR
         graphics_context_set_fill_color(aCtx, GColorMalachite);
-        graphics_fill_circle(aCtx, center, radius);
+        graphics_fill_circle(aCtx, aCenter, aRadius);
 #endif
         for (int32_t x = 0; x < r.size.w; ++x) {
             for (int32_t y = 0; y < r.size.h; ++y) {
-                if (point_in_ring(x-center.x, y-center.y, center.y)) {
+                if (point_in_ring(x-aCenter.x, y-aCenter.y, aCenter.y)) {
                     graphics_context_set_stroke_color(aCtx, GColorWhite);
-                    if (!point_in_arc(percent, x-center.x, y-center.y, center.y)) {
+                    if (!point_in_arc(percent, x-aCenter.x, y-aCenter.y, aCenter.y)) {
 #ifdef PBL_COLOR
                         graphics_context_set_stroke_color(aCtx, GColorDarkGray);
                         graphics_draw_pixel(aCtx, GPoint(x, y));
@@ -78,7 +64,7 @@ static void update_layer(BatteryIcon *aIcon, GContext *aCtx) {
         }
 #ifdef PBL_COLOR
         graphics_context_set_fill_color(aCtx, GColorBlack);
-        graphics_fill_circle(aCtx, center, radius * (1.f-RING_WIDTH));
+        graphics_fill_circle(aCtx, aCenter, aRadius * (1.f-RING_WIDTH));
 #endif
     
         // text
@@ -97,7 +83,7 @@ static void update_layer(BatteryIcon *aIcon, GContext *aCtx) {
 BatteryIcon *battery_icon_create(GRect aFromFrame, GRect aToFrame) {
     BatteryIcon *icon = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(battery_icon_data));
-    layer_set_update_proc(icon, update_layer);
+    icon_set_painter(icon, paint_battery_icon);
     return icon;
 }
 

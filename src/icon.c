@@ -63,18 +63,22 @@ static void update_layer(Icon *aIcon, GContext *aCtx) {
     GPoint center = GPoint(r.size.w / 2,
                            r.size.h / 2-1);
     uint16_t radius = r.size.w / 2 - 1;
-    if (animating) {
+    icon_get_painter(aIcon)(aIcon, aCtx, r, center, radius, animating, zoomedIn);
+}
+
+static void default_icon_painter(Icon *aIcon, GContext *aCtx, GRect aFrame, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn) {
+    if (aAnimating) {
         // draws only borders on animation
-        if (!zoomedIn) {
+        if (!aZoomedIn) {
             graphics_context_set_stroke_color(aCtx, GColorWhite);
-            graphics_draw_circle(aCtx, center, radius);
+            graphics_draw_circle(aCtx, aCenter, aRadius);
         }
     } else {
 #ifdef PBL_COLOR
         graphics_context_set_fill_color(aCtx, icon_get_color(aIcon));
-        graphics_fill_circle(aCtx, center, radius);
+        graphics_fill_circle(aCtx, aCenter, aRadius);
 #else
-        fill_dithered_circle(aCtx, center, radius,
+        fill_dithered_circle(aCtx, aCenter, aRadius,
             icon_get_color(aIcon));
 #endif
     }
@@ -87,6 +91,7 @@ Icon *icon_create(GRect aFromFrame, GRect aToFrame) {
 Icon *icon_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize) {
   	Icon *icon = layer_create_with_data(aFromFrame, aDataSize);
     layer_set_update_proc(icon, update_layer);
+    icon_set_painter(icon, default_icon_painter);
 
 #ifdef PBL_COLOR
     GColor sColors[] = {
@@ -128,4 +133,11 @@ GRect icon_get_from_frame(Icon *aIcon) {
 }
 GRect icon_get_to_frame(Icon *aIcon) {
   	return icon_data_get(aIcon)->mToFrame;
+}
+
+void icon_set_painter(Icon *aIcon, IconPainter aIconPainter) {
+    icon_data_get(aIcon)->mPainter = aIconPainter;
+}
+IconPainter icon_get_painter(Icon *aIcon) {
+    return icon_data_get(aIcon)->mPainter;
 }
