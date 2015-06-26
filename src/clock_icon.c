@@ -75,7 +75,7 @@ static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
     }
 }
 
-static void paint_clock_icon(ClockIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn) {
+static void paint_clock(ClockIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn) {
     // background
     if (aAnimating) {
         graphics_context_set_stroke_color(aCtx, GColorWhite);
@@ -126,11 +126,18 @@ static void paint_clock_icon(ClockIcon *aIcon, GContext *aCtx, GRect r, GPoint a
         draw_angle_line(aCtx, aCenter, secAngle, 0, secLength, LineWidth1);
     }
 }
+static void paint_animating_clock_icon(ClockIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aZoomedIn) {
+    paint_clock(aIcon, aCtx, r, aCenter, aRadius, true, aZoomedIn);
+}
+static void paint_clock_icon(ClockIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aZoomedIn) {
+    paint_clock(aIcon, aCtx, r, aCenter, aRadius, false, aZoomedIn);
+}
 
 ClockIcon *clock_icon_create(GRect aFromFrame, GRect aToFrame) {
     ClockIcon *icon = icon_create_with_data(aFromFrame, aToFrame,
         sizeof(clock_icon_data));
     icon_set_painter(icon, paint_clock_icon);
+    icon_set_animating_painter(icon, paint_animating_clock_icon);
     
     return icon;
 }

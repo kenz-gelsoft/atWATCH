@@ -30,54 +30,48 @@ static bool point_in_arc(int32_t aPercent, int32_t x, int32_t y, int32_t radius)
     return (0 <= a && a < degree);
 }
 
-static void paint_battery_icon(BatteryIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn) {
+static void paint_battery_icon(BatteryIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aZoomedIn) {
     graphics_context_set_stroke_color(aCtx, GColorWhite);
-    if (aAnimating) {
-        if (!aZoomedIn) {
-            graphics_draw_circle(aCtx, aCenter, aRadius);
-        }
-    } else {
-        uint8_t percent = battery_icon_get_percent(aIcon);
+    uint8_t percent = battery_icon_get_percent(aIcon);
 #ifdef PBL_COLOR
-        graphics_context_set_fill_color(aCtx, GColorMalachite);
-        graphics_fill_circle(aCtx, aCenter, aRadius);
+    graphics_context_set_fill_color(aCtx, GColorMalachite);
+    graphics_fill_circle(aCtx, aCenter, aRadius);
 #endif
-        for (int32_t x = 0; x < r.size.w; ++x) {
-            for (int32_t y = 0; y < r.size.h; ++y) {
-                if (point_in_ring(x-aCenter.x, y-aCenter.y, aCenter.y)) {
-                    graphics_context_set_stroke_color(aCtx, GColorWhite);
-                    if (!point_in_arc(percent, x-aCenter.x, y-aCenter.y, aCenter.y)) {
+    for (int32_t x = 0; x < r.size.w; ++x) {
+        for (int32_t y = 0; y < r.size.h; ++y) {
+            if (point_in_ring(x-aCenter.x, y-aCenter.y, aCenter.y)) {
+                graphics_context_set_stroke_color(aCtx, GColorWhite);
+                if (!point_in_arc(percent, x-aCenter.x, y-aCenter.y, aCenter.y)) {
 #ifdef PBL_COLOR
-                        graphics_context_set_stroke_color(aCtx, GColorDarkGray);
-                        graphics_draw_pixel(aCtx, GPoint(x, y));
-#else
-                        if (pattern_25percent(x,y)) {
-                            graphics_context_set_stroke_color(aCtx, GColorBlack);
-                        }
-#endif
-                    }
-#ifndef PBL_COLOR
+                    graphics_context_set_stroke_color(aCtx, GColorDarkGray);
                     graphics_draw_pixel(aCtx, GPoint(x, y));
+#else
+                    if (pattern_25percent(x,y)) {
+                        graphics_context_set_stroke_color(aCtx, GColorBlack);
+                    }
 #endif
                 }
+#ifndef PBL_COLOR
+                graphics_draw_pixel(aCtx, GPoint(x, y));
+#endif
             }
         }
-#ifdef PBL_COLOR
-        graphics_context_set_fill_color(aCtx, GColorBlack);
-        graphics_fill_circle(aCtx, aCenter, aRadius * (1.f-RING_WIDTH));
-#endif
-    
-        // text
-        static char buffer[] = "100";
-        snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), "%d", percent);
-        graphics_draw_text(aCtx, buffer,
-            fonts_get_system_font(BATTERY_FONT),
-            GRect(0, (r.size.h - BATTERY_TEXT_ADJUSTMENT) / 2,
-                r.size.w, BATTERY_FONT_SIZE),
-            GTextOverflowModeWordWrap,
-            GTextAlignmentCenter,
-            NULL);
     }
+#ifdef PBL_COLOR
+    graphics_context_set_fill_color(aCtx, GColorBlack);
+    graphics_fill_circle(aCtx, aCenter, aRadius * (1.f-RING_WIDTH));
+#endif
+
+    // text
+    static char buffer[] = "100";
+    snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), "%d", percent);
+    graphics_draw_text(aCtx, buffer,
+        fonts_get_system_font(BATTERY_FONT),
+        GRect(0, (r.size.h - BATTERY_TEXT_ADJUSTMENT) / 2,
+            r.size.w, BATTERY_FONT_SIZE),
+        GTextOverflowModeWordWrap,
+        GTextAlignmentCenter,
+        NULL);
 }
 
 BatteryIcon *battery_icon_create(GRect aFromFrame, GRect aToFrame) {

@@ -12,13 +12,14 @@ typedef DitheringPattern IconColor;
 
 typedef Layer Icon;
 
-typedef void (*IconPainter)(Icon *aIcon, GContext *aCtx, GRect aFrame, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn);
+typedef void (*IconPainter)(Icon *aIcon, GContext *aCtx, GRect aFrame, GPoint aCenter, int32_t aRadius, bool aZoomedIn);
 
 typedef struct {
     IconColor mColor;
     GRect mFromFrame;
     GRect mToFrame;
     IconPainter mPainter;
+    IconPainter mAnimatingPainter;
 } icon_data;
 
 Icon *icon_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize);
@@ -31,6 +32,8 @@ GRect icon_get_to_frame(Icon *aIcon);
 
 void icon_set_painter(Icon *aIcon, IconPainter aIconPainter);
 IconPainter icon_get_painter(Icon *aIcon);
+void icon_set_animating_painter(Icon *aIcon, IconPainter aIconPainter);
+IconPainter icon_get_animating_painter(Icon *aIcon);
 
 void icon_zoom_in(Icon *aIcon);
 

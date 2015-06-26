@@ -31,37 +31,30 @@ static calendar_icon_data *calendar_icon_data_get(CalendarIcon *aIcon) {
     return (calendar_icon_data *)layer_get_data(aIcon);
 }
 
-static void paint_calendar_icon(CalendarIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn) {
-    if (aAnimating) {
-        if (!aZoomedIn) {
-            graphics_context_set_stroke_color(aCtx, GColorWhite);
-            graphics_draw_circle(aCtx, aCenter, aRadius);
-        }
-    } else {
-        // background
-        graphics_context_set_fill_color(aCtx, GColorWhite);
-        graphics_fill_circle(aCtx, aCenter, aRadius);
-        graphics_context_set_text_color(aCtx, GColorBlack);
-        
-        uint8_t date = calendar_icon_get_date(aIcon);
-        
-        GBitmap* weekday = calendar_icon_get_weekday(aIcon);
-        graphics_draw_bitmap_in_rect(aCtx, weekday, GRect(
-            1 + (r.size.w - WEEKDAY_ICON_WIDTH) / 2,
-            WEEKDAY_CENTER_Y(r.size.h) - WEEKDAY_ICON_HEIGHT / 2,
-            WEEKDAY_ICON_WIDTH, WEEKDAY_ICON_HEIGHT));
+static void paint_calendar_icon(CalendarIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aZoomedIn) {
+    // background
+    graphics_context_set_fill_color(aCtx, GColorWhite);
+    graphics_fill_circle(aCtx, aCenter, aRadius);
+    graphics_context_set_text_color(aCtx, GColorBlack);
     
-        // text
-        static char buffer[] = "00";
-        snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), "%d", date);
-        graphics_draw_text(aCtx, buffer,
-            fonts_get_system_font(CALENDAR_FONT),
-            GRect(1, 1 + CALENDAR_CENTER_Y(r.size.h) - CALENDAR_TEXT_ADJUSTMENT,
-                r.size.w, CALENDAR_FONT_SIZE),
-            GTextOverflowModeWordWrap,
-            GTextAlignmentCenter,
-            NULL);
-    }
+    uint8_t date = calendar_icon_get_date(aIcon);
+    
+    GBitmap* weekday = calendar_icon_get_weekday(aIcon);
+    graphics_draw_bitmap_in_rect(aCtx, weekday, GRect(
+        1 + (r.size.w - WEEKDAY_ICON_WIDTH) / 2,
+        WEEKDAY_CENTER_Y(r.size.h) - WEEKDAY_ICON_HEIGHT / 2,
+        WEEKDAY_ICON_WIDTH, WEEKDAY_ICON_HEIGHT));
+
+    // text
+    static char buffer[] = "00";
+    snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), "%d", date);
+    graphics_draw_text(aCtx, buffer,
+        fonts_get_system_font(CALENDAR_FONT),
+        GRect(1, 1 + CALENDAR_CENTER_Y(r.size.h) - CALENDAR_TEXT_ADJUSTMENT,
+            r.size.w, CALENDAR_FONT_SIZE),
+        GTextOverflowModeWordWrap,
+        GTextAlignmentCenter,
+        NULL);
 }
 
 CalendarIcon *calendar_icon_create(GRect aFromFrame, GRect aToFrame) {

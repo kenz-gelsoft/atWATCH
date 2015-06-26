@@ -61,41 +61,34 @@ static weather_icon_data *weather_icon_data_get(WeatherIcon *aIcon) {
     return (weather_icon_data *)layer_get_data(aIcon);
 }
 
-static void paint_weather_icon(WeatherIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn) {
-    if (aAnimating) {
-        if (!aZoomedIn) {
-            graphics_context_set_stroke_color(aCtx, GColorWhite);
-            graphics_draw_circle(aCtx, aCenter, aRadius);
-        }
-    } else {
-        // background
+static void paint_weather_icon(WeatherIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aZoomedIn) {
+    // background
 #ifdef PBL_COLOR
-        graphics_context_set_fill_color(aCtx, GColorVividCerulean);
-        graphics_fill_circle(aCtx, aCenter, aRadius);
+    graphics_context_set_fill_color(aCtx, GColorVividCerulean);
+    graphics_fill_circle(aCtx, aCenter, aRadius);
 #else
-        fill_dithered_circle(aCtx, aCenter, aRadius, Dithering50Percent);
+    fill_dithered_circle(aCtx, aCenter, aRadius, Dithering50Percent);
 #endif
 
 #ifndef PBL_COLOR            
-        GBitmap* mask = weather_icon_get_mask(aIcon);
-        graphics_context_set_compositing_mode(aCtx, GCompOpClear);
-        for (int dx = -1; dx <= +1; ++dx) {
-            for (int dy = -1; dy <= +1; ++dy) {
-                graphics_draw_bitmap_in_rect(aCtx, mask, GRect(
-                    dx + 1 + (r.size.w - WEATHER_ICON_SIZE) / 2,
-                    dy + (r.size.h - WEATHER_ICON_SIZE) / 2,
-                    WEATHER_ICON_SIZE, WEATHER_ICON_SIZE));
-            }
+    GBitmap* mask = weather_icon_get_mask(aIcon);
+    graphics_context_set_compositing_mode(aCtx, GCompOpClear);
+    for (int dx = -1; dx <= +1; ++dx) {
+        for (int dy = -1; dy <= +1; ++dy) {
+            graphics_draw_bitmap_in_rect(aCtx, mask, GRect(
+                dx + 1 + (r.size.w - WEATHER_ICON_SIZE) / 2,
+                dy + (r.size.h - WEATHER_ICON_SIZE) / 2,
+                WEATHER_ICON_SIZE, WEATHER_ICON_SIZE));
         }
-#endif
-            
-        GBitmap* weather = weather_icon_get_weather(aIcon);
-        graphics_context_set_compositing_mode(aCtx, GCompOpSet);
-        graphics_draw_bitmap_in_rect(aCtx, weather, GRect(
-            1 + (r.size.w - WEATHER_ICON_SIZE) / 2,
-            (r.size.h - WEATHER_ICON_SIZE) / 2,
-            WEATHER_ICON_SIZE, WEATHER_ICON_SIZE));
     }
+#endif
+        
+    GBitmap* weather = weather_icon_get_weather(aIcon);
+    graphics_context_set_compositing_mode(aCtx, GCompOpSet);
+    graphics_draw_bitmap_in_rect(aCtx, weather, GRect(
+        1 + (r.size.w - WEATHER_ICON_SIZE) / 2,
+        (r.size.h - WEATHER_ICON_SIZE) / 2,
+        WEATHER_ICON_SIZE, WEATHER_ICON_SIZE));
 }
 
 WeatherIcon *weather_icon_create(GRect aFromFrame, GRect aToFrame) {
