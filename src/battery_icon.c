@@ -42,7 +42,7 @@ static void paint_battery_icon(BatteryIcon *aIcon, GContext *aCtx, GRect r, GPoi
                     graphics_context_set_stroke_color(aCtx, GColorDarkGray);
                     graphics_draw_pixel(aCtx, GPoint(x, y));
 #else
-                    if (pattern_25percent(x,y)) {
+                    if (pattern25(x,y)) {
                         graphics_context_set_stroke_color(aCtx, GColorBlack);
                     }
 #endif

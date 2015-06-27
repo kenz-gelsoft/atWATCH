@@ -67,7 +67,7 @@ static void paint_weather_icon(WeatherIcon *aIcon, GContext *aCtx, GRect r, GPoi
     graphics_context_set_fill_color(aCtx, GColorVividCerulean);
     graphics_fill_circle(aCtx, aCenter, aRadius);
 #else
-    fill_dithered_circle(aCtx, aCenter, aRadius, Dithering50Percent);
+    fill_dithered_circle(aCtx, aCenter, aRadius, PATTERN_50);
 #endif
 
 #ifndef PBL_COLOR            

@@ -1,4 +1,5 @@
 #include "icon_colors.h"
+#include "dithering.h"
 
 
 #ifdef PBL_COLOR
@@ -25,7 +26,7 @@ IconColor *icon_colors_create(uint8_t *aOutCount) {
     };
     uint8_t count = sizeof(sColors)/sizeof(sColors[0]);
 #else
-    uint8_t count = 4; 
+    uint8_t count = (uint8_t)PATTERN_COUNT; 
 #endif
     *aOutCount = count;
     
