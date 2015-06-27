@@ -75,9 +75,6 @@ static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
     }
 }
 
-static bool shows_second_hand(ClockIcon *aIcon) {
-    return clock_icon_data_get(aIcon)->mShowsSecondHand;
-}
 static void paint_clock(ClockIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn) {
     // background
     if (aAnimating) {
@@ -119,7 +116,7 @@ static void paint_clock(ClockIcon *aIcon, GContext *aCtx, GRect r, GPoint aCente
         graphics_draw_circle(aCtx, aCenter, CLOCK_CENTER_RADIUS - 1);
     }
     
-    if (!aZoomedIn && !shows_second_hand(aIcon)) {
+    if (!aAnimating && !aZoomedIn && !clock_icon_shows_second_hand()) {
         // don't draw second hand if preffed off.
         return;
     }
@@ -167,8 +164,9 @@ void clock_icon_update_time(ClockIcon *aIcon) {
     layer_mark_dirty(aIcon);
 }
 
-void clock_icon_reload_settings(ClockIcon *aIcon) {
-    clock_icon_data *data = clock_icon_data_get(aIcon);
-    data->mShowsSecondHand = persist_read_bool(showsSecondHand);
-    // automatically redraw clock after <1 second.
+bool clock_icon_shows_second_hand() {
+    if (!persist_exists(showsSecondHand)) {
+        return true;
+    }
+    return persist_read_bool(showsSecondHand);
 }

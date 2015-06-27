@@ -94,14 +94,35 @@ static void battery_handler(BatteryChargeState aCharge) {
     update_battery(aCharge);
 }
 
+static void zoom_in_end(Icon *aIcon) {
+    if (!clock_icon_shows_second_hand()) {
+        // restore timer interval
+        tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+    }
+}
+
 static void tap_handler(AccelAxisType aAxis, int32_t aDirection) {
     if (icon_is_animating(sIcons[0])) {
         // don't restart animation while animating
         return;
     }
-    for (int32_t i = 0; i < ICON_COUNT; ++i) {
-        icon_zoom_in(sIcons[i]);
+    if (!clock_icon_shows_second_hand()) {
+        // boost timer interval temporarily
+        tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
     }
+    for (int32_t i = 0; i < ICON_COUNT; ++i) {
+        IconAnimationDoneHandler handler = i == CLOCK_ICON
+            ? zoom_in_end
+            : NULL;
+        icon_zoom_in(sIcons[i], handler);
+    }
+}
+
+static void setup_tick_handler() {
+    TimeUnits tickUnits = clock_icon_shows_second_hand()
+        ? SECOND_UNIT
+        : MINUTE_UNIT;
+    tick_timer_service_subscribe(tickUnits, tick_handler);
 }
 
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
@@ -113,7 +134,9 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
             break;
         case showsSecondHand:
             persist_write_bool(showsSecondHand, t->value->uint8);
-            clock_icon_reload_settings(sIcons[CLOCK_ICON]);
+            
+            setup_tick_handler();
+            update_time();
             break;
         }
         t = dict_read_next(iterator);
@@ -153,7 +176,6 @@ static void main_window_load(Window *aWindow) {
     icon_colors_destroy(iconColors);
     
     update_time();
-    clock_icon_reload_settings(sIcons[CLOCK_ICON]);
     BatteryChargeState charge = battery_state_service_peek();
     update_battery(charge);
 }
@@ -176,7 +198,7 @@ static void init() {
     window_set_background_color(sMainWindow, GColorBlack);
     window_stack_push(sMainWindow, true);
     
-    tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
+    setup_tick_handler();
     battery_state_service_subscribe(battery_handler);
     accel_tap_service_subscribe(tap_handler);
     
