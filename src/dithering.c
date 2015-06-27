@@ -41,9 +41,9 @@ bool pattern75(int32_t x, int32_t y) {
 bool pattern75_2(int32_t x, int32_t y) {
 	return !pattern25_2(x, y);
 }
-bool pattern75_3(int32_t x, int32_t y) {
-	return !pattern25_3(x, y);
-}
+// bool pattern75_3(int32_t x, int32_t y) {
+// 	return !pattern25_3(x, y);
+// }
 
 void fill_dithered_circle(GContext *ctx, GPoint center, int32_t radius, DitheringPattern pattern) {
 	switch (pattern) {
@@ -54,6 +54,6 @@ void fill_dithered_circle(GContext *ctx, GPoint center, int32_t radius, Ditherin
 	CASE_PATTERN(50);
 	CASE_PATTERN(75);
 	CASE_PATTERN(75_2);
-	CASE_PATTERN(75_3);
+	// CASE_PATTERN(75_3);
 	}
 }
