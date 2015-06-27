@@ -122,8 +122,8 @@ function save() {
 		<table>
 			<h2>Display Settings</h2>
 			<tr>
-				<td><input type="checkbox"></td>
-				<td>Show Second Hand<td>
+				<td><input type="checkbox" id="show_second_hand" checked></td>
+				<td><label for="show_second_hand">Show Second Hand</label></td>
 			</tr>
 		</table>
 	</body>
