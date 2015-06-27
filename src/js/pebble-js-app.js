@@ -111,7 +111,11 @@ table {
 		</style>
 		<script type="text/javascript">
 function save() {
-	location.href = "pebblejs://close#success";
+	var secHand = document.getElementById('showsSecondHand').checked;
+  var config = {
+    "showsSecondHand": secHand
+  };
+  location.href = "pebblejs://close#" + encodeURIComponent(JSON.stringify(config));
 }
 		</script>
 	</head>
@@ -122,8 +126,8 @@ function save() {
 		<table>
 			<h2>Display Settings</h2>
 			<tr>
-				<td><input type="checkbox" id="show_second_hand" checked></td>
-				<td><label for="show_second_hand">Show Second Hand</label></td>
+				<td><input type="checkbox" id="showsSecondHand" checked></td>
+				<td><label for="showsSecondHand">Show Second Hand</label></td>
 			</tr>
 		</table>
 	</body>
@@ -133,4 +137,19 @@ function save() {
 Pebble.addEventListener('showConfiguration', function(e) {
   // Show config page
   Pebble.openURL('data:text/html;charset=UTF-8,' + encodeURIComponent(html));
+});
+
+Pebble.addEventListener('webviewclosed', function(e) {
+  var config = JSON.parse(decodeURIComponent(e.response));
+  Pebble.sendAppMessage(config,
+    function(e) {
+      console.log('Successfully delivered message with transactionId='
+        + e.data.transactionId);
+    },
+    function(e) {
+      console.log('Unable to deliver message with transactionId='
+        + e.data.transactionId
+        + ' Error is: ' + e.error.message);
+    });
+  console.log('Configuration window returned: ', JSON.stringify(config));
 });

@@ -75,6 +75,9 @@ static void draw_clock_hand(GContext *aCtx, GPoint aCenter, int32_t aRadius,
     }
 }
 
+static bool shows_second_hand(ClockIcon *aIcon) {
+    return clock_icon_data_get(aIcon)->mShowsSecondHand;
+}
 static void paint_clock(ClockIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aAnimating, bool aZoomedIn) {
     // background
     if (aAnimating) {
@@ -116,6 +119,10 @@ static void paint_clock(ClockIcon *aIcon, GContext *aCtx, GRect r, GPoint aCente
         graphics_draw_circle(aCtx, aCenter, CLOCK_CENTER_RADIUS - 1);
     }
     
+    if (!aZoomedIn && !shows_second_hand(aIcon)) {
+        // don't draw second hand if preffed off.
+        return;
+    }
     // seconds hand
     int32_t secLength = CLOCK_SEC_HAND_LENGTH(aRadius);
     int32_t secAngle = TRIG_MAX_ANGLE * s / 60.f;
@@ -158,4 +165,10 @@ void clock_icon_update_time(ClockIcon *aIcon) {
     data->s = tick_time->tm_sec;
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d", h, m);
     layer_mark_dirty(aIcon);
+}
+
+void clock_icon_reload_settings(ClockIcon *aIcon) {
+    clock_icon_data *data = clock_icon_data_get(aIcon);
+    data->mShowsSecondHand = persist_read_bool(showsSecondHand);
+    // automatically redraw clock after <1 second.
 }

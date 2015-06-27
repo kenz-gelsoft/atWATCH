@@ -12,6 +12,7 @@ typedef struct {
 	int32_t h;
 	int32_t m;
 	int32_t s;
+	bool mShowsSecondHand;
 } clock_icon_data;
 
 typedef Icon ClockIcon;
@@ -20,5 +21,6 @@ ClockIcon *clock_icon_create(GRect aFromFrame, GRect aToFrame);
 void clock_icon_destroy(ClockIcon *aIcon);
 
 void clock_icon_update_time(ClockIcon *aIcon);
+void clock_icon_reload_settings(ClockIcon *aIcon);
 
 #endif

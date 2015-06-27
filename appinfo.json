@@ -10,7 +10,8 @@
     "watchface": true
   },
   "appKeys": {
-    "KEY_WEATHER_ID": 1
+    "KEY_WEATHER_ID": 1,
+    "showsSecondHand": 2
   },
   "capabilities": [
     "configurable",

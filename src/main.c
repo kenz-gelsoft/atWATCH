@@ -12,10 +12,6 @@
 #define ICON_COUNT 19
 #define CLOCK_SIZE 41
 
-enum {
-    KEY_WEATHER_ID = 1
-};
-
 
 static Window *sMainWindow;
 static Icon *sIcons[ICON_COUNT];
@@ -115,6 +111,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         case KEY_WEATHER_ID:
             weather_icon_update(sIcons[WEATHER_ICON], t->value->int32);
             break;
+        case showsSecondHand:
+            persist_write_bool(showsSecondHand, t->value->uint8);
+            clock_icon_reload_settings(sIcons[CLOCK_ICON]);
+            break;
         }
         t = dict_read_next(iterator);
     }
@@ -153,6 +153,7 @@ static void main_window_load(Window *aWindow) {
     icon_colors_destroy(iconColors);
     
     update_time();
+    clock_icon_reload_settings(sIcons[CLOCK_ICON]);
     BatteryChargeState charge = battery_state_service_peek();
     update_battery(charge);
 }
