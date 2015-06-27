@@ -12,7 +12,10 @@
   "appKeys": {
     "KEY_WEATHER_ID": 1
   },
-  "capabilities": [ "location" ],
+  "capabilities": [
+    "configurable",
+    "location"
+  ],
   "resources": {
     "media": [
       {

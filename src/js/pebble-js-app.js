@@ -70,3 +70,67 @@ Pebble.addEventListener('appmessage',
   }                     
 );
 
+var html = (function() {/*
+<html>
+	<head>
+		<style type="text/css">
+html {
+	font-family: 'Trebuchet MS', sans-serif;
+	background-color: #222222;
+	color: #AAAAAA;
+	text-transform: uppercase;
+	-webkit-user-select: none;
+}
+h1, h2, h3, h4, h5, h6 {
+	color: #FF4A00;
+	font-size: 1em;
+}
+.button {
+	background-color: transparent;
+	border: 2px solid #FF4A00;
+	border-radius: 100px;
+	color: white;
+	display: inline-block;
+	font-size: 0.8em;
+	margin: 1em 0;
+	padding: 0.5em 1em;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+.button:active {
+	border-color: #7F2500;
+}
+.save-box {
+	float: right;
+	margin: 1em 0 0 0;
+}
+table {
+	border: 2px solid #FF4A00;
+	border-radius: 3px;
+}
+		</style>
+		<script type="text/javascript">
+function save() {
+	location.href = "pebblejs://close#success";
+}
+		</script>
+	</head>
+	<body>
+		<div class="save-box">
+			<a href="#" class="button" onclick="save()">Save</a>
+		</div>
+		<table>
+			<h2>Display Settings</h2>
+			<tr>
+				<td><input type="checkbox"></td>
+				<td>Show Second Hand<td>
+			</tr>
+		</table>
+	</body>
+</html>
+*/}).toString().match(/\/\*([^]*)\*\//)[1];
+
+Pebble.addEventListener('showConfiguration', function(e) {
+  // Show config page
+  Pebble.openURL('data:text/html;charset=UTF-8,' + encodeURIComponent(html));
+});
