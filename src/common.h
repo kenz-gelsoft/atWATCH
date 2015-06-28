@@ -6,7 +6,7 @@
 
 enum {
     KEY_WEATHER_ID = 1,
-    showsSecondHand = 2,
+    showSecondHand = 2,
 };
 
 #endif

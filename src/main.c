@@ -132,8 +132,8 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         case KEY_WEATHER_ID:
             weather_icon_update(sIcons[WEATHER_ICON], t->value->int32);
             break;
-        case showsSecondHand:
-            persist_write_bool(showsSecondHand, t->value->uint8);
+        case showSecondHand:
+            persist_write_bool(showSecondHand, t->value->uint8);
             
             setup_tick_handler();
             update_time();

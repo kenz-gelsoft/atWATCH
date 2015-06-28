@@ -165,8 +165,8 @@ void clock_icon_update_time(ClockIcon *aIcon) {
 }
 
 bool clock_icon_shows_second_hand() {
-    if (!persist_exists(showsSecondHand)) {
+    if (!persist_exists(showSecondHand)) {
         return true;
     }
-    return persist_read_bool(showsSecondHand);
+    return persist_read_bool(showSecondHand);
 }
