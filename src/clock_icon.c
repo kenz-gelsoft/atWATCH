@@ -116,6 +116,10 @@ static void paint_clock(ClockIcon *aIcon, GContext *aCtx, GRect r, GPoint aCente
         graphics_draw_circle(aCtx, aCenter, CLOCK_CENTER_RADIUS - 1);
     }
     
+    if (!aAnimating && !aZoomedIn && !clock_icon_shows_second_hand()) {
+        // don't draw second hand if preffed off.
+        return;
+    }
     // seconds hand
     int32_t secLength = CLOCK_SEC_HAND_LENGTH(aRadius);
     int32_t secAngle = TRIG_MAX_ANGLE * s / 60.f;
@@ -158,4 +162,11 @@ void clock_icon_update_time(ClockIcon *aIcon) {
     data->s = tick_time->tm_sec;
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "%d:%d", h, m);
     layer_mark_dirty(aIcon);
+}
+
+bool clock_icon_shows_second_hand() {
+    if (!persist_exists(showSecondHand)) {
+        return true;
+    }
+    return persist_read_bool(showSecondHand);
 }

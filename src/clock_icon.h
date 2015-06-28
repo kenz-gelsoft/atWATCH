@@ -20,5 +20,7 @@ ClockIcon *clock_icon_create(GRect aFromFrame, GRect aToFrame);
 void clock_icon_destroy(ClockIcon *aIcon);
 
 void clock_icon_update_time(ClockIcon *aIcon);
+bool clock_icon_shows_second_hand();
+
 
 #endif

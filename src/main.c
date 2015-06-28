@@ -12,10 +12,6 @@
 #define ICON_COUNT 19
 #define CLOCK_SIZE 41
 
-enum {
-    KEY_WEATHER_ID = 1
-};
-
 
 static Window *sMainWindow;
 static Icon *sIcons[ICON_COUNT];
@@ -98,14 +94,35 @@ static void battery_handler(BatteryChargeState aCharge) {
     update_battery(aCharge);
 }
 
+static void zoom_in_end(Icon *aIcon) {
+    if (!clock_icon_shows_second_hand()) {
+        // restore timer interval
+        tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+    }
+}
+
 static void tap_handler(AccelAxisType aAxis, int32_t aDirection) {
     if (icon_is_animating(sIcons[0])) {
         // don't restart animation while animating
         return;
     }
-    for (int32_t i = 0; i < ICON_COUNT; ++i) {
-        icon_zoom_in(sIcons[i]);
+    if (!clock_icon_shows_second_hand()) {
+        // boost timer interval temporarily
+        tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
     }
+    for (int32_t i = 0; i < ICON_COUNT; ++i) {
+        IconAnimationDoneHandler handler = i == CLOCK_ICON
+            ? zoom_in_end
+            : NULL;
+        icon_zoom_in(sIcons[i], handler);
+    }
+}
+
+static void setup_tick_handler() {
+    TimeUnits tickUnits = clock_icon_shows_second_hand()
+        ? SECOND_UNIT
+        : MINUTE_UNIT;
+    tick_timer_service_subscribe(tickUnits, tick_handler);
 }
 
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
@@ -114,6 +131,12 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         switch (t->key) {
         case KEY_WEATHER_ID:
             weather_icon_update(sIcons[WEATHER_ICON], t->value->int32);
+            break;
+        case showSecondHand:
+            persist_write_bool(showSecondHand, t->value->uint8);
+            
+            setup_tick_handler();
+            update_time();
             break;
         }
         t = dict_read_next(iterator);
@@ -175,7 +198,7 @@ static void init() {
     window_set_background_color(sMainWindow, GColorBlack);
     window_stack_push(sMainWindow, true);
     
-    tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
+    setup_tick_handler();
     battery_state_service_subscribe(battery_handler);
     accel_tap_service_subscribe(tap_handler);
     

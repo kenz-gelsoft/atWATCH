@@ -8,6 +8,7 @@
 typedef Layer Icon;
 
 typedef void (*IconPainter)(Icon *aIcon, GContext *aCtx, GRect aFrame, GPoint aCenter, int32_t aRadius, bool aZoomedIn);
+typedef void (*IconAnimationDoneHandler)(Icon *aIcon);
 
 typedef struct {
     IconColor mColor;
@@ -16,6 +17,7 @@ typedef struct {
     IconPainter mPainter;
     IconPainter mAnimatingPainter;
     bool mAnimating;
+    IconAnimationDoneHandler mAnimationDoneHandler;
 } icon_data;
 
 Icon *icon_create_with_data(GRect aFromFrame, GRect aToFrame, size_t aDataSize);
@@ -36,6 +38,6 @@ IconPainter icon_get_animating_painter(Icon *aIcon);
 bool icon_is_animating(Icon *aIcon);
 void icon_set_animating(Icon *aIcon, bool aAnimating);
 
-void icon_zoom_in(Icon *aIcon);
+void icon_zoom_in(Icon *aIcon, IconAnimationDoneHandler aDoneHandler);
 
 #endif

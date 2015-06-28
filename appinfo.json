@@ -3,16 +3,20 @@
   "shortName": "@WATCH",
   "longName": "@WATCH",
   "companyName": "KENZ",
-  "versionLabel": "1.3",
+  "versionLabel": "1.4",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite", "basalt"],
   "watchapp": {
     "watchface": true
   },
   "appKeys": {
-    "KEY_WEATHER_ID": 1
+    "KEY_WEATHER_ID": 1,
+    "showSecondHand": 2
   },
-  "capabilities": [ "location" ],
+  "capabilities": [
+    "configurable",
+    "location"
+  ],
   "resources": {
     "media": [
       {

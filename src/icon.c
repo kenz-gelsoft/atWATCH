@@ -13,9 +13,18 @@ static icon_data *icon_data_get(Icon *aIcon) {
     return (icon_data *)layer_get_data(aIcon);
 }
 
+static IconAnimationDoneHandler animation_done_handler(Icon *aIcon) {
+    return icon_data_get(aIcon)->mAnimationDoneHandler;
+}
 static void anim_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
     Icon *icon = (Icon *)aCtx;
     icon_set_animating(icon, false);
+    
+    IconAnimationDoneHandler done_handler = animation_done_handler(icon);
+    if (done_handler) {
+        done_handler(icon);
+    }
+    icon_data_get(icon)->mAnimationDoneHandler = NULL;
     
     property_animation_destroy((PropertyAnimation *)aAnimation);
 }
@@ -41,8 +50,10 @@ static void zoom_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
     zoom_out(icon, ZOOM_STOP_DELAY);
 }
 
-void icon_zoom_in(Icon *aIcon) {
+void icon_zoom_in(Icon *aIcon, IconAnimationDoneHandler aDoneHandler) {
     icon_set_animating(aIcon, true);
+    
+    icon_data_get(aIcon)->mAnimationDoneHandler = aDoneHandler;
     
     GRect fromFrame = icon_get_from_frame(aIcon);
     PropertyAnimation *animation = property_animation_create_layer_frame(aIcon, NULL, &fromFrame);
