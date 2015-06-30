@@ -37,6 +37,9 @@ table {
 }
 		</style>
 		<script type="text/javascript">
+function init() {
+	alert(location.hash);
+}
 function save() {
 	var secHand = document.getElementById('showSecondHand').checked;
   var config = {
@@ -46,7 +49,7 @@ function save() {
 }
 		</script>
 	</head>
-	<body>
+	<body onload="init()">
 		<div class="save-box">
 			<a href="#" class="button" onclick="save()">Save</a>
 		</div>
