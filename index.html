@@ -1,24 +1,7 @@
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="settings.css" />
-		<script type="text/javascript">
-function init() {
-	var hash = location.hash;
-	if (hash) {
-		var config = JSON.parse(decodeURIComponent(location.hash.substring(1)));
-		if (!config['showSecondHand']) {
-			document.getElementById('showSecondHand').checked = false;
-		}
-	}
-}
-function save() {
-	var secHand = document.getElementById('showSecondHand').checked;
-  var config = {
-    "showSecondHand": secHand ? 1 : 0
-  };
-  location.href = "pebblejs://close#" + encodeURIComponent(JSON.stringify(config));
-}
-		</script>
+		<script type="text/javascript" src="settings.js"></script>
 	</head>
 	<body onload="init()">
 		<div class="save-box">
