@@ -1,0 +1,17 @@
+{
+  "name": "atWATCHsettings",
+  "version": "0.0.0",
+  "homepage": "https://github.com/kenz-gelsoft/atWATCH",
+  "authors": [
+    "KENZ <KENZ.gelsoft@gmail.com>"
+  ],
+  "description": "The setting page for the atWATCH, a watchface of the Pebble Smartwatch.",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
