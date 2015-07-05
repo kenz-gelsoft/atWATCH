@@ -14,3 +14,6 @@ function save() {
     };
     location.href = "pebblejs://close#" + encodeURIComponent(JSON.stringify(config));
 }
+document.addEventListener('WebComponentsReady', function () {
+    init();
+});
