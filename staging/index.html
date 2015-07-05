@@ -15,13 +15,16 @@ body, paper-item {
 	font-family: 'DIN Alternate', 'Roboto', 'Noto', sans-serif;
 }
 body {
+    background-color: #222222;
+    color: #AAAAAA;
 	font-size: 14px;
 	margin: 0;
 	padding: 0;
-	background-color: var(--paper-grey-50);
 	text-transform: uppercase;
+    -webkit-user-select: none;
 }
 h4 {
+    color: #FF4A00;
 	font-size: 14px;
 	margin: 17px 16px;
 	padding: 0;
@@ -32,6 +35,21 @@ paper-item {
 }
 paper-item:first-child {
 	border-top: none;
+}
+paper-toggle-button {
+	--paper-toggle-button-checked-bar-color:    #FF4A00;
+	--paper-toggle-button-checked-button-color: #FF4A00;
+	--paper-toggle-button-checked-ink-color:    #FF4A00;
+	--paper-toggle-button-unchecked-bar-color:    gray;
+	--paper-toggle-button-unchecked-button-color: gray;
+	--paper-toggle-button-unchecked-ink-color:    gray;
+}
+paper-button {
+  color: #FF4A00;
+}
+paper-button[raised] {
+  background: #FF4A00;
+  color: #fff;
 }
 .at {
 	font-family: 'Trebuchet MS';
