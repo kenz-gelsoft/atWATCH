@@ -1,0 +1,100 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  		<title>@WATCH</title>
+		<script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+		<link rel="stylesheet" href="../bower_components/paper-styles/paper-styles.html">
+		<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+		<link rel="import" href="../bower_components/paper-button/paper-button.html">
+		<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+		<link rel="import" href="../bower_components/paper-item/paper-item.html">
+		<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+		<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+		<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+		<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+		<script type="text/javascript" src="settings.js"></script>
+  		<style is="custom-style">
+body, paper-item {
+	font-family: 'DIN Alternate', 'Roboto', 'Noto', sans-serif;
+}
+body {
+    background-color: #222222;
+    color: #AAAAAA;
+	font-size: 14px;
+	margin: 0;
+	padding: 0;
+	text-transform: uppercase;
+    -webkit-user-select: none;
+}
+h4 {
+    color: #FF4A00;
+	font-size: 14px;
+	margin: 17px 16px;
+	padding: 0;
+}
+paper-item {
+	border-top: 1px solid #444444;
+	margin: 0;
+}
+paper-item:first-child, paper-item.continue {
+	border-top: none;
+}
+paper-slider {
+	width: 100%;
+	--paper-slider-knob-color:   #FF4A00;
+	--paper-slider-active-color: #FF4A00;
+	--paper-slider-pin-color:    #FF4A00;
+}
+paper-toggle-button {
+	--paper-toggle-button-checked-bar-color:    #FF4A00;
+	--paper-toggle-button-checked-button-color: #FF4A00;
+	--paper-toggle-button-checked-ink-color:    #FF4A00;
+	--paper-toggle-button-unchecked-bar-color:    gray;
+	--paper-toggle-button-unchecked-button-color: gray;
+	--paper-toggle-button-unchecked-ink-color:    gray;
+}
+paper-toolbar {
+  background: #FF4A00;
+}
+paper-toolbar paper-button {
+	color: white;
+}
+paper-button {
+  color: #FF4A00;
+}
+paper-button[raised] {
+  background: #FF4A00;
+  color: #fff;
+}
+.at {
+	font-family: 'Trebuchet MS';
+}
+#save-button {
+	margin: 20px 16px 0;
+}
+  		</style>
+	</head>
+	<body unresolved>
+		<paper-toolbar id="toolbar">
+			<paper-icon-button icon="menu" onclick="cancel()"></paper-icon-button>
+			<span class="title">@WATCH</span>
+			<paper-button onclick="save()"><iron-icon icon="check"></iron-icon>Save</paper-button>
+		</paper-toolbar>
+		<h4>Display Settings</h4>
+		<div>
+			<paper-item>
+				<paper-item-body>Show Second Hand</paper-item-body>
+				<paper-toggle-button id="showSecondHand" checked></paper-tobble-button>
+			</paper-item>
+			<paper-item>
+				<paper-item-body>Shake Zooms In Clock For</paper-item-body>
+			</paper-item>
+			<paper-item class="continue">
+				<paper-slider id="zoomInTimeout" min="0" max="10" value="2.5" step="2.5"></paper-slider>
+				<span id="zoomInTimeoutLabel">2.5</span>&nbsp;s
+			</paper-item>
+		</div>
+		<paper-button id="save-button" raised onclick="save()">Save Settings</paper-button>
+	</body>
+</html>
