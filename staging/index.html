@@ -4,12 +4,13 @@
 		<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   		<title>@WATCH</title>
 		<script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+		<link rel="stylesheet" href="../bower_components/paper-styles/paper-styles.html">
 		<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-		<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
 		<link rel="import" href="../bower_components/paper-button/paper-button.html">
 		<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 		<link rel="import" href="../bower_components/paper-item/paper-item.html">
 		<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+		<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
 		<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 		<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
 		<script type="text/javascript" src="settings.js"></script>
@@ -33,11 +34,17 @@ h4 {
 	padding: 0;
 }
 paper-item {
-	border-top: 1px solid lightgray;
+	border-top: 1px solid #444444;
 	margin: 0;
 }
-paper-item:first-child {
+paper-item:first-child, paper-item.continue {
 	border-top: none;
+}
+paper-slider {
+	width: 100%;
+	--paper-slider-knob-color:   #FF4A00;
+	--paper-slider-active-color: #FF4A00;
+	--paper-slider-pin-color:    #FF4A00;
 }
 paper-toggle-button {
 	--paper-toggle-button-checked-bar-color:    #FF4A00;
@@ -79,6 +86,13 @@ paper-button[raised] {
 			<paper-item>
 				<paper-item-body>Show Second Hand</paper-item-body>
 				<paper-toggle-button id="showSecondHand" checked></paper-tobble-button>
+			</paper-item>
+			<paper-item>
+				<paper-item-body>Shake Shows Big Clock for</paper-item-body>
+			</paper-item>
+			<paper-item class="continue">
+				<paper-slider id="bigClockTimeout" min="2.5" max="10" value="2.5" step="2.5"></paper-slider>
+				<span id="bigClockTimeoutLabel">2.5</span>&nbsp;s
 			</paper-item>
 		</div>
 		<paper-button id="save-button" raised onclick="save()">Save Settings</paper-button>

@@ -5,6 +5,11 @@ function init() {
         document.getElementById('toolbar').style.display = "none";
     }
     
+    var timeout = document.querySelector('#bigClockTimeout');
+    timeout.addEventListener('value-change', function() {
+        document.querySelector('#bigClockTimeoutLabel').textContent = ratings.value;
+    });
+    
     var hash = location.hash;
     if (hash) {
         var config = JSON.parse(decodeURIComponent(location.hash.substring(1)));
