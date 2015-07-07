@@ -3,7 +3,7 @@
   "shortName": "@WATCH",
   "longName": "@WATCH",
   "companyName": "KENZ",
-  "versionLabel": "1.6",
+  "versionLabel": "1.7",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite", "basalt"],
   "watchapp": {
