@@ -43,11 +43,18 @@ static void zoom_out(Icon *aIcon, int32_t aDelay) {
     animation_schedule((Animation *)animation);
 }
 
+static int32_t zoom_in_timeout() {
+    if (!persist_exists(zoomInTimeout)) {
+        return ZOOM_STOP_DELAY;
+    }
+    return persist_read_int(zoomInTimeout);
+}
+
 static void zoom_stopped(Animation *aAnimation, bool aFinished, void *aCtx) {
     property_animation_destroy((PropertyAnimation *)aAnimation);
     
     Icon *icon = (Icon *)aCtx;
-    zoom_out(icon, ZOOM_STOP_DELAY);
+    zoom_out(icon, zoom_in_timeout());
 }
 
 void icon_zoom_in(Icon *aIcon, IconAnimationDoneHandler aDoneHandler) {

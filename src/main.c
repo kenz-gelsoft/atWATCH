@@ -138,6 +138,9 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
             setup_tick_handler();
             update_time();
             break;
+        case zoomInTimeout:
+            persist_write_int(zoomInTimeout, t->value->int32);
+            break;
         }
         t = dict_read_next(iterator);
     }
