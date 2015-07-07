@@ -5,9 +5,12 @@ function init() {
         document.getElementById('toolbar').style.display = "none";
     }
     
-    var timeout = document.querySelector('#bigClockTimeout');
-    timeout.addEventListener('value-change', function() {
-        document.querySelector('#bigClockTimeoutLabel').textContent = ratings.value;
+    var zoomInTimeout = document.querySelector('#zoomInTimeout');
+    zoomInTimeout.addEventListener('value-change', function() {
+        document.querySelector('#zoomInTimeoutLabel').textContent = zoomInTimeout.value;
+    });
+    zoomInTimeout.addEventListener('immediate-value-change', function() {
+        document.querySelector('#zoomInTimeoutLabel').textContent = zoomInTimeout.immediateValue;
     });
     
     var hash = location.hash;
@@ -23,8 +26,10 @@ function isAndroid() {
 }
 function save() {
     var secHand = document.getElementById('showSecondHand').checked;
+    var zoomInTimeout = parseFloat(document.querySelector('#zoomInTimeout').value) * 1000;
     var config = {
-        "showSecondHand": secHand ? 1 : 0
+        "showSecondHand": secHand ? 1 : 0,
+        "zoomInTimeout": zoomInTimeout
     };
     location.href = "pebblejs://close#" + encodeURIComponent(JSON.stringify(config));
 }
