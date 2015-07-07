@@ -13,16 +13,20 @@ function init() {
         document.querySelector('#zoomInTimeoutLabel').textContent = zoomInTimeout.immediateValue;
     });
     
+    load();
+}
+function isAndroid() {
+    return navigator.userAgent.indexOf('Android') >= 0;
+}
+function load() {
     var hash = location.hash;
     if (hash) {
         var config = JSON.parse(decodeURIComponent(location.hash.substring(1)));
         if (!config['showSecondHand']) {
             document.getElementById('showSecondHand').checked = false;
         }
+        document.querySelector('#zoomInTimeout').value = config['zoomInTimeout'] / 1000.0;
     }
-}
-function isAndroid() {
-    return navigator.userAgent.indexOf('Android') >= 0;
 }
 function save() {
     var secHand = document.getElementById('showSecondHand').checked;
