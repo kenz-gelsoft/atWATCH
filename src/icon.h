@@ -39,5 +39,6 @@ bool icon_is_animating(Icon *aIcon);
 void icon_set_animating(Icon *aIcon, bool aAnimating);
 
 void icon_zoom_in(Icon *aIcon, IconAnimationDoneHandler aDoneHandler);
+int32_t icon_zoom_in_timeout();
 
 #endif

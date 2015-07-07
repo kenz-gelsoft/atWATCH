@@ -125,6 +125,14 @@ static void setup_tick_handler() {
     tick_timer_service_subscribe(tickUnits, tick_handler);
 }
 
+static void setup_accel_handler() {
+    if (icon_zoom_in_timeout()) {
+        accel_tap_service_subscribe(tap_handler);
+    } else {
+        accel_tap_service_unsubscribe();
+    }
+}
+
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
     Tuple *t = dict_read_first(iterator);
     while (t != NULL) {
@@ -140,6 +148,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
             break;
         case zoomInTimeout:
             persist_write_int(zoomInTimeout, t->value->int32);
+            setup_accel_handler();
             break;
         }
         t = dict_read_next(iterator);
@@ -202,8 +211,8 @@ static void init() {
     window_stack_push(sMainWindow, true);
     
     setup_tick_handler();
+    setup_accel_handler();
     battery_state_service_subscribe(battery_handler);
-    accel_tap_service_subscribe(tap_handler);
     
     app_message_register_inbox_received(inbox_received_callback);
     app_message_register_inbox_dropped(inbox_dropped_callback);
