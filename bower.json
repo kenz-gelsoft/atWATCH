@@ -22,6 +22,7 @@
     "paper-styles": "PolymerElements/paper-styles#^1.0.0",
     "paper-toggle-button": "PolymerElements/paper-toggle-button#^1.0.0",
     "paper-toolbar": "PolymerElements/paper-toolbar#^1.0.0",
-    "paper-slider": "PolymerElements/paper-slider#^1.0.0"
+    "paper-slider": "PolymerElements/paper-slider#^1.0.0",
+    "paper-radio-group": "PolymerElements/paper-radio-group#~1.0.4"
   }
 }
