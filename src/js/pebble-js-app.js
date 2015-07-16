@@ -22,9 +22,13 @@ function locationSuccess(pos) {
       var weatherId = json.weather[0].id;      
       console.log('Weather ID is ' + weatherId);
       
+      var temperature = json.main.temp;
+      console.log('Temperature is ' + temperature);
+      
       // Assemble dictionary using our keys
       var dictionary = {
-        'KEY_WEATHER_ID': weatherId
+        'KEY_WEATHER_ID': weatherId,
+        'KEY_TEMPERATURE': temperature
       };
       
       // Send to Pebble
