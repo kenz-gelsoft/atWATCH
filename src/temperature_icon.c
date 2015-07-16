@@ -26,18 +26,21 @@ static void draw_degree(GContext *aCtx, GRect r, const char *buffer, int32_t dx,
 static void paint_temperature_icon(TemperatureIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aZoomedIn) {
     int32_t temp = temperature_icon_get_temp(aIcon);
     
-// #ifdef PBL_COLOR
-//     graphics_context_set_fill_color(aCtx, GColorMalachite);
-//     graphics_fill_circle(aCtx, aCenter, aRadius);
-// #else
+#ifdef PBL_COLOR
+    graphics_context_set_fill_color(aCtx, GColorDukeBlue);
+    graphics_fill_circle(aCtx, aCenter, aRadius);
+#else
     graphics_context_set_stroke_color(aCtx, GColorWhite);
     fill_dithered_circle(aCtx, aCenter, aRadius, PATTERN_75_2);
-// #endif
+#endif
 
     // text
     static char buffer[] = "-000°";
     snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), "%ld°", temp);
 
+#ifdef PBL_COLOR
+    graphics_context_set_text_color(aCtx, GColorElectricBlue);
+#else
     graphics_context_set_text_color(aCtx, GColorBlack);
     for (int dy = -1; dy <= +1; ++dy) {
         for (int dx = -1; dx <= +1; ++dx) {
@@ -48,6 +51,7 @@ static void paint_temperature_icon(TemperatureIcon *aIcon, GContext *aCtx, GRect
         }
     }
     graphics_context_set_text_color(aCtx, GColorWhite);
+#endif
     draw_degree(aCtx, r, buffer, 0, 0);
 }
 
