@@ -33,7 +33,7 @@ static char temperature_unit() {
 
 static void paint_temperature_icon(TemperatureIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aZoomedIn) {
 #ifdef PBL_COLOR
-    graphics_context_set_fill_color(aCtx, GColorDukeBlue);
+    graphics_context_set_fill_color(aCtx, GColorMidnightGreen);
     graphics_fill_circle(aCtx, aCenter, aRadius);
 #else
     graphics_context_set_stroke_color(aCtx, GColorWhite);
