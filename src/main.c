@@ -139,6 +139,7 @@ static void setup_accel_handler() {
 }
 
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
+    static int32_t lastTemp;
     Tuple *t = dict_read_first(iterator);
     while (t != NULL) {
         switch (t->key) {
@@ -146,7 +147,8 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
             weather_icon_update(sIcons[WEATHER_ICON], t->value->int32);
             break;
         case KEY_TEMPERATURE:
-            temperature_icon_update(sIcons[TEMPERATURE_ICON], t->value->int32);
+            lastTemp = t->value->int32;
+            temperature_icon_update(sIcons[TEMPERATURE_ICON], lastTemp);
             break;
         case showSecondHand:
             persist_write_bool(showSecondHand, t->value->uint8);
@@ -157,6 +159,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         case zoomInTimeout:
             persist_write_int(zoomInTimeout, t->value->int32);
             setup_accel_handler();
+            break;
+        case temperatureScale:
+            persist_write_int(temperatureScale, (char)t->value->cstring[0]);
+            temperature_icon_update(sIcons[TEMPERATURE_ICON], lastTemp);
             break;
         }
         t = dict_read_next(iterator);

@@ -18,7 +18,7 @@ typedef Icon TemperatureIcon;
 TemperatureIcon *temperature_icon_create(GRect aFromFrame, GRect aToFrame);
 void temperature_icon_destroy(TemperatureIcon *aIcon);
 
-int32_t temperature_icon_get_temp(TemperatureIcon *aIcon);
+int32_t temperature_icon_get_temperature(TemperatureIcon *aIcon);
 
 void temperature_icon_update(TemperatureIcon *aIcon, int32_t aTemperature);
 

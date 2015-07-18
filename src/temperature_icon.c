@@ -2,11 +2,12 @@
 #include "common.h"
 
 
-#define TEMPERATURE_FONT              FONT_KEY_GOTHIC_18_BOLD
-#define TEMPERATURE_FONT_SIZE         18
-#define TEMPERATURE_TEXT_ADJUSTMENT_X 2
-#define TEMPERATURE_TEXT_ADJUSTMENT_Y 26
-#define TEMPERATURE_CELCIUS_CONSTANT  273.15
+#define TEMPERATURE_FONT               FONT_KEY_GOTHIC_18_BOLD
+#define TEMPERATURE_FONT_SIZE          18
+#define TEMPERATURE_TEXT_ADJUSTMENT_X  2
+#define TEMPERATURE_TEXT_ADJUSTMENT_Y  26
+#define TEMPERATURE_CELCIUS_CONSTANT   273.15
+#define TEMPERATURE_FARENHEIT_CONSTANT 459.67
 
 
 static temperature_icon_data *temperature_icon_data_get(TemperatureIcon *aIcon) {
@@ -23,9 +24,14 @@ static void draw_degree(GContext *aCtx, GRect r, const char *buffer, int32_t dx,
         NULL);
 }
 
+static char temperature_unit() {
+    if (!persist_exists(temperatureScale)) {
+        return 'c';
+    }
+    return persist_read_int(temperatureScale);
+}
+
 static void paint_temperature_icon(TemperatureIcon *aIcon, GContext *aCtx, GRect r, GPoint aCenter, int32_t aRadius, bool aZoomedIn) {
-    int32_t temp = temperature_icon_get_temp(aIcon);
-    
 #ifdef PBL_COLOR
     graphics_context_set_fill_color(aCtx, GColorDukeBlue);
     graphics_fill_circle(aCtx, aCenter, aRadius);
@@ -34,8 +40,14 @@ static void paint_temperature_icon(TemperatureIcon *aIcon, GContext *aCtx, GRect
     fill_dithered_circle(aCtx, aCenter, aRadius, PATTERN_75_2);
 #endif
 
+    if (temperature_unit() == 'n') {
+        // don't show temperature
+        return;
+    }
+
     // text
     static char buffer[] = "-000°";
+    int32_t temp = temperature_icon_get_temperature(aIcon);
     snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), "%ld°", temp);
 
 #ifdef PBL_COLOR
@@ -70,11 +82,20 @@ void temperature_icon_destroy(TemperatureIcon *aIcon) {
     icon_destroy(aIcon);
 }
 
-int32_t temperature_icon_get_temp(TemperatureIcon *aIcon) {
+int32_t temperature_icon_get_temperature(TemperatureIcon *aIcon) {
     int32_t temp = temperature_icon_data_get(aIcon)->mTemperature;
 
-    // Kelvin => Celcius Degree
-    temp -= TEMPERATURE_CELCIUS_CONSTANT;
+    switch (temperature_unit()) {
+    case 'f':
+        // Kelvin => Farenheit Degree
+        temp = temp * 9 / 5 - TEMPERATURE_FARENHEIT_CONSTANT;
+        break;
+    case 'n':
+    default:
+        // Kelvin => Celcius Degree
+        temp -= TEMPERATURE_CELCIUS_CONSTANT;
+        break;
+    }
 
     return temp;
 }
