@@ -8,6 +8,8 @@ enum {
     KEY_WEATHER_ID = 1,
     showSecondHand = 2,
     zoomInTimeout = 3,
+    KEY_TEMPERATURE = 4,
+    temperatureScale = 5,
 };
 
 #endif

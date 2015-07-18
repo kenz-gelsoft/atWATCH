@@ -22,9 +22,13 @@ function locationSuccess(pos) {
       var weatherId = json.weather[0].id;      
       console.log('Weather ID is ' + weatherId);
       
+      var temperature = json.main.temp;
+      console.log('Temperature is ' + temperature);
+      
       // Assemble dictionary using our keys
       var dictionary = {
-        'KEY_WEATHER_ID': weatherId
+        'KEY_WEATHER_ID': weatherId,
+        'KEY_TEMPERATURE': temperature
       };
       
       // Send to Pebble
@@ -76,7 +80,7 @@ Pebble.addEventListener('showConfiguration', function(e) {
   if (config == null) {
     config = "";
   }
-  Pebble.openURL('http://kenz-gelsoft.github.io/atWATCH/1.7/#' + encodeURIComponent(config));
+  Pebble.openURL('http://kenz-gelsoft.github.io/atWATCH/1.8/#' + encodeURIComponent(config));
 });
 
 Pebble.addEventListener('webviewclosed', function(e) {

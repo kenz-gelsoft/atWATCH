@@ -6,6 +6,7 @@
 #include "common.h"
 #include "dithering.h"
 #include "icon.h"
+#include "temperature_icon.h"
 #include "weather_icon.h"
 
 
@@ -40,6 +41,8 @@ static Icon *create_icon(int32_t aIndex, GRect *aFromRect, GRect *aToRect,
         icon = battery_icon_create(initR, *aToRect);
     } else if (aIndex == CALENDAR_ICON) {
         icon = calendar_icon_create(initR, *aToRect);
+    } else if (aIndex == TEMPERATURE_ICON) {
+        icon = temperature_icon_create(initR, *aToRect);
     } else if (aIndex == WEATHER_ICON) {
         icon = weather_icon_create(initR, *aToRect);
     } else {
@@ -58,6 +61,8 @@ static void destroy_icon_at_index(int32_t i) {
         battery_icon_destroy(sIcons[i]);
     } else if (i == CALENDAR_ICON) {
         calendar_icon_destroy(sIcons[i]);
+    } else if (i == TEMPERATURE_ICON) {
+        temperature_icon_destroy(sIcons[i]);
     } else if (i == WEATHER_ICON) {
         weather_icon_destroy(sIcons[i]);
     } else {
@@ -134,11 +139,16 @@ static void setup_accel_handler() {
 }
 
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
+    static int32_t lastTemp;
     Tuple *t = dict_read_first(iterator);
     while (t != NULL) {
         switch (t->key) {
         case KEY_WEATHER_ID:
             weather_icon_update(sIcons[WEATHER_ICON], t->value->int32);
+            break;
+        case KEY_TEMPERATURE:
+            lastTemp = t->value->int32;
+            temperature_icon_update(sIcons[TEMPERATURE_ICON], lastTemp);
             break;
         case showSecondHand:
             persist_write_bool(showSecondHand, t->value->uint8);
@@ -149,6 +159,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         case zoomInTimeout:
             persist_write_int(zoomInTimeout, t->value->int32);
             setup_accel_handler();
+            break;
+        case temperatureScale:
+            persist_write_int(temperatureScale, (char)t->value->cstring[0]);
+            temperature_icon_update(sIcons[TEMPERATURE_ICON], lastTemp);
             break;
         }
         t = dict_read_next(iterator);

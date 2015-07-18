@@ -3,7 +3,7 @@
   "shortName": "@WATCH",
   "longName": "@WATCH",
   "companyName": "KENZ",
-  "versionLabel": "1.6",
+  "versionLabel": "1.8",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite", "basalt"],
   "watchapp": {
@@ -12,7 +12,9 @@
   "appKeys": {
     "KEY_WEATHER_ID": 1,
     "showSecondHand": 2,
-    "zoomInTimeout": 3
+    "zoomInTimeout": 3,
+    "KEY_TEMPERATURE": 4,
+    "temperatureScale": 5
   },
   "capabilities": [
     "configurable",
