@@ -26,6 +26,7 @@ function load() {
             document.getElementById('showSecondHand').checked = false;
         }
         document.querySelector('#zoomInTimeout').value = config['zoomInTimeout'] / 1000.0;
+        document.querySelector('#temperatureScale').selected = config['temperatureScale'];
     }
 }
 function save() {
