@@ -10,6 +10,8 @@
 		<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 		<link rel="import" href="../bower_components/paper-item/paper-item.html">
 		<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+		<link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
+		<link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
 		<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
 		<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 		<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
@@ -40,6 +42,18 @@ paper-item {
 paper-item:first-child, paper-item.continue {
 	border-top: none;
 }
+
+paper-radio-button {
+	--paper-radio-button-label-color:         #AAAAAA;
+	--paper-radio-button-checked-color:       #FF4A00;
+	--paper-radio-button-checked-ink-color:   #FF4A00;
+	--paper-radio-button-unchecked-color:     gray;
+	--paper-radio-button-unchecked-ink-color: gray;
+}
+paper-radio-group {
+	margin: 0 0 0 auto;
+}
+
 paper-slider {
 	width: 100%;
 	--paper-slider-knob-color:   #FF4A00;
@@ -73,6 +87,7 @@ paper-button[raised] {
 #save-button {
 	margin: 20px 16px 0;
 }
+
   		</style>
 	</head>
 	<body unresolved>
@@ -86,6 +101,14 @@ paper-button[raised] {
 			<paper-item>
 				<paper-item-body>Show Second Hand</paper-item-body>
 				<paper-toggle-button id="showSecondHand" checked></paper-tobble-button>
+			</paper-item>
+			<paper-item>
+				<paper-item-body>Temperature</paper-item-body>
+				<paper-radio-group id="temperatureUnit" selected="c">
+					<paper-radio-button name="c">℃</paper-radio-button>
+					<paper-radio-button name="f">°F</paper-radio-button>
+					<paper-radio-button name="n">None</paper-radio-button>
+				</paper-radio-group>
 			</paper-item>
 			<paper-item>
 				<paper-item-body>Shake Zooms In Clock For</paper-item-body>

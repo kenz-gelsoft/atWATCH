@@ -30,10 +30,22 @@ function load() {
 }
 function save() {
     var secHand = document.getElementById('showSecondHand').checked;
+    
+    var tempItems = document.getElementById('temperatureUnit').children;
+    var unit = 'n';
+    for (var i = 0; i < tempItems.length; ++i) {
+        var t = tempItems[i];
+        if (t.checked) {
+            unit = t.getAttribute('name');
+        }
+    }
+
     var zoomInTimeout = parseFloat(document.querySelector('#zoomInTimeout').value) * 1000;
+    
     var config = {
-        "showSecondHand": secHand ? 1 : 0,
-        "zoomInTimeout": zoomInTimeout
+        "showSecondHand":  secHand ? 1 : 0,
+        "temperatureUnit": unit,
+        "zoomInTimeout":   zoomInTimeout
     };
     location.href = "pebblejs://close#" + encodeURIComponent(JSON.stringify(config));
 }
