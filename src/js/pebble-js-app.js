@@ -80,7 +80,7 @@ Pebble.addEventListener('showConfiguration', function(e) {
   if (config == null) {
     config = "";
   }
-  Pebble.openURL('http://kenz-gelsoft.github.io/atWATCH/1.7/#' + encodeURIComponent(config));
+  Pebble.openURL('http://kenz-gelsoft.github.io/atWATCH/1.8/#' + encodeURIComponent(config));
 });
 
 Pebble.addEventListener('webviewclosed', function(e) {
